@@ -7,6 +7,8 @@
         "complex": "cpp",
         "optional": "cpp",
         "scoped_allocator": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "list": "cpp",
+        "forward_list": "cpp"
     }
 }
