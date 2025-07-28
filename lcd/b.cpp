@@ -152,7 +152,46 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 // **************************************************************************
 
-void solve(int test_case [[maybe_unused]]) {}
+// class Solution {
+// public:
+//     string longestSubsequenceRepeatedK(string s, int k) {
+
+//     }
+// };
+
+class Solution {
+   public:
+	vector<vector<int>> minAbsDiff(vector<vector<int>> &grid, int k) {
+		int n = grid.size(), m = grid[0].size();
+		vector<vector<int>> ans(n - k + 1, vector<int>(m - k + 1));
+		for (int i = 0; i <= n - k; i++) {
+			for (int j = 0; j <= m - k; j++) {
+				vector<int> temp;
+				for (int x = 0; x < k; x++) {
+					for (int y = 0; y < k; y++) {
+						temp.push_back(grid[i + x][j + y]);
+					}
+				}
+				sort(temp.begin(), temp.end());
+				long long t = INT_MAX;
+				for (int i = 1; i < k * k; i++) {
+					if (temp[i] != temp[i - 1])
+						t = min(t, abs((long long)temp[i] - temp[i - 1]));
+				}
+				if (t == INT_MAX) t = 0;
+				ans[i][j] = t;
+			}
+		}
+		return ans;
+	}
+};
+
+void solve(int test_case [[maybe_unused]]) {
+	Solution s;
+	// string str = "abpcplea";
+	// vector<string> dict = {"a", "b", "c"};
+	// cout << s.findLongestWord(str, dict) << nl;
+}
 
 // **************************************************************************
 
