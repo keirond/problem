@@ -152,45 +152,35 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 // **************************************************************************
 
-// class Solution {
-// public:
-//     string longestSubsequenceRepeatedK(string s, int k) {
-
-//     }
-// };
-
 class Solution {
-   public:
-	vector<vector<int>> minAbsDiff(vector<vector<int>> &grid, int k) {
-		int n = grid.size(), m = grid[0].size();
-		vector<vector<int>> ans(n - k + 1, vector<int>(m - k + 1));
-		for (int i = 0; i <= n - k; i++) {
-			for (int j = 0; j <= m - k; j++) {
-				vector<int> temp;
-				for (int x = 0; x < k; x++) {
-					for (int y = 0; y < k; y++) {
-						temp.push_back(grid[i + x][j + y]);
-					}
-				}
-				sort(temp.begin(), temp.end());
-				long long t = INT_MAX;
-				for (int i = 1; i < k * k; i++) {
-					if (temp[i] != temp[i - 1])
-						t = min(t, abs((long long)temp[i] - temp[i - 1]));
-				}
-				if (t == INT_MAX) t = 0;
-				ans[i][j] = t;
+public:
+    int maxEvents(vector<vector<int>>& events) {
+		sort(events.begin(), events.end(), [](auto &a, auto &b) {
+			if(a[1] == b[1]) return a[0] < b[0];
+			return a[1] < b[1];
+		});
+
+		deque<vector<int>> dq(events.begin(), events.end());
+		int s = 0;
+		int ans = 0;
+		while(!dq.empty()) {
+			s = max(s+1, dq.front()[0]);
+			dq.pop_front();
+			ans++;
+			while(!dq.empty() && dq.front()[1] <= s) {
+				dq.pop_front();
 			}
 		}
 		return ans;
-	}
+    }
 };
-
+// [[1,2],[1,2],[3,3],[1,5],[1,5]]
+// [[1,2],[1,2],[1,6],[1,2],[1,2]]
+// [[1,5],[1,5],[1,5],[2,3],[2,3]]
 void solve(int test_case [[maybe_unused]]) {
 	Solution s;
-	// string str = "abpcplea";
-	// vector<string> dict = {"a", "b", "c"};
-	// cout << s.findLongestWord(str, dict) << nl;
+	vector<vector<int>> events = {{1,2}, {1,2}, {1,6}, {1,2}, {1,2}};
+	cout << s.maxEvents(events) << nl;
 }
 
 // **************************************************************************
