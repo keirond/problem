@@ -153,35 +153,32 @@ template <typename T, typename... V> void __print(T t, V... v) {
 // **************************************************************************
 
 class Solution {
-public:
-    int maxEvents(vector<vector<int>>& events) {
-		sort(events.begin(), events.end(), [](auto &a, auto &b) {
-			if(a[1] == b[1]) return a[0] < b[0];
-			return a[1] < b[1];
-		});
+   public:
+	using ll = long long;
+	vector<vector<int>> rangeAddQueries(int n, vector<vector<int>> &queries) {
+		vector<vector<ll>> dif(n + 1, vector<ll>(n + 1));
 
-		deque<vector<int>> dq(events.begin(), events.end());
-		int s = 0;
-		int ans = 0;
-		while(!dq.empty()) {
-			s = max(s+1, dq.front()[0]);
-			dq.pop_front();
-			ans++;
-			while(!dq.empty() && dq.front()[1] <= s) {
-				dq.pop_front();
+		for (auto &d : queries) {
+			dif[d[0]][d[1]] += 1;
+			dif[d[0]][d[3] + 1] -= 1;
+			dif[d[2] + 1][d[1]] -= 1;
+			dif[d[2] + 1][d[3] + 1] += 1;
+		}
+
+		vector<vector<int>> ans(n, vector<int>(n));
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (i > 0) dif[i][j] += dif[i - 1][j];
+				if (j > 0) dif[i][j] += dif[i][j - 1];
+				if (i > 0 && j > 0) dif[i][j] -= dif[i - 1][j - 1];
+				ans[i][j] = dif[i][j];
 			}
 		}
 		return ans;
-    }
+	}
 };
-// [[1,2],[1,2],[3,3],[1,5],[1,5]]
-// [[1,2],[1,2],[1,6],[1,2],[1,2]]
-// [[1,5],[1,5],[1,5],[2,3],[2,3]]
-void solve(int test_case [[maybe_unused]]) {
-	Solution s;
-	vector<vector<int>> events = {{1,2}, {1,2}, {1,6}, {1,2}, {1,2}};
-	cout << s.maxEvents(events) << nl;
-}
+
+void solve(int test_case [[maybe_unused]]) { Solution s; }
 
 // **************************************************************************
 
