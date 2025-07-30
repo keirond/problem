@@ -154,31 +154,53 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
    public:
-	using ll = long long;
-	vector<vector<int>> rangeAddQueries(int n, vector<vector<int>> &queries) {
-		vector<vector<ll>> dif(n + 1, vector<ll>(n + 1));
-
-		for (auto &d : queries) {
-			dif[d[0]][d[1]] += 1;
-			dif[d[0]][d[3] + 1] -= 1;
-			dif[d[2] + 1][d[1]] -= 1;
-			dif[d[2] + 1][d[3] + 1] += 1;
-		}
-
-		vector<vector<int>> ans(n, vector<int>(n));
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (i > 0) dif[i][j] += dif[i - 1][j];
-				if (j > 0) dif[i][j] += dif[i][j - 1];
-				if (i > 0 && j > 0) dif[i][j] -= dif[i - 1][j - 1];
-				ans[i][j] = dif[i][j];
+	int boxDelivering(vector<vector<int>> &boxes, int portsCount, int maxBoxes,
+					  int maxWeight) {
+		deque<int> loaded;
+		int i = 0, n = boxes.size();
+		int ans = 0;
+		int curPort = 0;
+		while (i < n) {
+			int lBoxes = 0, lWeight = 0;
+			if (curPort != 0) ans++;
+			curPort = 0;
+			while (i < n && lBoxes < maxBoxes) {
+				lWeight += boxes[i][1];
+				if (lWeight <= maxWeight) {
+					lBoxes++;
+					loaded.push_back(boxes[i][0]);
+				} else
+					break;
+				i++;
+			}
+			__print(loaded);
+			while (!loaded.empty()) {
+				int cur = loaded.front();
+				loaded.pop_front();
+				if (curPort != cur) ans++;
+				curPort = cur;
 			}
 		}
+		if (curPort != 0) ans++;
 		return ans;
 	}
 };
 
-void solve(int test_case [[maybe_unused]]) { Solution s; }
+void solve(int test_case [[maybe_unused]]) {
+	Solution s;
+	vector<vector<int>> boxes;
+	int portsCount, maxBoxes, maxWeight;
+	__read(boxes, portsCount, maxBoxes, maxWeight);
+	cout << s.boxDelivering(boxes, portsCount, maxBoxes, maxWeight) << nl;
+}
+// [[2,4], [2,5],[3,1], [3,2], [3,7], [3,1],[4,4], [1,3],[5,2] ]
+// [2, 4] // 2
+// [2, 5], [3, 1] // 3
+// [3, 2] // 2
+// [3, 7] // 2
+// [3, 1], [4, 4] // 3
+// [1, 3], [5, 2] // 3
+// 5, 5, 7
 
 // **************************************************************************
 
