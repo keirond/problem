@@ -29,6 +29,7 @@
         "__split_buffer": "cpp",
         "__tree": "cpp",
         "map": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "bitset": "cpp"
     }
 }
