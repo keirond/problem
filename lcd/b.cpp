@@ -154,8 +154,45 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
    public:
-	vector<vector<int>> combine(int n, int k) {
+	long long maxRectangleArea(vector<int> &xCoord, vector<int> &yCoord) {
+		int n = xCoord.size();
+		vector<pair<int, int>> ps(n);
+		for (int i = 0; i < n; i++) ps[i] = {xCoord[i], yCoord[i]};
+		sort(ps.begin(), ps.end());
 
+		long long ans = 0;
+		map<int, pair<int, int>> mp;
+		for (int i = 0; i < n - 1; i++) {
+			if (ps[i].first == ps[i + 1].first) {
+				if (mp.contains(ps[i].second)) {
+					auto t = mp[ps[i].second];
+					if (t.first == ps[i + 1].second) {
+						ans = max(ans, 1LL * (ps[i].first - t.second) *
+										   (ps[i + 1].second - ps[i].second));
+					}
+				}
+				auto it = mp.upper_bound(ps[i + 1].second);
+				if (it != mp.begin()) --it;
+				while (it != mp.begin() && it->first >= ps[i].second) {
+					auto prv = prev(it);
+					mp.erase(it);
+					it = prv;
+				}
+			}
+
+			auto it = mp.lower_bound(ps[i].second);
+			if (it != mp.begin()) --it;
+			while (it != mp.begin() && it->second.first > ps[i].second) {
+				auto prv = prev(it);
+				mp.erase(it);
+				it = prv;
+			}
+			if (ps[i].first == ps[i + 1].first) {
+				mp[ps[i].second] = {ps[i + 1].second, ps[i].first};
+			}
+		}
+		return ans;
+		// [1, 3, 1], [2, 2, 2], [1, 3, 3]
 	}
 };
 
