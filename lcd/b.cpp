@@ -154,49 +154,135 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
    public:
-	long long maxRectangleArea(vector<int> &xCoord, vector<int> &yCoord) {
-		int n = xCoord.size();
-		vector<pair<int, int>> ps(n);
-		for (int i = 0; i < n; i++) ps[i] = {xCoord[i], yCoord[i]};
-		sort(ps.begin(), ps.end());
-
-		long long ans = 0;
-		map<int, pair<int, int>> mp;
-		for (int i = 0; i < n - 1; i++) {
-			if (ps[i].first == ps[i + 1].first) {
-				if (mp.contains(ps[i].second)) {
-					auto t = mp[ps[i].second];
-					if (t.first == ps[i + 1].second) {
-						ans = max(ans, 1LL * (ps[i].first - t.second) *
-										   (ps[i + 1].second - ps[i].second));
-					}
-				}
-				auto it = mp.upper_bound(ps[i + 1].second);
-				if (it != mp.begin()) --it;
-				while (it != mp.begin() && it->first >= ps[i].second) {
-					auto prv = prev(it);
-					mp.erase(it);
-					it = prv;
-				}
-			}
-
-			auto it = mp.lower_bound(ps[i].second);
-			if (it != mp.begin()) --it;
-			while (it != mp.begin() && it->second.first > ps[i].second) {
-				auto prv = prev(it);
-				mp.erase(it);
-				it = prv;
-			}
-			if (ps[i].first == ps[i + 1].first) {
-				mp[ps[i].second] = {ps[i + 1].second, ps[i].first};
-			}
-		}
-		return ans;
-		// [1, 3, 1], [2, 2, 2], [1, 3, 3]
+	string d0(int t) {
+		if (t == 1)
+			return "One";
+		else if (t == 2)
+			return "Two";
+		else if (t == 3)
+			return "Three";
+		else if (t == 4)
+			return "Four";
+		else if (t == 5)
+			return "Five";
+		else if (t == 6)
+			return "Six";
+		else if (t == 7)
+			return "Seven";
+		else if (t == 8)
+			return "Eight";
+		else if (t == 9)
+			return "Nine";
+		return "";
 	}
+	string d1(int t) {
+		if (t == 0) return "";
+		string s;
+
+		string s2;
+		int t2 = (t / 100) % 10;
+		if (t2 == 1)
+			s2 = "One";
+		else if (t2 == 2)
+			s2 = "Two";
+		else if (t2 == 3)
+			s2 = "Three";
+		else if (t2 == 4)
+			s2 = "Four";
+		else if (t2 == 5)
+			s2 = "Five";
+		else if (t2 == 6)
+			s2 = "Six";
+		else if (t2 == 7)
+			s2 = "Seven";
+		else if (t2 == 8)
+			s2 = "Eight";
+		else if (t2 == 9)
+			s2 = "Nine";
+		if (t2 != 0) {
+			s2 += " Hundred";
+			s += s2;
+		}
+
+		string s1;
+		int t1 = (t / 10) % 10;
+		int t0 = t % 10;
+		if (t1 == 1) {
+			if (t0 == 0)
+				s1 = "Ten";
+			else if (t0 == 1)
+				s1 = "Eleven";
+			else if (t0 == 2)
+				s1 = "Twelve";
+			else if (t0 == 3)
+				s1 = "Thirteen";
+			else if (t0 == 4)
+				s1 = "Forteen";
+			else if (t0 == 5)
+				s1 = "Fifteen";
+			else if (t0 == 6)
+				s1 = "Sixteen";
+			else if (t0 == 7)
+				s1 = "Seventeen";
+			else if (t0 == 8)
+				s1 = "Eighteen";
+			else if (t0 == 9)
+				s1 = "Nineteen";
+		} else {
+			if (t1 == 2)
+				s1 = "Twenty";
+			else if (t1 == 3)
+				s1 = "Thirty";
+			else if (t1 == 4)
+				s1 = "Forty";
+			else if (t1 == 5)
+				s1 = "Fifty";
+			else if (t1 == 6)
+				s1 = "Sixty";
+			else if (t1 == 7)
+				s1 = "Seventy";
+			else if (t1 == 8)
+				s1 = "Eighty";
+			else if (t1 == 9)
+				s1 = "Ninety";
+
+			if (t1 != 0 && t0 != 0) s1 += " ";
+			if (t0 == 1)
+				s1 += "One";
+			else if (t0 == 2)
+				s1 += "Two";
+			else if (t0 == 3)
+				s1 += "Three";
+			else if (t0 == 4)
+				s1 += "Four";
+			else if (t0 == 5)
+				s1 += "Five";
+			else if (t0 == 6)
+				s1 += "Six";
+			else if (t0 == 7)
+				s1 += "Seven";
+			else if (t0 == 8)
+				s1 += "Eight";
+			else if (t0 == 9)
+				s1 += "Nine";
+		}
+		if (t % 100) {
+			if (t / 100) s += " ";
+			s += s1;
+		}
+		return s;
+	}
+
+	string numberToWords(int num) { return ""; }
 };
 
-void solve(int test_case [[maybe_unused]]) {}
+void solve(int test_case [[maybe_unused]]) {
+	vector<int> arr;
+	int v;
+	__read(v);
+	Solution s;
+	cout << s.numberToWords(v) << endl;
+}
 
 // **************************************************************************
 
