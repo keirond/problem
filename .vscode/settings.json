@@ -30,6 +30,9 @@
         "__tree": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "ostream": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     }
 }
