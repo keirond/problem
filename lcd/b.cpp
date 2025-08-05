@@ -157,50 +157,33 @@ class Solution {
 	long long maximumCoins(vector<vector<int>> &coins, int k) {
 		int n = coins.size();
 		sort(coins.begin(), coins.end());
-		long long ans = 0, sm = 0;
-		for (int r = 0, l = 0; r < n; r++) {
-			// coins[r][0] -> coins[r][1]
-			// coins[r][0] -k+1 -> coins[r][1] - k+1;
-			while (l <= r && coins[l][1] < coins[r][0] - k + 1) {
-				sm -= 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
-				l++;
-			}
 
-			while (l <= r && coins[l][1] < coins[r][1] - k + 1) {
-				// coins[r][0]-k+1 <= coins[l][1] < coins[r][1] - k + 1
-				long long t = sm;
-				// coins[l][0] <= start <= coins[l][1];
-				int start = max(coins[l][0], coins[r][0] - k + 1);
-				// coins[r][0] <= end <= coins[r][1];
-				int end = min(coins[r][1], start + k - 1);
-				t -= 1LL * coins[l][2] * (start - coins[l][0]);
-				t += 1LL * coins[r][2] * (end - coins[r][0] + 1);
-				cout << start << ' ' << end << ' ' << t << endl;
-				ans = max(ans, t);
+		long long ans = 0;
 
-				sm -= 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
-				l++;
-			}
-
-			// coins[r][1] - k + 1 <= coins[l][1]
-			int start, end;
-			long long t;
-
-			start = coins[l][0];
-			end = min(start + k - 1, coins[r][1]);
-			if (end >= coins[r][0]) {
-				t = sm + 1LL * coins[r][2] * (end - coins[r][0] + 1);
-				ans = max(ans, t);
-				cout << '-' << ' ' << start << ' ' << end << ' ' << t << endl;
-			}
-
+		for (long long sm = 0, l = 0, r = 0; r < n; r++) {
 			sm += 1LL * coins[r][2] * (coins[r][1] - coins[r][0] + 1);
-			end = coins[r][1];
-			start = max(coins[l][0], end - k + 1);
-			t = sm - 1LL * coins[l][2] * (start - coins[l][0]);
-			cout << '-' << ' ' << start << ' ' << end << ' ' << t << endl;
-			ans = max(ans, t);
+			while (l <= r && coins[l][1] < coins[r][1] - k + 1) {
+				sm -= 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
+				l++;
+			}
+			// coins[r][1] - k + 1 <= coins[l][1];
+			int end = coins[r][1];
+			int start = max(coins[l][0], end - k + 1);
+			ans = max(ans, sm - 1LL * coins[l][2] * (start - coins[l][0]));
 		}
+
+		for (long long sm = 0, l = n-1, r = n-1; l >= 0; l--) {
+			sm += 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
+			while (l <= r && coins[r][0] > coins[l][1] + k - 1) {
+				sm -= 1LL * coins[r][2] * (coins[r][1] - coins[r][0] + 1);
+				r--;
+			}
+			// coins[l][1] - k + 1 >= coins[r][0];
+			int start = coins[l][0];
+			int end = min(coins[r][1], start+k-1);
+			ans = max(ans, sm - 1LL * coins[r][2] * (coins[r][1] - end));
+		}
+
 		return ans;
 	}
 };
