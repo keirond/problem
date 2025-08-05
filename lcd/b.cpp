@@ -154,134 +154,69 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
    public:
-	string d0(int t) {
-		if (t == 1)
-			return "One";
-		else if (t == 2)
-			return "Two";
-		else if (t == 3)
-			return "Three";
-		else if (t == 4)
-			return "Four";
-		else if (t == 5)
-			return "Five";
-		else if (t == 6)
-			return "Six";
-		else if (t == 7)
-			return "Seven";
-		else if (t == 8)
-			return "Eight";
-		else if (t == 9)
-			return "Nine";
-		return "";
+	long long maximumCoins(vector<vector<int>> &coins, int k) {
+		int n = coins.size();
+		sort(coins.begin(), coins.end());
+		long long ans = 0, sm = 0;
+		for (int r = 0, l = 0; r < n; r++) {
+			// coins[r][0] -> coins[r][1]
+			// coins[r][0] -k+1 -> coins[r][1] - k+1;
+			while (l <= r && coins[l][1] < coins[r][0] - k + 1) {
+				sm -= 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
+				l++;
+			}
+
+			while (l <= r && coins[l][1] < coins[r][1] - k + 1) {
+				// coins[r][0]-k+1 <= coins[l][1] < coins[r][1] - k + 1
+				long long t = sm;
+				// coins[l][0] <= start <= coins[l][1];
+				int start = max(coins[l][0], coins[r][0] - k + 1);
+				// coins[r][0] <= end <= coins[r][1];
+				int end = min(coins[r][1], start + k - 1);
+				t -= 1LL * coins[l][2] * (start - coins[l][0]);
+				t += 1LL * coins[r][2] * (end - coins[r][0] + 1);
+				cout << start << ' ' << end << ' ' << t << endl;
+				ans = max(ans, t);
+
+				sm -= 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
+				l++;
+			}
+
+			// coins[r][1] - k + 1 <= coins[l][1]
+			int start, end;
+			long long t;
+
+			start = coins[l][0];
+			end = min(start + k - 1, coins[r][1]);
+			if (end >= coins[r][0]) {
+				t = sm + 1LL * coins[r][2] * (end - coins[r][0] + 1);
+				ans = max(ans, t);
+				cout << '-' << ' ' << start << ' ' << end << ' ' << t << endl;
+			}
+
+			sm += 1LL * coins[r][2] * (coins[r][1] - coins[r][0] + 1);
+			end = coins[r][1];
+			start = max(coins[l][0], end - k + 1);
+			t = sm - 1LL * coins[l][2] * (start - coins[l][0]);
+			cout << '-' << ' ' << start << ' ' << end << ' ' << t << endl;
+			ans = max(ans, t);
+		}
+		return ans;
 	}
-	string d1(int t) {
-		if (t == 0) return "";
-		string s;
-
-		string s2;
-		int t2 = (t / 100) % 10;
-		if (t2 == 1)
-			s2 = "One";
-		else if (t2 == 2)
-			s2 = "Two";
-		else if (t2 == 3)
-			s2 = "Three";
-		else if (t2 == 4)
-			s2 = "Four";
-		else if (t2 == 5)
-			s2 = "Five";
-		else if (t2 == 6)
-			s2 = "Six";
-		else if (t2 == 7)
-			s2 = "Seven";
-		else if (t2 == 8)
-			s2 = "Eight";
-		else if (t2 == 9)
-			s2 = "Nine";
-		if (t2 != 0) {
-			s2 += " Hundred";
-			s += s2;
-		}
-
-		string s1;
-		int t1 = (t / 10) % 10;
-		int t0 = t % 10;
-		if (t1 == 1) {
-			if (t0 == 0)
-				s1 = "Ten";
-			else if (t0 == 1)
-				s1 = "Eleven";
-			else if (t0 == 2)
-				s1 = "Twelve";
-			else if (t0 == 3)
-				s1 = "Thirteen";
-			else if (t0 == 4)
-				s1 = "Forteen";
-			else if (t0 == 5)
-				s1 = "Fifteen";
-			else if (t0 == 6)
-				s1 = "Sixteen";
-			else if (t0 == 7)
-				s1 = "Seventeen";
-			else if (t0 == 8)
-				s1 = "Eighteen";
-			else if (t0 == 9)
-				s1 = "Nineteen";
-		} else {
-			if (t1 == 2)
-				s1 = "Twenty";
-			else if (t1 == 3)
-				s1 = "Thirty";
-			else if (t1 == 4)
-				s1 = "Forty";
-			else if (t1 == 5)
-				s1 = "Fifty";
-			else if (t1 == 6)
-				s1 = "Sixty";
-			else if (t1 == 7)
-				s1 = "Seventy";
-			else if (t1 == 8)
-				s1 = "Eighty";
-			else if (t1 == 9)
-				s1 = "Ninety";
-
-			if (t1 != 0 && t0 != 0) s1 += " ";
-			if (t0 == 1)
-				s1 += "One";
-			else if (t0 == 2)
-				s1 += "Two";
-			else if (t0 == 3)
-				s1 += "Three";
-			else if (t0 == 4)
-				s1 += "Four";
-			else if (t0 == 5)
-				s1 += "Five";
-			else if (t0 == 6)
-				s1 += "Six";
-			else if (t0 == 7)
-				s1 += "Seven";
-			else if (t0 == 8)
-				s1 += "Eight";
-			else if (t0 == 9)
-				s1 += "Nine";
-		}
-		if (t % 100) {
-			if (t / 100) s += " ";
-			s += s1;
-		}
-		return s;
-	}
-
-	string numberToWords(int num) { return ""; }
 };
 
 void solve(int test_case [[maybe_unused]]) {
-	vector<int> arr;
-	int v;
-	__read(v);
+	vector<vector<int>> grid1 [[maybe_unused]];
+	vector<int> arr1 [[maybe_unused]];
+	int i1 [[maybe_unused]];
+	long long l1 [[maybe_unused]];
+	double d1 [[maybe_unused]];
+	char c1 [[maybe_unused]];
+	string s1 [[maybe_unused]];
+
+	__read(grid1, i1);
 	Solution s;
-	cout << s.numberToWords(v) << endl;
+	cout << s.maximumCoins(grid1, i1) << endl;
 }
 
 // **************************************************************************
