@@ -175,7 +175,7 @@ class Solution {
    public:
 	int countNodes(TreeNode *root) {
 		if (!root) return 0;
-		int l = 0, r = 1, n = 1;
+		int l = 1, r = 1, n = 1;
 		TreeNode *node = root;
 		while (node->right) {
 			n++;
@@ -185,7 +185,7 @@ class Solution {
 		while (l <= r) {
 			TreeNode *node = root;
 			int m = l + (r - l >> 1);
-			for (int i = n - 1; i >= 0; i--) {
+			for (int i = n - 2; i >= 0; i--) {
 				if (m & (1 << i))
 					node = node->right;
 				else
@@ -197,8 +197,9 @@ class Solution {
 			else
 				r = m - 1;
 		}
+		if (r == 0) return (1 << n) - 1;
 		node = root;
-		for (int i = n - 1; i >= 0; i--) {
+		for (int i = n - 2; i >= 0; i--) {
 			if (r & (1 << i))
 				node = node->right;
 			else
