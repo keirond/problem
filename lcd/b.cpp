@@ -172,7 +172,7 @@ class Solution {
 			ans = max(ans, sm - 1LL * coins[l][2] * (start - coins[l][0]));
 		}
 
-		for (long long sm = 0, l = n-1, r = n-1; l >= 0; l--) {
+		for (long long sm = 0, l = n - 1, r = n - 1; l >= 0; l--) {
 			sm += 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
 			while (l <= r && coins[r][0] > coins[l][1] + k - 1) {
 				sm -= 1LL * coins[r][2] * (coins[r][1] - coins[r][0] + 1);
@@ -180,7 +180,7 @@ class Solution {
 			}
 			// coins[l][1] - k + 1 >= coins[r][0];
 			int start = coins[l][0];
-			int end = min(coins[r][1], start+k-1);
+			int end = min(coins[r][1], start + k - 1);
 			ans = max(ans, sm - 1LL * coins[r][2] * (coins[r][1] - end));
 		}
 
