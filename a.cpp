@@ -84,7 +84,7 @@ template <typename T, typename V> void __info(const pair<T, V> &x) {
 }
 
 template <typename T, typename V, typename K>
-void __info(const tuple<T, K, V> &x) {
+void __info(const tuple<T, V, K> &x) {
 	cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
 		cerr << ", ", __info(get<2>(x)), cerr << '}';
 }
