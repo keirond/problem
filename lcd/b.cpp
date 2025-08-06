@@ -114,6 +114,13 @@ void __info(const char *x) { cerr << '\"' << x << '\"'; }
 void __info(const string &x) { cerr << '\"' << x << '\"'; }
 void __info(bool x) { cerr << (x ? "true" : "false"); }
 
+void __info(const vector<bool> &x) {
+	int f = 0;
+	cerr << '{';
+	for (auto i : x) cerr << (f++ ? ", " : ""), __info(i);
+	cerr << "}";
+}
+
 template <typename T> void __info(const T &x) {
 	int f = 0;
 	cerr << '{';
@@ -154,52 +161,48 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
    public:
-	long long maximumCoins(vector<vector<int>> &coins, int k) {
-		int n = coins.size();
-		sort(coins.begin(), coins.end());
-
-		long long ans = 0;
-
-		for (long long sm = 0, l = 0, r = 0; r < n; r++) {
-			sm += 1LL * coins[r][2] * (coins[r][1] - coins[r][0] + 1);
-			while (l <= r && coins[l][1] < coins[r][1] - k + 1) {
-				sm -= 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
-				l++;
-			}
-			// coins[r][1] - k + 1 <= coins[l][1];
-			int end = coins[r][1];
-			int start = max(coins[l][0], end - k + 1);
-			ans = max(ans, sm - 1LL * coins[l][2] * (start - coins[l][0]));
+	void call(vector<int> &nums, int i, vector<int> &stk,
+			  vector<vector<int>> &ans) {
+		if (i == nums.size()) {
+			ans.push_back(vector<int>(stk));
+			return;
 		}
 
-		for (long long sm = 0, l = n - 1, r = n - 1; l >= 0; l--) {
-			sm += 1LL * coins[l][2] * (coins[l][1] - coins[l][0] + 1);
-			while (l <= r && coins[r][0] > coins[l][1] + k - 1) {
-				sm -= 1LL * coins[r][2] * (coins[r][1] - coins[r][0] + 1);
-				r--;
-			}
-			// coins[l][1] - k + 1 >= coins[r][0];
-			int start = coins[l][0];
-			int end = min(coins[r][1], start + k - 1);
-			ans = max(ans, sm - 1LL * coins[r][2] * (coins[r][1] - end));
+		int j = i;
+		for (j = i; j < nums.size(); j++) {
+			if (nums[i] != nums[j]) break;
 		}
-
+		for (int k = i; k < j; k++) {
+			stk.push_back(nums[i]);
+			call(nums, j, stk, ans);
+		}
+		for (int k = i; k < j; k++) stk.pop_back();
+		call(nums, j, stk, ans);
+	}
+	vector<vector<int>> subsetsWithDup(vector<int> &nums) {
+		sort(nums.begin(), nums.end());
+		vector<vector<int>> ans;
+		vector<int> stk;
+		call(nums, 0, stk, ans);
 		return ans;
 	}
 };
 
 void solve(int test_case [[maybe_unused]]) {
-	vector<vector<int>> grid1 [[maybe_unused]];
-	vector<int> arr1 [[maybe_unused]];
-	int i1 [[maybe_unused]];
-	long long l1 [[maybe_unused]];
-	double d1 [[maybe_unused]];
-	char c1 [[maybe_unused]];
-	string s1 [[maybe_unused]];
+	vector<vector<int>> grid [[maybe_unused]];
+	vector<int> arr [[maybe_unused]];
+	vector<string> strs [[maybe_unused]];
 
-	__read(grid1, i1);
-	Solution s;
-	cout << s.maximumCoins(grid1, i1) << endl;
+	int v [[maybe_unused]];
+	long long l [[maybe_unused]];
+	double d [[maybe_unused]];
+	char c [[maybe_unused]];
+	string s, s1 [[maybe_unused]];
+
+	Solution sol [[maybe_unused]];
+
+	__read(arr);
+	info(sol.subsetsWithDup(arr));
 }
 
 // **************************************************************************
