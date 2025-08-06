@@ -159,32 +159,54 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 // **************************************************************************
 
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
 class Solution {
    public:
-	void call(vector<int> &nums, int i, vector<int> &stk,
-			  vector<vector<int>> &ans) {
-		if (i == nums.size()) {
-			ans.push_back(vector<int>(stk));
-			return;
+	int countNodes(TreeNode *root) {
+		if (!root) return 0;
+		int l = 0, r = 1, n = 1;
+		TreeNode *node = root;
+		while (node->right) {
+			n++;
+			r = r << 1 | 1;
+			node = node->right;
+		}
+		while (l <= r) {
+			TreeNode *node = root;
+			int m = l + (r - l >> 1);
+			for (int i = n - 1; i >= 0; i--) {
+				if (m & (1 << i))
+					node = node->right;
+				else
+					node = node->left;
+			}
+			bool ok = node->left;
+			if (ok)
+				l = m + 1;
+			else
+				r = m - 1;
+		}
+		node = root;
+		for (int i = n - 1; i >= 0; i--) {
+			if (r & (1 << i))
+				node = node->right;
+			else
+				node = node->left;
 		}
 
-		int j = i;
-		for (j = i; j < nums.size(); j++) {
-			if (nums[i] != nums[j]) break;
-		}
-		for (int k = i; k < j; k++) {
-			stk.push_back(nums[i]);
-			call(nums, j, stk, ans);
-		}
-		for (int k = i; k < j; k++) stk.pop_back();
-		call(nums, j, stk, ans);
-	}
-	vector<vector<int>> subsetsWithDup(vector<int> &nums) {
-		sort(nums.begin(), nums.end());
-		vector<vector<int>> ans;
-		vector<int> stk;
-		call(nums, 0, stk, ans);
-		return ans;
+		if (node->right) return r << 1 | 1;
+		return r << 1;
 	}
 };
 
