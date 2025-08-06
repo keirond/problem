@@ -33,6 +33,7 @@
         "bitset": "cpp",
         "ostream": "cpp",
         "queue": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "random": "cpp"
     }
 }
