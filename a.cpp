@@ -27,7 +27,7 @@ using vpii = vector<pii>;
 #define all(v) v.begin(), v.end()
 #define par(v, n) v.begin(), v.begin() + n
 
-#define range(i, s, e, j) \
+#define loop(i, s, e, j) \
 	for (auto i = (s); ((j) > 0) ? (i <= (e)) : (i >= (e)); i += (j))
 #define iter(i, n) range(i, 0, n - 1, 1)
 #define each(i, arr) for (auto &i : (arr))

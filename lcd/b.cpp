@@ -7,13 +7,24 @@ using ll = long long;
 #define fi first
 #define se second
 #define pb push_back
+#define eb emplace_back
 #define ins insert
+#define mp make_pair
+#define mtp make_tuple
 #define lb lower_bound
 #define ub upper_bound
+
 #define sz(v) (int)(v).size()
 #define all(v) v.begin(), v.end()
-#define range(v, n) v.begin(), v.begin() + n
+#define par(v, n) v.begin(), v.begin() + n
 
+#define loop(i, s, e, j) \
+	for (auto i = (s); ((j) > 0) ? (i <= (e)) : (i >= (e)); i += (j))
+#define iter(i, n) range(i, 0, n - 1, 1)
+#define each(i, arr) for (auto &i : (arr))
+
+constexpr double EPS [[maybe_unused]] = 1e-9;
+constexpr double PI [[maybe_unused]] = 3.14159265358979323846;
 constexpr char nl [[maybe_unused]] = '\n';
 
 // --------------------------------------------------------------------------
@@ -159,55 +170,47 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 // **************************************************************************
 
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
- * right(right) {}
- * };
- */
 class Solution {
    public:
-	int countNodes(TreeNode *root) {
-		if (!root) return 0;
-		int l = 1, r = 1, n = 1;
-		TreeNode *node = root;
-		while (node->right) {
-			n++;
-			r = r << 1 | 1;
-			node = node->right;
-		}
-		while (l <= r) {
-			TreeNode *node = root;
-			int m = l + (r - l >> 1);
-			for (int i = n - 2; i >= 0; i--) {
-				if (m & (1 << i))
-					node = node->right;
-				else
-					node = node->left;
-			}
-			bool ok = node->left;
-			if (ok)
-				l = m + 1;
-			else
-				r = m - 1;
-		}
-		if (r == 0) return (1 << n) - 1;
-		node = root;
-		for (int i = n - 2; i >= 0; i--) {
-			if (r & (1 << i))
-				node = node->right;
-			else
-				node = node->left;
-		}
+	using ll = long long;
+	vector<int> countPairs(int n, vector<vector<int>> &edges,
+						   vector<int> &queries) {
+		unordered_map<int, int> mcnt;
+		vector<int> cnt(n);
+		vector<unordered_map<int, int>> ecnt(n);
 
-		if (node->right) return r << 1 | 1;
-		return r << 1;
+		for (auto &d : edges) {
+			int u = d[0] - 1, v = d[1] - 1;
+			cnt[u]++, cnt[v]++;
+			mcnt[u]++, mcnt[v]++;
+			ecnt[u][v]++;
+			ecnt[v][u]++;
+		}
+		sort(cnt.begin(), cnt.end());
+
+		int m = queries.size();
+		vector<pair<int, int>> pr(m);
+		for (int i = 0; i < m; i++) pr[i] = {queries[i], i};
+		ranges::sort(pr);
+		vector<int> result(m);
+		auto it = cnt.begin();
+		for (int i = 0; i < m; i++) {
+			int q = queries[i];
+			ll ans = 0;
+			for (int j = 0; j < n; j++) {
+				it = upper_bound(it, cnt.end(), q - mcnt[j]);
+				int t = cnt.end() - it;
+				if (mcnt[j] > q - mcnt[j]) t--;
+				for (auto [k, v] : ecnt[j]) {
+					if (mcnt[k] > q - mcnt[j] && mcnt[j] + mcnt[k] - v <= q)
+						t--;
+				}
+				ans += t;
+			}
+			ans /= 2;
+			result[i] = ans;
+		}
+		return result;
 	}
 };
 
@@ -224,8 +227,9 @@ void solve(int test_case [[maybe_unused]]) {
 
 	Solution sol [[maybe_unused]];
 
-	__read(arr);
-	info(sol.subsetsWithDup(arr));
+	__read(v, grid, arr);
+	auto result = sol.countPairs(v, grid, arr);
+	info(result);
 }
 
 // **************************************************************************
