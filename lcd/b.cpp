@@ -172,46 +172,7 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
    public:
-	using ll = long long;
-	vector<int> countPairs(int n, vector<vector<int>> &edges,
-						   vector<int> &queries) {
-		unordered_map<int, int> mcnt;
-		vector<int> cnt(n);
-		vector<unordered_map<int, int>> ecnt(n);
-
-		for (auto &d : edges) {
-			int u = d[0] - 1, v = d[1] - 1;
-			cnt[u]++, cnt[v]++;
-			mcnt[u]++, mcnt[v]++;
-			ecnt[u][v]++;
-			ecnt[v][u]++;
-		}
-		sort(cnt.begin(), cnt.end());
-
-		int m = queries.size();
-		vector<pair<int, int>> pr(m);
-		for (int i = 0; i < m; i++) pr[i] = {queries[i], i};
-		ranges::sort(pr);
-		vector<int> result(m);
-		auto it = cnt.begin();
-		for (int i = 0; i < m; i++) {
-			int q = queries[i];
-			ll ans = 0;
-			for (int j = 0; j < n; j++) {
-				it = upper_bound(it, cnt.end(), q - mcnt[j]);
-				int t = cnt.end() - it;
-				if (mcnt[j] > q - mcnt[j]) t--;
-				for (auto [k, v] : ecnt[j]) {
-					if (mcnt[k] > q - mcnt[j] && mcnt[j] + mcnt[k] - v <= q)
-						t--;
-				}
-				ans += t;
-			}
-			ans /= 2;
-			result[i] = ans;
-		}
-		return result;
-	}
+	vector<int> maximumWeight(vector<vector<int>> &intervals) { return {}; }
 };
 
 void solve(int test_case [[maybe_unused]]) {
@@ -227,8 +188,8 @@ void solve(int test_case [[maybe_unused]]) {
 
 	Solution sol [[maybe_unused]];
 
-	__read(v, grid, arr);
-	auto result = sol.countPairs(v, grid, arr);
+	__read(grid);
+	auto result = sol.maximumWeight(grid);
 	info(result);
 }
 
