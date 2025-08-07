@@ -171,7 +171,7 @@ template <typename T, typename... V> void __print(T t, V... v) {
 // **************************************************************************
 
 class Solution {
-   public:
+  public:
 	vector<int> maximumWeight(vector<vector<int>> &intervals) { return {}; }
 };
 
