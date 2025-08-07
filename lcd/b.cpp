@@ -172,7 +172,12 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
   public:
-	vector<int> maximumWeight(vector<vector<int>> &intervals) { return {}; }
+	using ll = long long;
+	vector<int> maximumWeight(vector<vector<int>> &intervals) {
+		int n = intervals.size();
+		vector<vector<ll>> dp(4, vector<ll>());
+		return {};
+	}
 };
 
 void solve(int test_case [[maybe_unused]]) {
