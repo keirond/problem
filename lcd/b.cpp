@@ -175,8 +175,50 @@ class Solution {
 	using ll = long long;
 	vector<int> maximumWeight(vector<vector<int>> &intervals) {
 		int n = intervals.size();
-		vector<vector<ll>> dp(4, vector<ll>());
-		return {};
+		for (int i = 0; i < n; i++) intervals[i].push_back(i);
+		sort(begin(intervals), end(intervals));
+		vector<vector<vector<ll>>> dp(4, vector<vector<ll>>(n + 1));
+
+		dp[0][n] = {INT_MIN, n, -1};
+		for (int i = n - 1; i >= 0; i--) {
+			dp[0][i] = {intervals[i][2], -1, 0};
+			if (dp[0][i + 1][0] > dp[0][i][0]) dp[0][i] = dp[0][i + 1];
+		}
+
+		for (int k = 1; k < 4; k++) {
+			dp[k][n] = {INT_MIN, n, -1};
+
+			for (int i = n - 1; i >= 0; i--) {
+				int r = intervals[i][1];
+				int w = intervals[i][2];
+
+				dp[k][i] = {w, i, -1};
+				if (dp[k][i + 1][0] > dp[k][i][0]) dp[k][i] = dp[k][i + 1];
+
+				int t =
+					upper_bound(begin(intervals), end(intervals),
+								vector<int>({r, INT_MAX, INT_MAX, INT_MAX})) -
+					begin(intervals);
+
+				if (dp[k - 1][t][0] + w > dp[k][i][0]) {
+					dp[k][i][0] = dp[k - 1][t][0] + w;
+					dp[k][i][1] = i;
+					dp[k][i][2] = t;
+				}
+			}
+		}
+		info(dp);
+
+		vector<int> ans;
+		int mk = 3, mi = 0;
+		while (mi != -1) {
+			int cur = dp[mk][mi][1];
+			int nxt = dp[mk][mi][2];
+			ans.push_back(intervals[cur][3]);
+			mk--;
+			mi = nxt;
+		}
+		return ans;
 	}
 };
 

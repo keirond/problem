@@ -1,5 +1,4 @@
 {
-    "C_Cpp.autocomplete": "disabled",
     "files.associations": {
         "iostream": "cpp",
         "iosfwd": "cpp",
@@ -36,5 +35,6 @@
         "stack": "cpp",
         "random": "cpp"
     },
+    "C_Cpp.autocomplete": "disabled",
     "clangd.enableCodeCompletion": false
 }
