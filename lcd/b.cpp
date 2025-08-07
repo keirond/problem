@@ -177,48 +177,70 @@ class Solution {
 		int n = intervals.size();
 		for (int i = 0; i < n; i++) intervals[i].push_back(i);
 		sort(begin(intervals), end(intervals));
-		vector<vector<vector<ll>>> dp(4, vector<vector<ll>>(n + 1));
+		auto get = [&](int r) {
+			return upper_bound(begin(intervals), end(intervals),
+							   vector<int>({r, INT_MAX, INT_MAX, INT_MAX})) -
+				   begin(intervals);
+		};
 
-		dp[0][n] = {INT_MIN, n, -1};
+		vector<vector<pair<ll, vector<int>>>> dp(
+			4, vector<pair<ll, vector<int>>>(n + 1));
+
+		dp[0][n] = {INT_MIN, {}};
 		for (int i = n - 1; i >= 0; i--) {
-			dp[0][i] = {intervals[i][2], -1, 0};
-			if (dp[0][i + 1][0] > dp[0][i][0]) dp[0][i] = dp[0][i + 1];
+			dp[0][i] = {intervals[i][2], {i}};
+			if (dp[0][i + 1].first > dp[0][i].first) dp[0][i] = dp[0][i + 1];
 		}
 
 		for (int k = 1; k < 4; k++) {
-			dp[k][n] = {INT_MIN, n, -1};
+			dp[k][n] = {INT_MIN, {}};
 
 			for (int i = n - 1; i >= 0; i--) {
 				int r = intervals[i][1];
 				int w = intervals[i][2];
 
-				dp[k][i] = {w, i, -1};
-				if (dp[k][i + 1][0] > dp[k][i][0]) dp[k][i] = dp[k][i + 1];
+				dp[k][i] = {w, {i}};
+				if (dp[k][i + 1].first > dp[k][i].first)
+					dp[k][i] = dp[k][i + 1];
 
-				int t =
-					upper_bound(begin(intervals), end(intervals),
-								vector<int>({r, INT_MAX, INT_MAX, INT_MAX})) -
-					begin(intervals);
-
-				if (dp[k - 1][t][0] + w > dp[k][i][0]) {
-					dp[k][i][0] = dp[k - 1][t][0] + w;
-					dp[k][i][1] = i;
-					dp[k][i][2] = t;
+				int t = get(r);
+				auto &t1 = dp[k][i], &t2 = dp[k - 1][t];
+				if (t2.first + w > t1.first ||
+					t2.first + w == t1.first &&
+						intervals[i][3] < intervals[t1.second[0]][3]) {
+					t1.first = dp[k - 1][t].first + w;
+					vector<int> temp = {i};
+					temp.insert(end(temp), begin(t2.second), end(t2.second));
+					sort(begin(temp), end(temp), [&](int x, int y) {
+						return intervals[x][3] < intervals[y][3];
+					});
+					t1.second = temp;
 				}
 			}
 		}
-		info(dp);
 
-		vector<int> ans;
-		int mk = 3, mi = 0;
-		while (mi != -1) {
-			int cur = dp[mk][mi][1];
-			int nxt = dp[mk][mi][2];
-			ans.push_back(intervals[cur][3]);
-			mk--;
-			mi = nxt;
+		vector<pair<ll, vector<int>>> ans(4);
+		for (int k = 0; k < 4; k++) {
+			vector<int> temp;
+			transform(begin(dp[k][0].second), end(dp[k][0].second),
+					  back_inserter(temp),
+					  [&](int x) { return intervals[x][3]; });
+			info(temp);
+			sort(begin(temp), end(temp));
+			ans[k] = {dp[k][0].first, temp};
 		}
-		return ans;
+		sort(begin(ans), end(ans), [](auto &a, auto &b) {
+			if (a.first == b.first) return a.second < b.second;
+			return a.first > b.first;
+		});
+
+		info(intervals);
+		info(dp[0]);
+		info(dp[1]);
+		info(dp[2]);
+		info(dp[3]);
+		info(ans);
+		return ans[0].second;
 	}
 };
 
