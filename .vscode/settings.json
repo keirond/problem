@@ -35,5 +35,6 @@
         "queue": "cpp",
         "stack": "cpp",
         "random": "cpp"
-    }
+    },
+    "clangd.enableCodeCompletion": false
 }
