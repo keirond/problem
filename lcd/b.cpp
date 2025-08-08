@@ -182,6 +182,14 @@ class Solution {
 							   vector<int>({r, INT_MAX, INT_MAX, INT_MAX})) -
 				   begin(intervals);
 		};
+		auto comp = [&](vector<int> &x, vector<int> &y) {
+			int n = x.size(), m = y.size();
+			int t = min(n, m);
+			for (int i = 0; i < t; i++) {
+				if (intervals[x[i]][3] < intervals[y[i]][3]) return true;
+			}
+			return false;
+		};
 
 		vector<vector<pair<ll, vector<int>>>> dp(
 			4, vector<pair<ll, vector<int>>>(n + 1));
@@ -189,7 +197,10 @@ class Solution {
 		dp[0][n] = {INT_MIN, {}};
 		for (int i = n - 1; i >= 0; i--) {
 			dp[0][i] = {intervals[i][2], {i}};
-			if (dp[0][i + 1].first > dp[0][i].first) dp[0][i] = dp[0][i + 1];
+			if (dp[0][i + 1].first > dp[0][i].first ||
+				dp[0][i + 1].first == dp[0][i].first &&
+					intervals[dp[0][i + 1].second[0]][3] < intervals[i][3])
+				dp[0][i] = dp[0][i + 1];
 		}
 
 		for (int k = 1; k < 4; k++) {
@@ -205,16 +216,17 @@ class Solution {
 
 				int t = get(r);
 				auto &t1 = dp[k][i], &t2 = dp[k - 1][t];
-				if (t2.first + w > t1.first ||
-					t2.first + w == t1.first &&
-						intervals[i][3] < intervals[t1.second[0]][3]) {
-					t1.first = dp[k - 1][t].first + w;
+				if (t2.first + w >= t1.first) {
 					vector<int> temp = {i};
 					temp.insert(end(temp), begin(t2.second), end(t2.second));
 					sort(begin(temp), end(temp), [&](int x, int y) {
 						return intervals[x][3] < intervals[y][3];
 					});
-					t1.second = temp;
+					if (t2.first + w > t1.first ||
+						t2.first + w == t1.first && comp(temp, t1.second)) {
+						t1.first = dp[k - 1][t].first + w;
+						t1.second = temp;
+					}
 				}
 			}
 		}
@@ -225,7 +237,6 @@ class Solution {
 			transform(begin(dp[k][0].second), end(dp[k][0].second),
 					  back_inserter(temp),
 					  [&](int x) { return intervals[x][3]; });
-			info(temp);
 			sort(begin(temp), end(temp));
 			ans[k] = {dp[k][0].first, temp};
 		}
@@ -234,12 +245,12 @@ class Solution {
 			return a.first > b.first;
 		});
 
-		info(intervals);
-		info(dp[0]);
-		info(dp[1]);
-		info(dp[2]);
-		info(dp[3]);
-		info(ans);
+		// info(intervals);
+		// info(dp[0]);
+		// info(dp[1]);
+		// info(dp[2]);
+		// info(dp[3]);
+		// info(ans);
 		return ans[0].second;
 	}
 };
