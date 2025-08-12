@@ -172,7 +172,8 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
   public:
-	int longestCommonSubpath(int n, vector<vector<int>> &paths) {
+	int longestCommonSubpath(int n [[maybe_unused]],
+							 vector<vector<int>> &paths) {
 		int m = paths.size();
 		vector<pair<int, int>> idx;
 		vector<int> sa, rank;
@@ -190,8 +191,8 @@ class Solution {
 		for (int k = 1; k < sm; k <<= 1) {
 			auto cmp = [&](int x, int y) {
 				if (rank[x] != rank[y]) return rank[x] < rank[y];
-				int px = px + k < sm ? rank[px + k] : -1;
-				int py = py + k < sm ? rank[py + k] : -1;
+				int px = x + k < sm ? rank[x + k] : -1;
+				int py = y + k < sm ? rank[y + k] : -1;
 				return px < py;
 			};
 			sort(begin(sa), end(sa), cmp);
@@ -219,13 +220,16 @@ class Solution {
 		int cnt = 0;
 		for (int si = 0, lsi = 0; si < sm; si++) {
 			if (freq[idx[sa[si]].first]++ == 0) cnt++;
-			if (si < sm - 1) {
-				while (!dq.empty() && dq.back().first >= lcp[si]) dq.pop_back();
-				dq.push_back({lcp[si], si});
+			if (si > 0) {
+				while (!dq.empty() && dq.back().first >= lcp[si - 1])
+					dq.pop_back();
+				dq.push_back({lcp[si - 1], si - 1});
 			}
 			while (cnt == m && lsi <= si) {
-				if (!dq.empty()) ans = max(ans, dq.front().first);
-				if (dq.front().second <= lsi) dq.pop_front();
+				if (!dq.empty()) {
+					ans = max(ans, dq.front().first);
+					if (dq.front().second <= lsi) dq.pop_front();
+				}
 				if (--freq[idx[sa[lsi]].first] == 0) cnt--;
 				lsi++;
 			}
