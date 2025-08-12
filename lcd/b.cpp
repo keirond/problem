@@ -179,6 +179,10 @@ class Solution {
 		vector<int> sa, rank;
 
 		auto get = [&](int i) { return paths[idx[i].first][idx[i].second]; };
+		auto bound = [&](int i) {
+			return i + paths[idx[i].first].size() - idx[i].second;
+		};
+
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < paths[i].size(); j++) {
 				idx.push_back({i, j});
@@ -209,10 +213,15 @@ class Solution {
 		for (int i = 0, h = 0; i < sm; i++) {
 			if (rank[i] == 0) continue;
 			int j = sa[rank[i] - 1];
-			while (i + h < sm && j + h < sm && get(i + h) == get(j + h)) h++;
+			int u1 = bound(i+h);
+			int u2 = bound(j+h);
+			while (i + h < u1 && j + h < u2 && get(i + h) == get(j + h)) h++;
 			lcp[rank[i] - 1] = h;
 			if (h > 0) h--;
 		}
+
+		info(sa);
+		info(lcp);
 
 		int ans = 0;
 		deque<pair<int, int>> dq;
