@@ -172,86 +172,65 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
   public:
-	using ll = long long;
-	vector<int> maximumWeight(vector<vector<int>> &intervals) {
-		int n = intervals.size();
-		for (int i = 0; i < n; i++) intervals[i].push_back(i);
-		sort(begin(intervals), end(intervals));
-		auto get = [&](int r) {
-			return upper_bound(begin(intervals), end(intervals),
-							   vector<int>({r, INT_MAX, INT_MAX, INT_MAX})) -
-				   begin(intervals);
-		};
-		auto comp = [&](vector<int> &x, vector<int> &y) {
-			int n = x.size(), m = y.size();
-			int t = min(n, m);
-			for (int i = 0; i < t; i++) {
-				if (intervals[x[i]][3] < intervals[y[i]][3]) return true;
-			}
-			return false;
-		};
+	int longestCommonSubpath(int n, vector<vector<int>> &paths) {
+		int m = paths.size();
+		vector<pair<int, int>> idx;
+		vector<int> sa, rank;
 
-		vector<vector<pair<ll, vector<int>>>> dp(
-			4, vector<pair<ll, vector<int>>>(n + 1));
-
-		dp[0][n] = {INT_MIN, {}};
-		for (int i = n - 1; i >= 0; i--) {
-			dp[0][i] = {intervals[i][2], {i}};
-			if (dp[0][i + 1].first > dp[0][i].first ||
-				dp[0][i + 1].first == dp[0][i].first &&
-					intervals[dp[0][i + 1].second[0]][3] < intervals[i][3])
-				dp[0][i] = dp[0][i + 1];
-		}
-
-		for (int k = 1; k < 4; k++) {
-			dp[k][n] = {INT_MIN, {}};
-
-			for (int i = n - 1; i >= 0; i--) {
-				int r = intervals[i][1];
-				int w = intervals[i][2];
-
-				dp[k][i] = {w, {i}};
-				if (dp[k][i + 1].first > dp[k][i].first)
-					dp[k][i] = dp[k][i + 1];
-
-				int t = get(r);
-				auto &t1 = dp[k][i], &t2 = dp[k - 1][t];
-				if (t2.first + w >= t1.first) {
-					vector<int> temp = {i};
-					temp.insert(end(temp), begin(t2.second), end(t2.second));
-					sort(begin(temp), end(temp), [&](int x, int y) {
-						return intervals[x][3] < intervals[y][3];
-					});
-					if (t2.first + w > t1.first ||
-						t2.first + w == t1.first && comp(temp, t1.second)) {
-						t1.first = dp[k - 1][t].first + w;
-						t1.second = temp;
-					}
-				}
+		auto get = [&](int i) { return paths[idx[i].first][idx[i].second]; };
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < paths[i].size(); j++) {
+				idx.push_back({i, j});
+				sa.push_back(sa.size());
+				rank.push_back(paths[i][j]);
 			}
 		}
 
-		vector<pair<ll, vector<int>>> ans(4);
-		for (int k = 0; k < 4; k++) {
-			vector<int> temp;
-			transform(begin(dp[k][0].second), end(dp[k][0].second),
-					  back_inserter(temp),
-					  [&](int x) { return intervals[x][3]; });
-			sort(begin(temp), end(temp));
-			ans[k] = {dp[k][0].first, temp};
+		int sm = sa.size();
+		for (int k = 1; k < sm; k <<= 1) {
+			auto cmp = [&](int x, int y) {
+				if (rank[x] != rank[y]) return rank[x] < rank[y];
+				int px = px + k < sm ? rank[px + k] : -1;
+				int py = py + k < sm ? rank[py + k] : -1;
+				return px < py;
+			};
+			sort(begin(sa), end(sa), cmp);
+			vector<int> temp(sm);
+			temp[sa[0]] = 0;
+			for (int si = 1; si < sm; si++) {
+				temp[sa[si]] = temp[sa[si - 1]] + cmp(sa[si - 1], sa[si]);
+			}
+			rank = temp;
 		}
-		sort(begin(ans), end(ans), [](auto &a, auto &b) {
-			if (a.first == b.first) return a.second < b.second;
-			return a.first > b.first;
-		});
 
-		// info(intervals);
-		// info(dp[0]);
-		// info(dp[1]);
-		// info(dp[2]);
-		// info(dp[3]);
-		// info(ans);
-		return ans[0].second;
+		vector<int> lcp(sm - 1);
+		for (int si = 0; si < sm; si++) rank[sa[si]] = si;
+		for (int i = 0, h = 0; i < sm; i++) {
+			if (rank[i] == 0) continue;
+			int j = sa[rank[i] - 1];
+			while (i + h < sm && j + h < sm && get(i + h) == get(j + h)) h++;
+			lcp[rank[i] - 1] = h;
+			if (h > 0) h--;
+		}
+
+		int ans = 0;
+		deque<pair<int, int>> dq;
+		vector<int> freq(m, 0);
+		int cnt = 0;
+		for (int si = 0, lsi = 0; si < sm; si++) {
+			if (freq[idx[sa[si]].first]++ == 0) cnt++;
+			if (si < sm - 1) {
+				while (!dq.empty() && dq.back().first >= lcp[si]) dq.pop_back();
+				dq.push_back({lcp[si], si});
+			}
+			while (cnt == m && lsi <= si) {
+				if (!dq.empty()) ans = max(ans, dq.front().first);
+				if (dq.front().second <= lsi) dq.pop_front();
+				if (--freq[idx[sa[lsi]].first] == 0) cnt--;
+				lsi++;
+			}
+		}
+		return ans;
 	}
 };
 
@@ -268,8 +247,8 @@ void solve(int test_case [[maybe_unused]]) {
 
 	Solution sol [[maybe_unused]];
 
-	__read(grid);
-	auto result = sol.maximumWeight(grid);
+	__read(v, grid);
+	auto result = sol.longestCommonSubpath(v, grid);
 	info(result);
 }
 
