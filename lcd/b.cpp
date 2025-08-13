@@ -213,8 +213,8 @@ class Solution {
 		for (int i = 0, h = 0; i < sm; i++) {
 			if (rank[i] == 0) continue;
 			int j = sa[rank[i] - 1];
-			int u1 = bound(i+h);
-			int u2 = bound(j+h);
+			int u1 = i + h < sm ? bound(i + h) : sm;
+			int u2 = j + h < sm ? bound(j + h) : sm;
 			while (i + h < u1 && j + h < u2 && get(i + h) == get(j + h)) h++;
 			lcp[rank[i] - 1] = h;
 			if (h > 0) h--;
