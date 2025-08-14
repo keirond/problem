@@ -172,78 +172,78 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
   public:
-	int longestCommonSubpath(int n [[maybe_unused]],
-							 vector<vector<int>> &paths) {
-		int m = paths.size();
-		vector<pair<int, int>> idx;
-		vector<int> sa, rank;
+	void freqDistinctSubstrings(string &s) {
+		int nn = 0, last = 0;
+		vector<int> link, len, count;
+		vector<vector<int>> next;
 
-		auto get = [&](int i) { return paths[idx[i].first][idx[i].second]; };
-		auto bound = [&](int i) {
-			return i + paths[idx[i].first].size() - idx[i].second;
+		auto add = [&]() {
+			next.emplace_back(26, -1);
+			link.emplace_back(-1);
+			len.emplace_back();
+			count.emplace_back();
+			return nn++;
 		};
+		add();
 
-		for (int i = 0; i < m; i++) {
-			for (int j = 0; j < paths[i].size(); j++) {
-				idx.push_back({i, j});
-				sa.push_back(sa.size());
-				rank.push_back(paths[i][j]);
+		for (char c : s) {
+			int d = c - 'a';
+
+			int u = add();
+			int p = last;
+			len[u] = len[p] + 1;
+			count[u] = 1;
+
+			while (p != -1 && next[p][d] == -1) {
+				next[p][d] = u;
+				p = link[p];
 			}
-		}
 
-		int sm = sa.size();
-		for (int k = 1; k < sm; k <<= 1) {
-			auto cmp = [&](int x, int y) {
-				if (rank[x] != rank[y]) return rank[x] < rank[y];
-				int px = x + k < sm ? rank[x + k] : -1;
-				int py = y + k < sm ? rank[y + k] : -1;
-				return px < py;
-			};
-			sort(begin(sa), end(sa), cmp);
-			vector<int> temp(sm);
-			temp[sa[0]] = 0;
-			for (int si = 1; si < sm; si++) {
-				temp[sa[si]] = temp[sa[si - 1]] + cmp(sa[si - 1], sa[si]);
-			}
-			rank = temp;
-		}
-
-		vector<int> lcp(sm - 1);
-		for (int si = 0; si < sm; si++) rank[sa[si]] = si;
-		for (int i = 0, h = 0; i < sm; i++) {
-			if (rank[i] == 0) continue;
-			int j = sa[rank[i] - 1];
-			int u1 = i + h < sm ? bound(i + h) : sm;
-			int u2 = j + h < sm ? bound(j + h) : sm;
-			while (i + h < u1 && j + h < u2 && get(i + h) == get(j + h)) h++;
-			lcp[rank[i] - 1] = h;
-			if (h > 0) h--;
-		}
-
-		info(sa);
-		info(lcp);
-
-		int ans = 0;
-		deque<pair<int, int>> dq;
-		vector<int> freq(m, 0);
-		int cnt = 0;
-		for (int si = 0, lsi = 0; si < sm; si++) {
-			if (freq[idx[sa[si]].first]++ == 0) cnt++;
-			if (si > 0) {
-				while (!dq.empty() && dq.back().first >= lcp[si - 1])
-					dq.pop_back();
-				dq.push_back({lcp[si - 1], si - 1});
-			}
-			while (cnt == m && lsi <= si) {
-				if (!dq.empty()) {
-					ans = max(ans, dq.front().first);
-					if (dq.front().second <= lsi) dq.pop_front();
+			if (p == -1) {
+				link[u] = 0;
+			} else {
+				int v = next[p][d];
+				if (len[p] + 1 == len[v]) {
+					link[u] = v;
+				} else {
+					int clone = add();
+					next[clone] = next[v];
+					link[clone] = link[v];
+					len[clone] = len[p] + 1;
+					while (p != -1 && next[p][d] == v) {
+						next[p][d] = clone;
+						p = link[p];
+					}
+					link[u] = link[v] = clone;
 				}
-				if (--freq[idx[sa[lsi]].first] == 0) cnt--;
-				lsi++;
+			}
+			last = u;
+		}
+
+		vector<int> order(nn);
+		iota(begin(order), end(order), 0);
+		sort(begin(order), end(order),
+			 [&](int a, int b) { return len[a] > len[b]; });
+		for (int u : order) {
+			if (link[u] != -1) {
+				count[link[u]] += count[u];
 			}
 		}
-		return ans;
+
+		string st;
+		function<void(int)> call = [&](int u) {
+			for (int d = 0; d < 26; d++) {
+				int v = next[u][d];
+				if (v != -1) {
+					char c = 'a' + d;
+					st.push_back(c);
+					cout << st << ' ' << count[v] << endl;
+					call(next[u][d]);
+					st.pop_back();
+				}
+			}
+		};
+		call(0);
 	}
 };
 
@@ -260,9 +260,10 @@ void solve(int test_case [[maybe_unused]]) {
 
 	Solution sol [[maybe_unused]];
 
-	__read(v, grid);
-	auto result = sol.longestCommonSubpath(v, grid);
-	info(result);
+	__read(s);
+	// auto result =
+	sol.freqDistinctSubstrings(s);
+	// info(result);
 }
 
 // **************************************************************************
