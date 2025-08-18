@@ -111,9 +111,23 @@ template <typename T, typename V> void __info(const pair<T, V> &x);
 template <typename T, typename V, typename K>
 void __info(const tuple<T, V, K> &x);
 
-void __info(int x) { cerr << x; }
+void __info(int x) {
+	if (x == INT_MIN)
+		cerr << "-I";
+	else if (x == INT_MAX)
+		cerr << "I";
+	else
+		cerr << x;
+}
 void __info(long x) { cerr << x; }
-void __info(long long x) { cerr << x; }
+void __info(long long x) {
+	if (x == INT_MIN || x == LLONG_MIN)
+		cerr << "-I";
+	else if (x == INT_MAX || x == LLONG_MAX)
+		cerr << "I";
+	else
+		cerr << x;
+}
 void __info(unsigned x) { cerr << x; }
 void __info(unsigned long x) { cerr << x; }
 void __info(unsigned long long x) { cerr << x; }
@@ -172,79 +186,30 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 class Solution {
   public:
-	void freqDistinctSubstrings(string &s) {
-		int nn = 0, last = 0;
-		vector<int> link, len, count;
-		vector<vector<int>> next;
+	int maxProduct(vector<int> &nums) {
+		// f[x] = max positive product
+		// g[x] = min negative product
 
-		auto add = [&]() {
-			next.emplace_back(26, -1);
-			link.emplace_back(-1);
-			len.emplace_back();
-			count.emplace_back();
-			return nn++;
-		};
-		add();
-
-		for (char c : s) {
-			int d = c - 'a';
-
-			int u = add();
-			int p = last;
-			len[u] = len[p] + 1;
-			count[u] = 1;
-
-			while (p != -1 && next[p][d] == -1) {
-				next[p][d] = u;
-				p = link[p];
-			}
-
-			if (p == -1) {
-				link[u] = 0;
-			} else {
-				int v = next[p][d];
-				if (len[p] + 1 == len[v]) {
-					link[u] = v;
-				} else {
-					int clone = add();
-					next[clone] = next[v];
-					link[clone] = link[v];
-					len[clone] = len[p] + 1;
-					while (p != -1 && next[p][d] == v) {
-						next[p][d] = clone;
-						p = link[p];
-					}
-					link[u] = link[v] = clone;
-				}
-			}
-			last = u;
+		int n = nums.size();
+		vector<long long> f(n), g(n);
+		f[0] = g[0] = nums[0];
+		long long ans = nums[0];
+		for (int i = 1; i < n; i++) {
+			f[i] =
+				max(max(g[i - 1] * nums[i], f[i - 1] * nums[i]), (ll)nums[i]);
+			g[i] =
+				min(min(g[i - 1] * nums[i], f[i - 1] * nums[i]), (ll)nums[i]);
+			ans = max(ans, f[i]);
 		}
-
-		vector<int> order(nn);
-		iota(begin(order), end(order), 0);
-		sort(begin(order), end(order),
-			 [&](int a, int b) { return len[a] > len[b]; });
-		for (int u : order) {
-			if (link[u] != -1) {
-				count[link[u]] += count[u];
-			}
-		}
-
-		string st;
-		function<void(int)> call = [&](int u) {
-			for (int d = 0; d < 26; d++) {
-				int v = next[u][d];
-				if (v != -1) {
-					char c = 'a' + d;
-					st.push_back(c);
-					cout << st << ' ' << count[v] << endl;
-					call(next[u][d]);
-					st.pop_back();
-				}
-			}
-		};
-		call(0);
+		return ans;
 	}
+};
+
+class Solution {
+  public:
+	string longestPalindrome(string s) {
+		// dp[i]
+		for (int i) }
 };
 
 void solve(int test_case [[maybe_unused]]) {
@@ -260,10 +225,9 @@ void solve(int test_case [[maybe_unused]]) {
 
 	Solution sol [[maybe_unused]];
 
-	__read(s);
-	// auto result =
-	sol.freqDistinctSubstrings(s);
-	// info(result);
+	__read(arr);
+	auto result = sol.maximumSum(arr);
+	info(result);
 }
 
 // **************************************************************************
