@@ -186,6 +186,7 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 template <typename Obj, typename MemFn, typename... Args>
 void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
+	__read(args...);
 	if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
 					  std::forward<Args>(args)...))>) {
 		(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
@@ -206,18 +207,19 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	vector<vector<int>> grid [[maybe_unused]];
-	vector<int> arr [[maybe_unused]];
+	vector<int> nums [[maybe_unused]];
 	vector<string> strs [[maybe_unused]];
+	vector<vector<int>> grid [[maybe_unused]];
+	vector<vector<string>> strss [[maybe_unused]];
 
-	int v [[maybe_unused]];
-	long long l [[maybe_unused]];
-	double d [[maybe_unused]];
-	char c [[maybe_unused]];
-	string s, s1 [[maybe_unused]];
+	int v, val [[maybe_unused]];
+	long long l, lg [[maybe_unused]];
+	double d, dd [[maybe_unused]];
+	char c, ch [[maybe_unused]];
+	string s, str [[maybe_unused]];
 
 	Solution sol;
-	call_and_info(sol, &Solution::countTriplets, arr);
+	call_and_info(sol, &Solution::countTriplets, nums);
 }
 
 // **************************************************************************
