@@ -184,33 +184,26 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 // **************************************************************************
 
-class Solution {
-  public:
-	int maxProduct(vector<int> &nums) {
-		// f[x] = max positive product
-		// g[x] = min negative product
-
-		int n = nums.size();
-		vector<long long> f(n), g(n);
-		f[0] = g[0] = nums[0];
-		long long ans = nums[0];
-		for (int i = 1; i < n; i++) {
-			f[i] =
-				max(max(g[i - 1] * nums[i], f[i - 1] * nums[i]), (ll)nums[i]);
-			g[i] =
-				min(min(g[i - 1] * nums[i], f[i - 1] * nums[i]), (ll)nums[i]);
-			ans = max(ans, f[i]);
-		}
-		return ans;
+template <typename Obj, typename MemFn, typename... Args>
+void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
+	if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
+					  std::forward<Args>(args)...))>) {
+		(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+	} else {
+		auto result =
+			(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+		info(result);
 	}
-};
+}
+
+// **************************************************************************
 
 class Solution {
   public:
-	string longestPalindrome(string s) {
-		// dp[i]
-		for (int i) }
+	int countTriplets(vector<int> &nums) {}
 };
+
+// **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
 	vector<vector<int>> grid [[maybe_unused]];
@@ -225,9 +218,7 @@ void solve(int test_case [[maybe_unused]]) {
 
 	Solution sol [[maybe_unused]];
 
-	__read(arr);
-	auto result = sol.maximumSum(arr);
-	info(result);
+	call_and_info(sol, &Solution::countTriplets, arr);
 }
 
 // **************************************************************************
