@@ -201,8 +201,31 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int mincostTickets(vector<int> &days, vector<int> &costs) {
-		
+	int longestDecomposition(string text) {
+		int n = text.size();
+		vector<vector<int>> z(n, vector<int>(n));
+		for (int i = 0; i < n; i++) {
+			int c = i, l = i;
+			for (int j = i + 1; j < n; j++) {
+				if (j < c + l) z[i][j] = min(c + l - j, z[i][c * 2 - i]);
+				while (j + z[i][j] < n &&
+					   text[i + z[i][j]] == text[j + z[i][j]]) {
+					z[i][j]++;
+				}
+				if (j + z[i][j] > c + l) c = j, l = z[i][j];
+			}
+			z[i][i] = n - i;
+		}
+
+		int tn=(n-1)/2+1;
+		vector<int> f(tn);
+		for(int i=tn-1; i>=0; i--) {
+			// from [i -> n-i);
+			int ti=n-i;
+			for(int j=ti-1; j>=i; j--) {
+				if(z[i][j] >= n-2*i) f[i] = max(f[i], f[n-j])
+			}
+		}
 	}
 };
 
@@ -221,7 +244,7 @@ void solve(int test_case [[maybe_unused]]) {
 	string s [[maybe_unused]], str [[maybe_unused]];
 
 	Solution sol;
-	call_and_info(sol, &Solution::mincostTickets, arr, nums);
+	call_and_info(sol, &Solution::longestDecomposition, s);
 }
 
 // **************************************************************************
