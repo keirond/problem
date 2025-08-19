@@ -193,7 +193,7 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 	} else {
 		auto result =
 			(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
-		info(result);
+		__print(result);
 	}
 }
 
@@ -227,7 +227,7 @@ class Solution {
 				if (z[i][j] >= n - i - j) f[i] = max(f[i], f[n - j] + 2);
 			}
 		}
-		
+
 		return f[0];
 	}
 };
