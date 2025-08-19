@@ -2,7 +2,7 @@
 
 using namespace std;
 
-using ll = long long;
+// using ll = long long;
 
 #define fi first
 #define se second
@@ -201,7 +201,7 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int countTriplets(vector<int> &nums) {}
+	int integerBreak(int n) {}
 };
 
 // **************************************************************************
@@ -212,14 +212,14 @@ void solve(int test_case [[maybe_unused]]) {
 	vector<vector<int>> grid [[maybe_unused]];
 	vector<vector<string>> strss [[maybe_unused]];
 
-	int v, val [[maybe_unused]];
-	long long l, lg [[maybe_unused]];
-	double d, dd [[maybe_unused]];
-	char c, ch [[maybe_unused]];
-	string s, str [[maybe_unused]];
+	int v [[maybe_unused]], val [[maybe_unused]];
+	long long l [[maybe_unused]], lg [[maybe_unused]];
+	double d [[maybe_unused]], dd [[maybe_unused]];
+	char c [[maybe_unused]], ch [[maybe_unused]];
+	string s [[maybe_unused]], str [[maybe_unused]];
 
 	Solution sol;
-	call_and_info(sol, &Solution::countTriplets, nums);
+	call_and_info(sol, &Solution::integerBreak, v);
 }
 
 // **************************************************************************
