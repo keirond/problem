@@ -216,8 +216,7 @@ void solve(int test_case [[maybe_unused]]) {
 	char c [[maybe_unused]];
 	string s, s1 [[maybe_unused]];
 
-	Solution sol [[maybe_unused]];
-
+	Solution sol;
 	call_and_info(sol, &Solution::countTriplets, arr);
 }
 
