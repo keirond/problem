@@ -201,13 +201,15 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int integerBreak(int n) {}
+	int mincostTickets(vector<int> &days, vector<int> &costs) {
+		
+	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	vector<int> nums [[maybe_unused]];
+	vector<int> arr [[maybe_unused]], nums [[maybe_unused]];
 	vector<string> strs [[maybe_unused]];
 	vector<vector<int>> grid [[maybe_unused]];
 	vector<vector<string>> strss [[maybe_unused]];
@@ -219,7 +221,7 @@ void solve(int test_case [[maybe_unused]]) {
 	string s [[maybe_unused]], str [[maybe_unused]];
 
 	Solution sol;
-	call_and_info(sol, &Solution::integerBreak, v);
+	call_and_info(sol, &Solution::mincostTickets, arr, nums);
 }
 
 // **************************************************************************
