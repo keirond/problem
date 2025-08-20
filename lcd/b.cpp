@@ -204,7 +204,8 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 	} else {
 		auto result =
 			(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
-		__print(result);
+		__info(result);
+		cerr << nl;
 	}
 }
 
@@ -212,7 +213,14 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int countOrders(int n) {}
+	int countOrders(int n) {
+		long long ans = 1;
+		int mod = 1e9 + 7;
+		for (int i = 1; i < n; i++) {
+			ans = ans * (i + 1) * (2 * i + 1) % mod;
+		}
+		return ans;
+	}
 };
 
 // **************************************************************************
