@@ -213,20 +213,31 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int countOrders(int n) {
-		long long ans = 1;
-		int mod = 1e9 + 7;
-		for (int i = 1; i < n; i++) {
-			ans = ans * (i + 1) * (2 * i + 1) % mod;
+	int findMaxForm(vector<string> &strs, int m, int n) {
+		vector<vector<int>> f(n + 1, vector<int>(m + 1)), nf = f;
+		for (string &s : strs) {
+			int b0 = 0, b1 = 0;
+			for (char c : s) {
+				if (c == '0')
+					b0++;
+				else
+					b1++;
+			}
+			for (int i = b1; i <= n; i++) {
+				for (int j = b0; j <= m; j++) {
+					nf[i][j] = max(f[i][j], f[i - b1][j - b0] + 1);
+				}
+			}
+			f = nf;
 		}
-		return ans;
+		return f[n][m];
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	call_and_info(Solution(), &Solution::countOrders, v);
+	call_and_info(Solution(), &Solution::findMaxForm, strs, v, val);
 }
 
 // **************************************************************************
