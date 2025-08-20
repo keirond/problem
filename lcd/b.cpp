@@ -183,6 +183,7 @@ template <typename T, typename... V> void __print(T t, V... v) {
 #endif
 
 // --------------------------------------------------------------------------
+// Runner (only Leetcode)
 
 vector<int> arr [[maybe_unused]], nums [[maybe_unused]];
 vector<string> strs [[maybe_unused]];
@@ -196,7 +197,7 @@ char c [[maybe_unused]], ch [[maybe_unused]];
 string s [[maybe_unused]], str [[maybe_unused]];
 
 template <typename Obj, typename MemFn, typename... Args>
-void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
+void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 	__read(args...);
 	if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
 					  std::forward<Args>(args)...))>) {
@@ -237,7 +238,7 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	call_and_info(Solution(), &Solution::findMaxForm, strs, v, val);
+	perform(Solution(), &Solution::findMaxForm, strs, v, val);
 }
 
 // **************************************************************************
