@@ -212,41 +212,13 @@ void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int longestDecomposition(string text) {
-		int n = text.size();
-		vector<vector<int>> z(n, vector<int>(n));
-		for (int i = 0; i < n; i++) {
-			vector<int> &cur = z[i];
-			int c = i, l = 0;
-			for (int j = i + 1; j < n; j++) {
-				if (j < c + l) cur[j] = min(c + l - j, cur[c * 2 - j]);
-				while (j + cur[j] < n && text[i + cur[j]] == text[j + cur[j]]) {
-					cur[j]++;
-				}
-				if (j + cur[j] > c + l) c = j, l = cur[j];
-			}
-			cur[i] = n - i;
-		}
-
-		int tn = (n - 1) / 2 + 1;
-		vector<int> f(tn, 1);
-		for (int i = tn - 1; i >= 0; i--) {
-			//[i, n-i)
-			int ti = n - i;
-			if (ti == i) f[i] = 0;
-			for (int j = ti - 1; j >= tn; j--) {
-				if (z[i][j] >= n - i - j) f[i] = max(f[i], f[n - j] + 2);
-			}
-		}
-
-		return f[0];
-	}
+	int countOrders(int n) {}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	call_and_info(Solution(), &Solution::longestDecomposition, s);
+	call_and_info(Solution(), &Solution::countOrders, v);
 }
 
 // **************************************************************************
