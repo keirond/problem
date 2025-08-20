@@ -202,7 +202,7 @@ class Solution {
 					b1++;
 			}
 			for (int i = b1; i <= n; i++) {
-				for (int j = b0; j <= m; j++) {
+				for (int j = b0; j <= m + 1; j++) {
 					nf[i][j] = max(f[i][j], f[i - b1][j - b0] + 1);
 				}
 			}
