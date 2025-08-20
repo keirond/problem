@@ -182,7 +182,7 @@ template <typename T, typename... V> void __print(T t, V... v) {
 #define info(x...)
 #endif
 
-// **************************************************************************
+// --------------------------------------------------------------------------
 
 vector<int> arr [[maybe_unused]], nums [[maybe_unused]];
 vector<string> strs [[maybe_unused]];
