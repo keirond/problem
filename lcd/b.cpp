@@ -184,6 +184,17 @@ template <typename T, typename... V> void __print(T t, V... v) {
 
 // **************************************************************************
 
+vector<int> arr [[maybe_unused]], nums [[maybe_unused]];
+vector<string> strs [[maybe_unused]];
+vector<vector<int>> grid [[maybe_unused]];
+vector<vector<string>> strss [[maybe_unused]];
+
+int v [[maybe_unused]], val [[maybe_unused]];
+long long l [[maybe_unused]], lg [[maybe_unused]];
+double d [[maybe_unused]], dd [[maybe_unused]];
+char c [[maybe_unused]], ch [[maybe_unused]];
+string s [[maybe_unused]], str [[maybe_unused]];
+
 template <typename Obj, typename MemFn, typename... Args>
 void call_and_info(Obj &&obj, MemFn &&memfn, Args &&...args) {
 	__read(args...);
@@ -235,19 +246,7 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	vector<int> arr [[maybe_unused]], nums [[maybe_unused]];
-	vector<string> strs [[maybe_unused]];
-	vector<vector<int>> grid [[maybe_unused]];
-	vector<vector<string>> strss [[maybe_unused]];
-
-	int v [[maybe_unused]], val [[maybe_unused]];
-	long long l [[maybe_unused]], lg [[maybe_unused]];
-	double d [[maybe_unused]], dd [[maybe_unused]];
-	char c [[maybe_unused]], ch [[maybe_unused]];
-	string s [[maybe_unused]], str [[maybe_unused]];
-
-	Solution sol;
-	call_and_info(sol, &Solution::longestDecomposition, s);
+	call_and_info(Solution(), &Solution::longestDecomposition, s);
 }
 
 // **************************************************************************
