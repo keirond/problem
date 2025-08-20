@@ -2,6 +2,8 @@
 
 using namespace std;
 
+constexpr char nl = '\n';
+
 // --------------------------------------------------------------------------
 // Data structures (only Leetcode)
 
