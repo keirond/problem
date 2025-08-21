@@ -192,48 +192,25 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
   public:
 	int findIntegers(int n) {
-		// k bit 1, k-1 bit 0
-		// 1010101010101
-		// f[b]
-		// f[0] = 1
-		// f[1] = 2
-		// f[2] = (1)f[0] + (0)f[1]; => 1 + 2
-		// f[3] = (1)f[1] + (0)f[2]; => 2 + 3
-		// f[4] = (1)f[2] + (0)f[3]; => 3 + 5
-		// f[5] = (1)f[3] + (0)f[4]; =>
-		// f[b] = (1)f[b-2] + (0)f[]
+		using ll = long long;
 
-		if (n == 0) return 1;
+		vector<vector<vector<ll>>> f(31,
+									 vector<vector<ll>>(2, vector<ll>(2, -1)));
+		function<ll(int, int, int)> call = [&](int pos, int tight,
+											   int prev) -> ll {
+			if (pos >= 31) return 1;
+			if (f[pos][tight][prev] != -1) return f[pos][tight][prev];
 
-		int N = 1e6;
-		vector<int> f(N);
-		f[0] = 1, f[1] = 2;
-		for (int i = 2; i < N; i++) {
-			f[i] = f[i - 1] + f[i - 2];
-		}
+			int limit = tight ? ((n >> (30 - pos)) & 1) : 1;
+			ll ans = 0;
+			for (int i = 0; i <= limit; i++) {
+				if (prev && i) continue;
+				ans += call(pos + 1, tight && i == limit, i);
+			}
+			return f[pos][tight][prev] = ans;
+		};
 
-		vector<int> bs{0};
-		for (int i = 0; i < n; i++) {
-			if (n & (1 << i)) bs.push_back(i);
-		}
-
-		int m = bs.size();
-		long long ans = 0;
-		for (int i = m - 1; i >= 0; i--) {
-			ans += f[bs[i]];
-			if (i + 1 < m && bs[i] + 1 >= bs[i + 1]) break;
-		}
-
-		// 101
-		// 000 -> 011 => f[2];
-		// 100 -> 100 => f[0];
-		// 101 -> 101 => f[0];
-		// 1110
-		// 0000 -> 0111 => f[3]
-		// 1000 -> 1011 => f[2];
-		// 1100 -> 1101 =>
-
-		return ans;
+		return call(0, 1, 0);
 	}
 };
 
