@@ -191,31 +191,30 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int findMaxForm(vector<string> &strs, int m, int n) {
-		vector<vector<int>> f(n + 1, vector<int>(m + 1)), nf = f;
-		for (string &s : strs) {
-			int b0 = 0, b1 = 0;
-			for (char c : s) {
-				if (c == '0')
-					b0++;
-				else
-					b1++;
+	bool canIWin(int n, int total) {
+		if (total <= 0) return true;
+		if (1LL * n * (n + 1) / 2 < total) return false;
+		vector<bool> f(1 << n);
+		f[0] = 0;
+		for (int i = 1; i < (1 << n); i++) {
+			int sm = 0;
+			for (int j = 0; j < n; j++) {
+				if (!(i & (1 << j))) sm += j + 1;
 			}
-			for (int i = b1; i <= n; i++) {
-				for (int j = b0; j <= m + 1; j++) {
-					nf[i][j] = max(f[i][j], f[i - b1][j - b0] + 1);
+			for (int j = 0; j < n && !f[i]; j++) {
+				if (i & (1 << j)) {
+					f[i] = f[i] || sm + j + 1 >= total || !f[i ^ (1 << j)];
 				}
 			}
-			f = nf;
 		}
-		return f[n][m];
+		return f[(1 << n) - 1];
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::findMaxForm, strs, v, val);
+	perform(Solution(), &Solution::canIWin, v, val);
 }
 
 // **************************************************************************
