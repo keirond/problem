@@ -191,21 +191,30 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	bool canIWin(int n, int total) {
-		if (total <= 0) return true;
-		if (1LL * n * (n + 1) / 2 < total) return false;
-		vector<bool> f(1 << n);
-		f[0] = 0;
-		for (int i = 1; i < (1 << n); i++) {
-			int sm = 0;
-			for (int j = 0; j < n; j++) {
-				if (!(i & (1 << j))) sm += j + 1;
+	int numberWays(vector<vector<int>> &hats) {
+		using ll = long long;
+		int mod = 1e9 + 7;
+		int n = hats.size();
+		vector<ll> mp(n);
+		for (int i = 0; i < n; i++) {
+			for (int d : hats[i]) {
+				mp[i] |= 1LL << (d - 1);
 			}
-			for (int j = 0; j < n && !f[i]; j++) {
-				if (i & (1 << j)) {
-					f[i] = f[i] || sm + j + 1 >= total || !f[i ^ (1 << j)];
+		}
+
+		// f[i][mask] = number of ways to distribute (i+1) hats for se
+		vector<int> f(1 << n), nf;
+		f[0] = 1;
+		for (int h = 0; h < 40; h++) {
+			nf = f;
+			for (int mask = 1; mask < (1 << n); mask++) {
+				for (int i = 0; i < n; i++) {
+					if (mask & (1 << i) && mp[i] & (1LL << h)) {
+						nf[mask] = (nf[mask] + f[mask ^ (1 << i)]) % mod;
+					}
 				}
 			}
+			f = nf;
 		}
 		return f[(1 << n) - 1];
 	}
@@ -214,7 +223,7 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::canIWin, v, val);
+	perform(Solution(), &Solution::numberWays, grid);
 }
 
 // **************************************************************************
