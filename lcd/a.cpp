@@ -191,39 +191,56 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int numberWays(vector<vector<int>> &hats) {
-		using ll = long long;
-		int mod = 1e9 + 7;
-		int n = hats.size();
-		vector<ll> mp(n);
-		for (int i = 0; i < n; i++) {
-			for (int d : hats[i]) {
-				mp[i] |= 1LL << (d - 1);
-			}
+	int findIntegers(int n) {
+		// k bit 1, k-1 bit 0
+		// 1010101010101
+		// f[b]
+		// f[0] = 1
+		// f[1] = 2
+		// f[2] = (1)f[0] + (0)f[1]; => 1 + 2
+		// f[3] = (1)f[1] + (0)f[2]; => 2 + 3
+		// f[4] = (1)f[2] + (0)f[3]; => 3 + 5
+		// f[5] = (1)f[3] + (0)f[4]; =>
+		// f[b] = (1)f[b-2] + (0)f[]
+
+		if (n == 0) return 1;
+
+		int N = 1e6;
+		vector<int> f(N);
+		f[0] = 1, f[1] = 2;
+		for (int i = 2; i < N; i++) {
+			f[i] = f[i - 1] + f[i - 2];
 		}
 
-		// f[i][mask] = number of ways to distribute (i+1) hats for se
-		vector<int> f(1 << n), nf;
-		f[0] = 1;
-		for (int h = 0; h < 40; h++) {
-			nf = f;
-			for (int mask = 1; mask < (1 << n); mask++) {
-				for (int i = 0; i < n; i++) {
-					if (mask & (1 << i) && mp[i] & (1LL << h)) {
-						nf[mask] = (nf[mask] + f[mask ^ (1 << i)]) % mod;
-					}
-				}
-			}
-			f = nf;
+		vector<int> bs{0};
+		for (int i = 0; i < n; i++) {
+			if (n & (1 << i)) bs.push_back(i);
 		}
-		return f[(1 << n) - 1];
+
+		int m = bs.size();
+		long long ans = 0;
+		for (int i = m - 1; i >= 0; i--) {
+			ans += f[bs[i]];
+			if (i + 1 < m && bs[i] + 1 >= bs[i + 1]) break;
+		}
+
+		// 101
+		// 000 -> 011 => f[2];
+		// 100 -> 100 => f[0];
+		// 101 -> 101 => f[0];
+		// 1110
+		// 0000 -> 0111 => f[3]
+		// 1000 -> 1011 => f[2];
+		// 1100 -> 1101 =>
+
+		return ans;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::numberWays, grid);
+	perform(Solution(), &Solution::findIntegers, v);
 }
 
 // **************************************************************************
