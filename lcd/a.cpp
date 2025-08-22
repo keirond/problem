@@ -201,27 +201,34 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
  * right(right) {}
  * };
  */
+
+pair<int, int> call(TreeNode *node, int start, int &ans) {
+	if (!node) return make_pair(0, -1);
+	auto lp = call(node->left, start, ans);
+	auto rp = call(node->right, start, ans);
+	int t = max(lp.first, rp.first);
+	if (node->val == start) {
+		ans = max(ans, t);
+		return make_pair(t + 1, 0);
+	}
+	if (lp.second > -1) {
+		ans = max(ans, lp.second + rp.first + 1);
+		return make_pair(t + 1, lp.second + 1);
+	}
+	if (rp.second > -1) {
+		ans = max(ans, rp.second + lp.first + 1);
+		return make_pair(t + 1, rp.second + 1);
+	}
+	return make_pair(t + 1, -1);
+}
+
 class Solution {
   public:
-	bool btreeGameWinningMove(TreeNode *root, int n, int x) {
-		vector<int> cnt(n);
-		TreeNode *red;
+	int amountOfTime(TreeNode *root, int start) {
+		int ans = 0;
 
-		function<int(TreeNode *)> call = [&](TreeNode *node) {
-			if (!node) return 0;
-			if (node->val == x) {
-				red = node;
-			}
-			return cnt[node->val - 1] =
-					   1 + call(node->left) + call(node->right);
-		};
-		call(root);
-
-		int a = n - cnt[x - 1];
-		int b = red->left ? cnt[red->left->val - 1] : 0;
-		int c = red->right ? cnt[red->right->val - 1] : 0;
-
-		return a > b + c || b > a + c || c > a + b;
+		call(root, start, ans);
+		return ans;
 	}
 };
 
