@@ -189,29 +189,25 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
 class Solution {
-  public:
-	int findIntegers(int n) {
-		using ll = long long;
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+		if(!p && !q) return true;
+		if(!p || !q || p->val != q->val) return false;
 
-		vector<vector<vector<ll>>> f(31,
-									 vector<vector<ll>>(2, vector<ll>(2, -1)));
-		function<ll(int, int, int)> call = [&](int pos, int tight,
-											   int prev) -> ll {
-			if (pos >= 31) return 1;
-			if (f[pos][tight][prev] != -1) return f[pos][tight][prev];
-
-			int limit = tight ? ((n >> (30 - pos)) & 1) : 1;
-			ll ans = 0;
-			for (int i = 0; i <= limit; i++) {
-				if (prev && i) continue;
-				ans += call(pos + 1, tight && i == limit, i);
-			}
-			return f[pos][tight][prev] = ans;
-		};
-
-		return call(0, 1, 0);
-	}
+		return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+    }
 };
 
 // **************************************************************************
