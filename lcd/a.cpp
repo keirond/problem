@@ -197,23 +197,38 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
  *     TreeNode *right;
  *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
  *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
  * };
  */
 class Solution {
-public:
-    bool isSameTree(TreeNode* p, TreeNode* q) {
-		if(!p && !q) return true;
-		if(!p || !q || p->val != q->val) return false;
+  public:
+	bool btreeGameWinningMove(TreeNode *root, int n, int x) {
+		vector<int> cnt(n);
+		TreeNode *red;
 
-		return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
-    }
+		function<int(TreeNode *)> call = [&](TreeNode *node) {
+			if (!node) return 0;
+			if (node->val == x) {
+				red = node;
+			}
+			return cnt[node->val - 1] =
+					   1 + call(node->left) + call(node->right);
+		};
+		call(root);
+
+		int a = n - cnt[x - 1];
+		int b = red->left ? cnt[red->left->val - 1] : 0;
+		int c = red->right ? cnt[red->right->val - 1] : 0;
+
+		return a > b + c || b > a + c || c > a + b;
+	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::findIntegers, v);
+	perform(Solution(), &Solution::foo, v);
 }
 
 // **************************************************************************
