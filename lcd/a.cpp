@@ -189,53 +189,54 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
- * right(right) {}
- * };
- */
-
-pair<int, int> call(TreeNode *node, int start, int &ans) {
-	if (!node) return make_pair(0, -1);
-	auto lp = call(node->left, start, ans);
-	auto rp = call(node->right, start, ans);
-	int t = max(lp.first, rp.first);
-	if (node->val == start) {
-		ans = max(ans, t);
-		return make_pair(t + 1, 0);
-	}
-	if (lp.second > -1) {
-		ans = max(ans, lp.second + rp.first + 1);
-		return make_pair(t + 1, lp.second + 1);
-	}
-	if (rp.second > -1) {
-		ans = max(ans, rp.second + lp.first + 1);
-		return make_pair(t + 1, rp.second + 1);
-	}
-	return make_pair(t + 1, -1);
-}
-
 class Solution {
   public:
-	int amountOfTime(TreeNode *root, int start) {
-		int ans = 0;
+	int minimumVisitedCells(vector<vector<int>> &grid) {
+		int n = grid.size(), m = grid[0].size();
 
-		call(root, start, ans);
-		return ans;
+		vector<vector<int>> f(n, vector<int>(m, -1));
+		f[0][0] = 1;
+
+		vector<int> furRow(n), furCol(m);
+		deque<pair<int, int>> dq;
+		dq.push_back({0, 0});
+		while (!dq.empty()) {
+			auto [x, y] = dq.front();
+			dq.pop_front();
+
+			if (grid[x][y] == 0) continue;
+
+			int l, r;
+
+			l = max(furCol[y], x + 1);
+			r = min(n - 1, x + grid[x][y]);
+			for (int i = l; i <= r; i++) {
+				if (f[i][y] == -1) {
+					f[i][y] = f[x][y] + 1;
+					dq.push_back({i, y});
+				}
+			}
+			furCol[y] = max(furCol[y], r + 1);
+
+			l = max(furRow[x], y + 1);
+			r = min(m - 1, y + grid[x][y]);
+			for (int i = l; i <= r; i++) {
+				if (f[x][i] == -1) {
+					f[x][i] = f[x][y] + 1;
+					dq.push_back({x, i});
+				}
+			}
+			furRow[x] = max(furRow[x], r + 1);
+		}
+		info(f);
+		return f[n - 1][m - 1];
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::foo, v);
+	perform(Solution(), &Solution::minimumVisitedCells, grid);
 }
 
 // **************************************************************************
