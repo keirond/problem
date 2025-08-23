@@ -197,9 +197,10 @@ class Solution {
 		vector<vector<int>> f(n, vector<int>(m, -1));
 		f[0][0] = 1;
 
-		vector<int> furRow(n), furCol(m);
+		vector<int> furRow(n, -1), furCol(m, -1);
 		deque<pair<int, int>> dq;
 		dq.push_back({0, 0});
+
 		while (!dq.empty()) {
 			auto [x, y] = dq.front();
 			dq.pop_front();
@@ -208,6 +209,7 @@ class Solution {
 
 			int l, r;
 
+			// Jump down in column y
 			l = max(furCol[y], x + 1);
 			r = min(n - 1, x + grid[x][y]);
 			for (int i = l; i <= r; i++) {
@@ -218,6 +220,7 @@ class Solution {
 			}
 			furCol[y] = max(furCol[y], r + 1);
 
+			// Jump right in row x
 			l = max(furRow[x], y + 1);
 			r = min(m - 1, y + grid[x][y]);
 			for (int i = l; i <= r; i++) {
@@ -227,9 +230,11 @@ class Solution {
 				}
 			}
 			furRow[x] = max(furRow[x], r + 1);
+
+			if (f[n - 1][m - 1] != -1) return f[n - 1][m - 1];
 		}
-		info(f);
-		return f[n - 1][m - 1];
+
+		return -1;
 	}
 };
 
