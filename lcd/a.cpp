@@ -191,57 +191,44 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int minimumVisitedCells(vector<vector<int>> &grid) {
-		int n = grid.size(), m = grid[0].size();
-
-		vector<vector<int>> f(n, vector<int>(m, -1));
-		f[0][0] = 1;
-
-		vector<int> furRow(n, -1), furCol(m, -1);
-		deque<pair<int, int>> dq;
-		dq.push_back({0, 0});
-
-		while (!dq.empty()) {
-			auto [x, y] = dq.front();
-			dq.pop_front();
-
-			if (grid[x][y] == 0) continue;
-
-			int l, r;
-
-			// Jump down in column y
-			l = max(furCol[y], x + 1);
-			r = min(n - 1, x + grid[x][y]);
-			for (int i = l; i <= r; i++) {
-				if (f[i][y] == -1) {
-					f[i][y] = f[x][y] + 1;
-					dq.push_back({i, y});
-				}
-			}
-			furCol[y] = max(furCol[y], r + 1);
-
-			// Jump right in row x
-			l = max(furRow[x], y + 1);
-			r = min(m - 1, y + grid[x][y]);
-			for (int i = l; i <= r; i++) {
-				if (f[x][i] == -1) {
-					f[x][i] = f[x][y] + 1;
-					dq.push_back({x, i});
-				}
-			}
-			furRow[x] = max(furRow[x], r + 1);
-
-			if (f[n - 1][m - 1] != -1) return f[n - 1][m - 1];
+	bool possibleBipartition(int n, vector<vector<int>> &dislikes) {
+		vector<vector<int>> adj(n);
+		for (auto &d : dislikes) {
+			int u = d[0], v = d[1];
+			u--, v--;
+			adj[u].push_back(v);
+			adj[v].push_back(u);
 		}
 
-		return -1;
+		bool ans = true;
+		deque<int> dq;
+		vector<int> color(n);
+		for (int i = 0; i < n; i++) {
+			if (!color[i]) {
+				color[i] = 1;
+				dq.push_back(i);
+				while (!dq.empty()) {
+					auto u = dq.front();
+					dq.pop_front();
+					for (int v : adj[u]) {
+						if (!color[v]) {
+							color[v] = -color[u];
+							dq.push_back(v);
+						} else {
+							ans &= color[u] != color[v];
+						}
+					}
+				}
+			}
+		}
+		return ans;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::minimumVisitedCells, grid);
+	perform(Solution(), &Solution::possibleBipartition, v, grid);
 }
 
 // **************************************************************************
