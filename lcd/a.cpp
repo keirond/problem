@@ -191,35 +191,26 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	bool possibleBipartition(int n, vector<vector<int>> &dislikes) {
-		vector<vector<int>> adj(n);
-		for (auto &d : dislikes) {
-			int u = d[0], v = d[1];
-			u--, v--;
-			adj[u].push_back(v);
-			adj[v].push_back(u);
-		}
-
-		bool ans = true;
-		deque<int> dq;
-		vector<int> color(n);
+	int count(vector<int> &nums) {
+		int n = nums.size();
+		vector<pair<int, int>> pr(n);
 		for (int i = 0; i < n; i++) {
-			if (!color[i]) {
-				color[i] = 1;
-				dq.push_back(i);
-				while (!dq.empty()) {
-					auto u = dq.front();
-					dq.pop_front();
-					for (int v : adj[u]) {
-						if (!color[v]) {
-							color[v] = -color[u];
-							dq.push_back(v);
-						} else {
-							ans &= color[u] != color[v];
-						}
-					}
-				}
+			pr[i] = {nums[i], i};
+		}
+		sort(begin(pr), end(pr));
+
+		int ans = 0;
+		vector<bool> vt(n);
+		for (int i = 0; i < n; i++) {
+			if (vt[i]) continue;
+			int cnt = 0;
+			int j = pr[i].second;
+			while (!vt[i]) {
+				vt[j] = 1;
+				j = pr[j].second;
+				cnt++;
 			}
+			ans += cnt - 1;
 		}
 		return ans;
 	}
@@ -228,7 +219,7 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::possibleBipartition, v, grid);
+	perform(Solution(), &Solution::count, arr);
 }
 
 // **************************************************************************
