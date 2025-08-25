@@ -189,32 +189,45 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-class Solution {
-  public:
-	int count(vector<int> &nums) {
-		int n = nums.size();
-		vector<pair<int, int>> pr(n);
-		for (int i = 0; i < n; i++) {
-			pr[i] = {nums[i], i};
-		}
-		sort(begin(pr), end(pr));
+void solve(int test_case [[maybe_unused]]) {
+	using ll = long long;
+	int n;
+	cin >> n;  // the number of vertices
 
-		int ans = 0;
-		vector<bool> vt(n);
-		for (int i = 0; i < n; i++) {
-			if (vt[i]) continue;
-			int cnt = 0;
-			int j = pr[i].second;
-			while (!vt[i]) {
-				vt[j] = 1;
-				j = pr[j].second;
-				cnt++;
-			}
-			ans += cnt - 1;
-		}
-		return ans;
+	vector<vector<int>> adj(n);
+	for (int i = 1; i < n; i++) {
+		int U, V;
+		cin >> U >> V;
+		U--, V--;
+		adj[U].push_back(V);
+		adj[V].push_back(U);
 	}
-};
+
+	auto call = [&](int &fN) {
+		vector<ll> dist(n, -1);
+		deque<int> dq;
+		dq.push_back(fN);
+		dist[fN] = 0;
+
+		while (!dq.empty()) {
+			int u = dq.front();
+			dq.pop_front();
+
+			for (int v : adj[u]) {
+				if (dist[v] == -1) {
+					dist[v] = dist[u] + 1;	// f(u, v)
+					dq.push_back(v);
+					if (dist[v] > dist[fN]) fN = v;
+				}
+			}
+		}
+		return dist[fN];
+	};
+
+	int ans = 0;
+	call(ans);
+	cout << call(ans) << nl;
+}
 
 // **************************************************************************
 
