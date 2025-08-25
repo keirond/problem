@@ -189,50 +189,51 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-void solve(int test_case [[maybe_unused]]) {
-	using ll = long long;
-	int n;
-	cin >> n;  // the number of vertices
+class Solution {
+  public:
+	int countPaths(int n, vector<vector<int>> &roads) {
+		using ll = long long;
+		int mod = 1e9 + 7;
 
-	vector<vector<int>> adj(n);
-	for (int i = 1; i < n; i++) {
-		int U, V;
-		cin >> U >> V;
-		U--, V--;
-		adj[U].push_back(V);
-		adj[V].push_back(U);
-	}
+		vector<vector<int>> adjm(n, vector<int>(n));
+		for (auto &d : roads) {
+			int u = d[0], v = d[1];
+			adjm[u][v] = adjm[v][u] = d[2];
+		}
 
-	auto call = [&](int &fN) {
-		vector<ll> dist(n, -1);
-		deque<int> dq;
-		dq.push_back(fN);
-		dist[fN] = 0;
+		vector<pair<ll, ll>> dp(n, make_pair(LLONG_MAX, 0));
+		dp[0] = {0, 1};
 
-		while (!dq.empty()) {
-			int u = dq.front();
-			dq.pop_front();
-
-			for (int v : adj[u]) {
-				if (dist[v] == -1) {
-					dist[v] = dist[u] + 1;	// f(u, v)
-					dq.push_back(v);
-					if (dist[v] > dist[fN]) fN = v;
+		vector<bool> vt(n);
+		priority_queue<pair<ll, int>, vector<pair<ll, int>>,
+					   greater<pair<ll, int>>>
+			pq;
+		pq.emplace(0, 0);
+		while (!pq.empty()) {
+			auto [d, u] = pq.top();
+			pq.pop();
+			if (vt[u]) continue;
+			vt[u] = 1;
+			for (int v = 0; v < n; v++) {
+				if (v != u && !vt[v] && adjm[u][v]) {
+					ll t = d + adjm[u][v];
+					if (t < dp[v].first) {
+						dp[v] = {t, dp[u].second};
+						pq.emplace(t, v);
+					} else if (t == dp[v].first) {
+						dp[v].second = (dp[v].second + dp[u].second) % mod;
+					}
 				}
 			}
 		}
-		return dist[fN];
-	};
-
-	int ans = 0;
-	call(ans);
-	cout << call(ans) << nl;
-}
+		return dp[n - 1].second;
+	}
+};
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::count, arr);
+	perform(Solution(), &Solution::countPaths, v, grid);
 }
 
 // **************************************************************************
