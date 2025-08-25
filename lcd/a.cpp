@@ -191,45 +191,61 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int minMaxWeight(int n, vector<vector<int>> &edges, int threshold) {
+	int countRestrictedPaths(int n, vector<vector<int>> &edges) {
 		using pii = pair<int, int>;
+		int mod = 1e9 + 7;
 		vector<vector<pii>> adj(n);
 		for (auto &d : edges) {
-			adj[d[1]].push_back({d[0], d[2]});
+			int u = d[0] - 1, v = d[1] - 1, w = d[2];
+			adj[u].push_back({v, w});
+			adj[v].push_back({u, w});
 		}
 
-		int ans = 0;
+		using ll = long long;
+		vector<ll> f(n);
+
 		vector<bool> vt(n);
-		// Each node has at most threshold outgoing edges.
-		vector<int> freq(n);  // ?
-		priority_queue<pii, vector<pii>, greater<pii>> pq;
-		pq.emplace(0, 0);
+		using plli = pair<ll, int>;
+		priority_queue<plli, vector<plli>, greater<plli>> pq;
+		pq.emplace(0, n - 1);
 		while (!pq.empty()) {
 			auto [d, u] = pq.top();
 			pq.pop();
 			if (vt[u]) continue;
 			vt[u] = 1;
-			// The maximum edge weight in the resulting graph is minimized.
-			ans = max(ans, d);
+			f[u] = d;
 			for (auto [v, dv] : adj[u]) {
 				if (!vt[v]) {
-					pq.emplace(dv, v);
+					pq.emplace(d + dv, v);
 				}
 			}
 		}
 
-		// Node 0 must be reachable from all other nodes.
-		for (int i = 0; i < n; i++) {
-			if (!vt[i]) return -1;
+		vt.assign(n, false);
+		vector<ll> g(n, 0);	 // start at 0, end at i
+		g[0] = 1;
+		priority_queue<plli, vector<plli>> pq1;
+		pq1.emplace(f[0], 0);
+		while (!pq1.empty()) {
+			auto [_, u] = pq1.top();
+			pq1.pop();
+			if (vt[u]) continue;
+			vt[u] = 1;
+			for (auto [v, _] : adj[u]) {
+				if (!vt[v] && f[v] < f[u]) {
+					g[v] = (g[u] + g[v]) % mod;
+					pq1.emplace(f[v], v);
+				}
+			}
 		}
-		return ans;
+		return g[n - 1];
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::minMaxWeight, v, grid, val);
+	perform(Solution(), &Solution::countRestrictedPaths, v, grid);
 }
 
 // **************************************************************************
