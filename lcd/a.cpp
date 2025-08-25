@@ -191,61 +191,64 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int countRestrictedPaths(int n, vector<vector<int>> &edges) {
-		using pii = pair<int, int>;
-		int mod = 1e9 + 7;
-		vector<vector<pii>> adj(n);
-		for (auto &d : edges) {
-			int u = d[0] - 1, v = d[1] - 1, w = d[2];
-			adj[u].push_back({v, w});
-			adj[v].push_back({u, w});
-		}
+	int ti = 0, sccs = 0, re = 0;
+	vector<vector<int>> adj;
+	vector<int> disc, _link;
+	vector<bool> vt;
+	deque<int> stk;
+	void call(int u) {
+		disc[u] = _link[u] = ti++;
+		stk.push_back(u);
+		vt[u] = 1;
 
-		using ll = long long;
-		vector<ll> f(n);
-
-		vector<bool> vt(n);
-		using plli = pair<ll, int>;
-		priority_queue<plli, vector<plli>, greater<plli>> pq;
-		pq.emplace(0, n - 1);
-		while (!pq.empty()) {
-			auto [d, u] = pq.top();
-			pq.pop();
-			if (vt[u]) continue;
-			vt[u] = 1;
-			f[u] = d;
-			for (auto [v, dv] : adj[u]) {
-				if (!vt[v]) {
-					pq.emplace(d + dv, v);
-				}
+		for (int v : adj[u]) {
+			if (disc[v] == -1) {
+				call(v);
+				_link[u] = min(_link[u], _link[v]);
+			} else if (vt[u]) {
+				_link[u] = min(_link[u], disc[v]);
 			}
 		}
 
-		vt.assign(n, false);
-		vector<ll> g(n, 0);	 // start at 0, end at i
-		g[0] = 1;
-		priority_queue<plli, vector<plli>> pq1;
-		pq1.emplace(f[0], 0);
-		while (!pq1.empty()) {
-			auto [_, u] = pq1.top();
-			pq1.pop();
-			if (vt[u]) continue;
-			vt[u] = 1;
-			for (auto [v, _] : adj[u]) {
-				if (!vt[v] && f[v] < f[u]) {
-					g[v] = (g[u] + g[v]) % mod;
-					pq1.emplace(f[v], v);
-				}
-			}
+		if (disc[u] == _link[u]) {
+			int ce = 0, cv = 0;
+			int v;
+			do {
+				v = stk.back();
+				vt[v] = 0;
+				cv++;
+				ce += adj[v].size();
+				stk.pop_back();
+			} while (v != u);
+			sccs++;
+			ce /= 2;
+			re += ce - (cv - 1);
 		}
-		return g[n - 1];
+	}
+	int makeConnected(int n, vector<vector<int>> &connections) {
+		adj.resize(n);
+		for (auto &d : connections) {
+			int u = d[0], v = d[1];
+			adj[u].push_back(v);
+			adj[v].push_back(u);
+		}
+
+		disc.assign(n, -1);
+		_link.resize(n);
+		vt.resize(n);
+		for (int i = 0; i < n; i++) {
+			if (disc[i] == -1) call(i);
+		}
+
+		if (sccs - 1 > re) return -1;
+		return sccs - 1;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::countRestrictedPaths, v, grid);
+	perform(Solution(), &Solution::makeConnected, v, grid);
 }
 
 // **************************************************************************
