@@ -191,49 +191,45 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int countPaths(int n, vector<vector<int>> &roads) {
-		using ll = long long;
-		int mod = 1e9 + 7;
-
-		vector<vector<int>> adjm(n, vector<int>(n));
-		for (auto &d : roads) {
-			int u = d[0], v = d[1];
-			adjm[u][v] = adjm[v][u] = d[2];
+	int minMaxWeight(int n, vector<vector<int>> &edges, int threshold) {
+		using pii = pair<int, int>;
+		vector<vector<pii>> adj(n);
+		for (auto &d : edges) {
+			adj[d[1]].push_back({d[0], d[2]});
 		}
 
-		vector<pair<ll, ll>> dp(n, make_pair(LLONG_MAX, 0));
-		dp[0] = {0, 1};
-
+		int ans = 0;
 		vector<bool> vt(n);
-		priority_queue<pair<ll, int>, vector<pair<ll, int>>,
-					   greater<pair<ll, int>>>
-			pq;
+		// Each node has at most threshold outgoing edges.
+		vector<int> freq(n);  // ?
+		priority_queue<pii, vector<pii>, greater<pii>> pq;
 		pq.emplace(0, 0);
 		while (!pq.empty()) {
 			auto [d, u] = pq.top();
 			pq.pop();
 			if (vt[u]) continue;
 			vt[u] = 1;
-			for (int v = 0; v < n; v++) {
-				if (v != u && !vt[v] && adjm[u][v]) {
-					ll t = d + adjm[u][v];
-					if (t < dp[v].first) {
-						dp[v] = {t, dp[u].second};
-						pq.emplace(t, v);
-					} else if (t == dp[v].first) {
-						dp[v].second = (dp[v].second + dp[u].second) % mod;
-					}
+			// The maximum edge weight in the resulting graph is minimized.
+			ans = max(ans, d);
+			for (auto [v, dv] : adj[u]) {
+				if (!vt[v]) {
+					pq.emplace(dv, v);
 				}
 			}
 		}
-		return dp[n - 1].second;
+
+		// Node 0 must be reachable from all other nodes.
+		for (int i = 0; i < n; i++) {
+			if (!vt[i]) return -1;
+		}
+		return ans;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::countPaths, v, grid);
+	perform(Solution(), &Solution::minMaxWeight, v, grid, val);
 }
 
 // **************************************************************************
