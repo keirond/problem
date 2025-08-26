@@ -189,61 +189,37 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-class Solution {
-  public:
-	int ti = 0, sccs = 0, re = 0;
-	vector<vector<int>> adj;
-	vector<int> disc, _link;
-	vector<bool> vt;
-	deque<int> stk;
-	void call(int u) {
-		disc[u] = _link[u] = ti++;
-		stk.push_back(u);
-		vt[u] = 1;
+int n;
+vector<vector<int>> adj;
 
-		for (int v : adj[u]) {
-			if (disc[v] == -1) {
-				call(v);
-				_link[u] = min(_link[u], _link[v]);
-			} else if (vt[u]) {
-				_link[u] = min(_link[u], disc[v]);
-			}
-		}
+vector<bool> vt(n);
+vector<int> match(n, -1);
 
-		if (disc[u] == _link[u]) {
-			int ce = 0, cv = 0;
-			int v;
-			do {
-				v = stk.back();
-				vt[v] = 0;
-				cv++;
-				ce += adj[v].size();
-				stk.pop_back();
-			} while (v != u);
-			sccs++;
-			ce /= 2;
-			re += ce - (cv - 1);
+bool call(int u) {
+	if (vt[u]) return 0;
+	vt[u] = 1;
+	for (int v : adj[u]) {
+		if (match[v] == -1 || call(match[v])) {
+			match[v] = u;
+			return 1;
 		}
 	}
-	int makeConnected(int n, vector<vector<int>> &connections) {
-		adj.resize(n);
-		for (auto &d : connections) {
-			int u = d[0], v = d[1];
-			adj[u].push_back(v);
-			adj[v].push_back(u);
-		}
+	return 0;
+}
 
-		disc.assign(n, -1);
-		_link.resize(n);
-		vt.resize(n);
-		for (int i = 0; i < n; i++) {
-			if (disc[i] == -1) call(i);
-		}
-
-		if (sccs - 1 > re) return -1;
-		return sccs - 1;
+void solve() {
+	for (int i = 0; i < n; i++) {
+		vt.assign(n, -1);
+		call(i);
 	}
-};
+
+	// ans: match edges
+	for (int i = 0; i < n; i++) {
+		if (match[i] != -1) {
+			cout << match[i] << ' ' << i << endl;
+		}
+	}
+}
 
 // **************************************************************************
 
