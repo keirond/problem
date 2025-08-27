@@ -189,6 +189,8 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
+class Solution {};
+
 int n;
 vector<vector<int>> adj;
 
