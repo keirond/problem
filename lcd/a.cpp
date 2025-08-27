@@ -189,7 +189,15 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-class Solution {};
+class Solution {
+  public:
+	void foo() {}
+	int fibonacci(int i) {
+		if (i == 0) return 0;
+		if (i == 1) return 1;
+		return fibonacci(i - 1) + fibonacci(i - 2);
+	}
+};
 
 int n;
 vector<vector<int>> adj;
@@ -226,7 +234,7 @@ void solve() {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::makeConnected, v, grid);
+	perform(Solution(), &Solution::foo);
 }
 
 // **************************************************************************
