@@ -36,5 +36,10 @@
         "random": "cpp"
     },
     "C_Cpp.autocomplete": "disabled",
-    "clangd.enableCodeCompletion": false
+    "clangd.enableCodeCompletion": false,
+    "editor.quickSuggestions": {
+        "other": "off",
+        "comments": "off",
+        "strings": "off"
+    },
 }
