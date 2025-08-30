@@ -3,27 +3,36 @@
 using namespace std;
 
 using ll = long long;
+
 using vi = vector<int>;
 using vl = vector<ll>;
+
 using vvi = vector<vi>;
 using vvl = vector<vl>;
+
 using pii = pair<int, int>;
 using pll = pair<ll, ll>;
+
 using mii = map<int, int>;
 using mci = map<char, int>;
+
 using vpii = vector<pii>;
 
 #define fi first
 #define se second
+
 #define pb push_back
 #define eb emplace_back
 #define ins insert
+
 #define mp make_pair
 #define mtp make_tuple
+
 #define lb lower_bound
 #define ub upper_bound
 
 #define sz(v) (int)(v).size()
+
 #define all(v) v.begin(), v.end()
 #define par(v, n) v.begin(), v.begin() + n
 
