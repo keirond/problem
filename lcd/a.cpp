@@ -199,38 +199,6 @@ class Solution {
 	}
 };
 
-int n;
-vector<vector<int>> adj;
-
-vector<bool> vt(n);
-vector<int> match(n, -1);
-
-bool call(int u) {
-	if (vt[u]) return 0;
-	vt[u] = 1;
-	for (int v : adj[u]) {
-		if (match[v] == -1 || call(match[v])) {
-			match[v] = u;
-			return 1;
-		}
-	}
-	return 0;
-}
-
-void solve() {
-	for (int i = 0; i < n; i++) {
-		vt.assign(n, -1);
-		call(i);
-	}
-
-	// ans: match edges
-	for (int i = 0; i < n; i++) {
-		if (match[i] != -1) {
-			cout << match[i] << ' ' << i << endl;
-		}
-	}
-}
-
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
