@@ -191,25 +191,38 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int findCenter(vector<vector<int>> &edges) {
-		int n = edges.size() + 1;
-		vector<unordered_set<int>> adj(n);
+	bool validPath(int n, vector<vector<int>> &edges, int source,
+				   int destination) {
+		vector<vector<int>> adj(n);
 		for (auto &d : edges) {
-			int u = d[0] - 1, v = d[1] - 1;
-			adj[u].insert(v);
-			adj[v].insert(u);
+			int u = d[0], v = d[1];
+			adj[u].push_back(v);
+			adj[v].push_back(u);
 		}
-		for (int i = 0; i < n; i++) {
-			if (adj[i].size() == n - 1) return i + 1;
+
+		vector<bool> vt(n);
+		deque<int> dq;
+		dq.push_back(source);
+		while (!dq.empty()) {
+			int u = dq.back();
+			dq.pop_back();
+			if (vt[u]) continue;
+			if (u == destination) return true;
+			vt[u] = 1;
+			for (int v : adj[u]) {
+				if (!vt[v]) {
+					dq.push_back(v);
+				}
+			}
 		}
-		return -1;
+		return false;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::findCenter, grid);
+	perform(Solution(), &Solution::validPath, grid);
 }
 
 // **************************************************************************
