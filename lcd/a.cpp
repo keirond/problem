@@ -191,38 +191,37 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	bool validPath(int n, vector<vector<int>> &edges, int source,
-				   int destination) {
-		vector<vector<int>> adj(n);
-		for (auto &d : edges) {
-			int u = d[0], v = d[1];
-			adj[u].push_back(v);
-			adj[v].push_back(u);
+	int findCheapestPrice(int n, vector<vector<int>> &flights, int src, int dst,
+						  int k) {
+		using ll = long long;
+		vector<vector<pair<int, int>>> adj(n);
+		for (auto &d : flights) {
+			adj[d[0]].push_back({d[1], d[2]});
 		}
 
-		vector<bool> vt(n);
-		deque<int> dq;
-		dq.push_back(source);
-		while (!dq.empty()) {
-			int u = dq.back();
-			dq.pop_back();
-			if (vt[u]) continue;
-			if (u == destination) return true;
-			vt[u] = 1;
-			for (int v : adj[u]) {
-				if (!vt[v]) {
-					dq.push_back(v);
+		vector<ll> f(n, LLONG_MAX), g;
+		f[dst] = 0;
+		ll ans = LLONG_MAX;
+		for (int ik = 0; ik <= k; ik++) {
+			g = f;
+			for (int i = 0; i < n; i++) {
+				for (auto [v, p] : adj[i]) {
+					if (f[v] != LLONG_MAX) {
+						g[i] = min(g[i], f[v] + p);
+					}
 				}
 			}
+			f = g;
+			ans = min(ans, f[src]);
 		}
-		return false;
+		return ans == LLONG_MAX? -1 : ans;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::validPath, grid);
+	perform(Solution(), &Solution::findCheapestPrice, v, grid);
 }
 
 // **************************************************************************
