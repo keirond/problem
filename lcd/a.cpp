@@ -191,18 +191,27 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	void foo() {}
-	int fibonacci(int i) {
-		if (i == 0) return 0;
-		if (i == 1) return 1;
-		return fibonacci(i - 1) + fibonacci(i - 2);
+	int findJudge(int n, vector<vector<int>> &trust) {
+		vector<bool> is(n, true);
+		vector<vector<int>> adj(n);
+		for (auto &d : trust) {
+			int u = d[0] - 1, v = d[1] - 1;
+			adj[v].push_back(u);
+			is[u] = false;
+		}
+		for (int i = 0; i < n; i++) {
+			if (adj[i].size() == n - 1 && is[i]) {
+				return i + 1;
+			}
+		}
+		return -1;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::foo);
+	perform(Solution(), &Solution::findJudge, v, grid);
 }
 
 // **************************************************************************
