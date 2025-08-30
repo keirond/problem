@@ -191,18 +191,16 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int findJudge(int n, vector<vector<int>> &trust) {
-		vector<bool> is(n, true);
-		vector<vector<int>> adj(n);
-		for (auto &d : trust) {
+	int findCenter(vector<vector<int>> &edges) {
+		int n = edges.size() + 1;
+		vector<unordered_set<int>> adj(n);
+		for (auto &d : edges) {
 			int u = d[0] - 1, v = d[1] - 1;
-			adj[v].push_back(u);
-			is[u] = false;
+			adj[u].insert(v);
+			adj[v].insert(u);
 		}
 		for (int i = 0; i < n; i++) {
-			if (adj[i].size() == n - 1 && is[i]) {
-				return i + 1;
-			}
+			if (adj[i].size() == n - 1) return i + 1;
 		}
 		return -1;
 	}
@@ -211,7 +209,7 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::findJudge, v, grid);
+	perform(Solution(), &Solution::findCenter, grid);
 }
 
 // **************************************************************************
