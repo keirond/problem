@@ -88,23 +88,9 @@ template <typename T, typename V> void __info(const pair<T, V> &x);
 template <typename T, typename V, typename K>
 void __info(const tuple<T, V, K> &x);
 
-void __info(int x) {
-	if (x == INT_MIN)
-		cerr << "-I";
-	else if (x == INT_MAX)
-		cerr << "I";
-	else
-		cerr << x;
-}
+void __info(int x) { cerr << x; }
 void __info(long x) { cerr << x; }
-void __info(long long x) {
-	if (x == INT_MIN || x == LLONG_MIN)
-		cerr << "-I";
-	else if (x == INT_MAX || x == LLONG_MAX)
-		cerr << "I";
-	else
-		cerr << x;
-}
+void __info(long long x) { cerr << x; }
 void __info(unsigned x) { cerr << x; }
 void __info(unsigned long x) { cerr << x; }
 void __info(unsigned long long x) { cerr << x; }
@@ -134,7 +120,7 @@ template <typename T, typename V> void __info(const pair<T, V> &x) {
 	cerr << '{', __info(x.first), cerr << ", ", __info(x.second), cerr << '}';
 }
 
-template <typename T, typename V, typename K>
+template <typename T, typename K, typename V>
 void __info(const tuple<T, K, V> &x) {
 	cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
 		cerr << ", ", __info(get<2>(x)), cerr << '}';
@@ -165,7 +151,7 @@ template <typename T, typename... V> void __print(T t, V... v) {
 vector<int> arr [[maybe_unused]], nums [[maybe_unused]];
 vector<string> strs [[maybe_unused]];
 vector<vector<int>> grid [[maybe_unused]];
-vector<vector<string>> strss [[maybe_unused]];
+vector<vector<string>> str_grid [[maybe_unused]];
 
 int v [[maybe_unused]], val [[maybe_unused]];
 long long l [[maybe_unused]], lg [[maybe_unused]];
@@ -214,7 +200,7 @@ class Solution {
 			f = g;
 			ans = min(ans, f[src]);
 		}
-		return ans == LLONG_MAX? -1 : ans;
+		return ans == LLONG_MAX ? -1 : ans;
 	}
 };
 
