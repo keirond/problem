@@ -2,6 +2,7 @@
 BasedOnStyle: LLVM
 
 IndentWidth: 4
+ContinuationIndentWidth: 2
 TabWidth: 4
 UseTab: Never
 
@@ -9,3 +10,7 @@ InsertBraces: true
 AllowShortBlocksOnASingleLine: Always
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
+
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
