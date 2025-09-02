@@ -177,37 +177,47 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-	int findCheapestPrice(int n, vector<vector<int>> &flights, int src, int dst,
-						  int k) {
+	bool findSafeWalk(vector<vector<int>> &grid, int health) {
 		using ll = long long;
-		vector<vector<pair<int, int>>> adj(n);
-		for (auto &d : flights) {
-			adj[d[0]].push_back({d[1], d[2]});
+		using pii = pair<int, int>;
+
+		int n = grid.size(), m = grid[0].size();
+		vector<vector<bool>> vt(n, vector<bool>(m));
+
+		priority_queue<pair<ll, pii>> pq;
+		auto check = [&](int x, int y, int h) {
+			return x >= 0 && x < n && y >= 0 && y < m && !vt[x][y] &&
+				   (h - grid[x][y] > 0);
+		};
+
+		if (check(0, 0, health)) {
+			pq.push({health - grid[0][0], {0, 0}});
 		}
 
-		vector<ll> f(n, LLONG_MAX), g;
-		f[dst] = 0;
-		ll ans = LLONG_MAX;
-		for (int ik = 0; ik <= k; ik++) {
-			g = f;
-			for (int i = 0; i < n; i++) {
-				for (auto [v, p] : adj[i]) {
-					if (f[v] != LLONG_MAX) {
-						g[i] = min(g[i], f[v] + p);
-					}
+		vector<pair<int, int>> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+		while (!pq.empty()) {
+			auto [h, d] = pq.top();
+			pq.pop();
+			auto [x, y] = d;
+			if (vt[x][y]) continue;
+			info(h, x, y);
+			if (x == n - 1 && y == m - 1) return true;
+			vt[x][y] = 1;
+			for (auto [dx, dy] : directions) {
+				if (check(x + dx, y + dy, h)) {
+					pq.push({h - grid[x + dx][y + dy], {x + dx, y + dy}});
 				}
 			}
-			f = g;
-			ans = min(ans, f[src]);
 		}
-		return ans == LLONG_MAX ? -1 : ans;
+
+		return false;
 	}
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::findCheapestPrice, v, grid);
+	perform(Solution(), &Solution::findSafeWalk, grid, v);
 }
 
 // **************************************************************************
