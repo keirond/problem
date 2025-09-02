@@ -123,7 +123,7 @@ template <typename T, typename V> void __info(const pair<T, V> &x) {
 template <typename T, typename K, typename V>
 void __info(const tuple<T, K, V> &x) {
     cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
-        cerr << ", ", __info(get<2>(x)), cerr << '}';
+      cerr << ", ", __info(get<2>(x)), cerr << '}';
 }
 
 void __print() { cerr << ']' << nl; }
@@ -163,11 +163,11 @@ template <typename Obj, typename MemFn, typename... Args>
 void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
     __read(args...);
     if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
-                      std::forward<Args>(args)...))>) {
+                    std::forward<Args>(args)...))>) {
         (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
     } else {
         auto result =
-            (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+          (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
         __info(result);
         cerr << nl;
     }
