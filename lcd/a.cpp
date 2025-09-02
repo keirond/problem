@@ -11,23 +11,23 @@ template <typename T> struct LinkedListNode;
 template <typename T> struct BinaryTreeNode;
 
 template <typename T> struct LinkedListNode {
-	T val;
-	LinkedListNode *next;
+    T val;
+    LinkedListNode *next;
 
-	LinkedListNode() : val(T()), next(nullptr) {}
-	LinkedListNode(T x) : val(x), next(nullptr) {}
-	LinkedListNode(T x, LinkedListNode *next) : val(x), next(next) {}
+    LinkedListNode() : val(T()), next(nullptr) {}
+    LinkedListNode(T x) : val(x), next(nullptr) {}
+    LinkedListNode(T x, LinkedListNode *next) : val(x), next(next) {}
 };
 
 template <typename T> struct BinaryTreeNode {
-	T val;
-	BinaryTreeNode *left;
-	BinaryTreeNode *right;
+    T val;
+    BinaryTreeNode *left;
+    BinaryTreeNode *right;
 
-	BinaryTreeNode() : val(T()), left(nullptr), right(nullptr) {}
-	BinaryTreeNode(T x) : val(x), left(nullptr), right(nullptr) {}
-	BinaryTreeNode(T x, BinaryTreeNode *left, BinaryTreeNode *right)
-		: val(x), left(left), right(right) {}
+    BinaryTreeNode() : val(T()), left(nullptr), right(nullptr) {}
+    BinaryTreeNode(T x) : val(x), left(nullptr), right(nullptr) {}
+    BinaryTreeNode(T x, BinaryTreeNode *left, BinaryTreeNode *right)
+        : val(x), left(left), right(right) {}
 };
 
 #define ListNode LinkedListNode<int>
@@ -39,46 +39,46 @@ template <typename T> struct BinaryTreeNode {
 template <typename T> void __cin(stringstream &ss, T &value) { ss >> value; }
 
 void __cin(stringstream &ss, char &value) {
-	char c;
-	ss >> c >> value >> c;
+    char c;
+    ss >> c >> value >> c;
 }
 
 void __cin(stringstream &ss, string &value) {
-	char c;
-	ss >> c, getline(ss, value, '"');
+    char c;
+    ss >> c, getline(ss, value, '"');
 }
 
 template <typename T, typename V>
 void __cin(stringstream &ss, pair<T, V> &values) {
-	char c;
-	ss >> c;
-	__cin(ss, values.first);
-	ss >> c;
-	__cin<V>(ss, values.second);
-	ss >> c;
+    char c;
+    ss >> c;
+    __cin(ss, values.first);
+    ss >> c;
+    __cin<V>(ss, values.second);
+    ss >> c;
 }
 
 template <typename T> void __cin(stringstream &ss, vector<T> &values) {
-	char c;
-	ss >> c;
+    char c;
+    ss >> c;
 
-	while (ss.peek() != ']') {
-		T value;
-		__cin(ss, value);
-		values.push_back(value);
-		ss >> c;
-		if (c == ']') break;
-	}
+    while (ss.peek() != ']') {
+        T value;
+        __cin(ss, value);
+        values.push_back(value);
+        ss >> c;
+        if (c == ']') { break; }
+    }
 }
 
 void __read() {}
 
 template <typename T, typename... V> void __read(T &t, V &...v) {
-	string str;
-	getline(cin, str);
-	stringstream ss(str);
-	__cin(ss, t);
-	__read(v...);
+    string str;
+    getline(cin, str);
+    stringstream ss(str);
+    __cin(ss, t);
+    __read(v...);
 }
 
 // --------------------------------------------------------------------------
@@ -103,43 +103,43 @@ void __info(const string &x) { cerr << '\"' << x << '\"'; }
 void __info(bool x) { cerr << (x ? "true" : "false"); }
 
 void __info(const vector<bool> &x) {
-	int f = 0;
-	cerr << '{';
-	for (auto i : x) cerr << (f++ ? ", " : ""), __info(i);
-	cerr << "}";
+    int f = 0;
+    cerr << '{';
+    for (auto i : x) { cerr << (f++ ? ", " : ""), __info(i); }
+    cerr << "}";
 }
 
 template <typename T> void __info(const T &x) {
-	int f = 0;
-	cerr << '{';
-	for (auto &i : x) cerr << (f++ ? ", " : ""), __info(i);
-	cerr << "}";
+    int f = 0;
+    cerr << '{';
+    for (auto &i : x) { cerr << (f++ ? ", " : ""), __info(i); }
+    cerr << "}";
 }
 
 template <typename T, typename V> void __info(const pair<T, V> &x) {
-	cerr << '{', __info(x.first), cerr << ", ", __info(x.second), cerr << '}';
+    cerr << '{', __info(x.first), cerr << ", ", __info(x.second), cerr << '}';
 }
 
 template <typename T, typename K, typename V>
 void __info(const tuple<T, K, V> &x) {
-	cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
-		cerr << ", ", __info(get<2>(x)), cerr << '}';
+    cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
+        cerr << ", ", __info(get<2>(x)), cerr << '}';
 }
 
 void __print() { cerr << ']' << nl; }
 
 template <typename T, typename... V> void __print(T t, V... v) {
-	__info(t);
-	if (sizeof...(v)) cerr << ", ";
-	__print(v...);
+    __info(t);
+    if (sizeof...(v)) { cerr << ", "; }
+    __print(v...);
 }
 
 #ifdef INFO
 #define enable_info() cerr << "Enabling debug logging..." << nl;
-#define info(x...)                                                            \
-	cerr << "\e[91m" << __func__ << ":" << __LINE__ << " [" << #x << "] = ["; \
-	__print(x);                                                               \
-	cerr << "\e[39m";
+#define info(x...)                                                             \
+    cerr << "\e[91m" << __func__ << ":" << __LINE__ << " [" << #x << "] = [";  \
+    __print(x);                                                                \
+    cerr << "\e[39m";
 #else
 #define enable_info()
 #define info(x...)
@@ -161,79 +161,77 @@ string s [[maybe_unused]], str [[maybe_unused]];
 
 template <typename Obj, typename MemFn, typename... Args>
 void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
-	__read(args...);
-	if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
-					  std::forward<Args>(args)...))>) {
-		(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
-	} else {
-		auto result =
-			(std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
-		__info(result);
-		cerr << nl;
-	}
+    __read(args...);
+    if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
+                      std::forward<Args>(args)...))>) {
+        (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+    } else {
+        auto result =
+            (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+        __info(result);
+        cerr << nl;
+    }
 }
 
 // **************************************************************************
 
 class Solution {
   public:
-	bool findSafeWalk(vector<vector<int>> &grid, int health) {
-		using ll = long long;
-		using pii = pair<int, int>;
+    bool findSafeWalk(vector<vector<int>> &grid, int health) {
+        using ll = long long;
+        using pii = pair<int, int>;
 
-		int n = grid.size(), m = grid[0].size();
-		vector<vector<bool>> vt(n, vector<bool>(m));
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<bool>> vt(n, vector<bool>(m));
 
-		priority_queue<pair<ll, pii>> pq;
-		auto check = [&](int x, int y, int h) {
-			return x >= 0 && x < n && y >= 0 && y < m && !vt[x][y] &&
-				   (h - grid[x][y] > 0);
-		};
+        priority_queue<pair<ll, pii>> pq;
+        auto check = [&](int x, int y, int h) {
+            return x >= 0 && x < n && y >= 0 && y < m && !vt[x][y] &&
+                   (h - grid[x][y] > 0);
+        };
 
-		if (check(0, 0, health)) {
-			pq.push({health - grid[0][0], {0, 0}});
-		}
+        if (check(0, 0, health)) { pq.push({health - grid[0][0], {0, 0}}); }
 
-		vector<pair<int, int>> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-		while (!pq.empty()) {
-			auto [h, d] = pq.top();
-			pq.pop();
-			auto [x, y] = d;
-			if (vt[x][y]) continue;
-			info(h, x, y);
-			if (x == n - 1 && y == m - 1) return true;
-			vt[x][y] = 1;
-			for (auto [dx, dy] : directions) {
-				if (check(x + dx, y + dy, h)) {
-					pq.push({h - grid[x + dx][y + dy], {x + dx, y + dy}});
-				}
-			}
-		}
+        vector<pair<int, int>> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        while (!pq.empty()) {
+            auto [h, d] = pq.top();
+            pq.pop();
+            auto [x, y] = d;
+            if (vt[x][y]) { continue; }
+            info(h, x, y);
+            if (x == n - 1 && y == m - 1) { return true; }
+            vt[x][y] = 1;
+            for (auto [dx, dy] : directions) {
+                if (check(x + dx, y + dy, h)) {
+                    pq.push({h - grid[x + dx][y + dy], {x + dx, y + dy}});
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-	perform(Solution(), &Solution::findSafeWalk, grid, v);
+    perform(Solution(), &Solution::findSafeWalk, grid, v);
 }
 
 // **************************************************************************
 
 int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0), cout.tie(0);
-	enable_info();
+    ios::sync_with_stdio(0);
+    cin.tie(0), cout.tie(0);
+    enable_info();
 
-	int test_cases = 1;
-	// cin >> test_cases;
-	while (test_cases--) {
-		solve(test_cases);
-		cout << flush;
-	}
-	return 0;
+    int test_cases = 1;
+    // cin >> test_cases;
+    while (test_cases--) {
+        solve(test_cases);
+        cout << flush;
+    }
+    return 0;
 }
 
 // **************************************************************************
