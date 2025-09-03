@@ -177,56 +177,48 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    using ll = long long;
-    vector<ll> f, g, ans;
-    vector<bool> vt;
+    int ti = 0;
     vector<vector<int>> adj;
-    void dfs(int u) {
-        vt[u] = 1;
-        g[u]++;
+    vector<int> disc, llink;
+    vector<vector<int>> ans;
+
+    void call(int u, int p) {
+        disc[u] = llink[u] = ti++;
+
         for (int v : adj[u]) {
-            if (!vt[v]) {
-                dfs(v);
-                f[u] += g[v] + f[v];
-                g[u] += g[v];
+            if (disc[v] == -1) {
+                call(v, u);
+                llink[u] = min(llink[u], llink[v]);
+                if (disc[u] < llink[v]) { ans.push_back({u, v}); }
+            } else if (v != p) {
+                llink[u] = min(llink[u], disc[v]);
             }
         }
     }
 
-    void update(int u, int p) {
-        vt[u] = 1;
-        for (int v : adj[u]) {
-            if (!vt[v]) {
-                ans[v] += ans[u] - g[v] - f[v] + g[p] - g[v];
-                update(v, p);
-            }
-        }
-    }
-    vector<int> sumOfDistancesInTree(int n, vector<vector<int>> &edges) {
-        adj.resize(n), vt.resize(n);
-        f.resize(n), g.resize(n), ans.resize(n);
-        for (auto &d : edges) {
+    vector<vector<int>> criticalConnections(int n,
+                                            vector<vector<int>> &connections) {
+        adj.resize(n);
+        disc.assign(n, -1);
+        llink.resize(n);
+
+        for (auto &d : connections) {
             int u = d[0], v = d[1];
             adj[u].push_back(v);
             adj[v].push_back(u);
         }
-        for (int i = 0; i < n; i++) {
-            if (!vt[i]) { dfs(i); }
-        }
 
-        vt.assign(n, false);
-        ans = f;
         for (int i = 0; i < n; i++) {
-            if (!vt[i]) { update(i, i); }
+            if (disc[i] == -1) { call(i, -1); }
         }
-        return vector<int>(begin(ans), end(ans));
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::sumOfDistancesInTree, v, grid);
+    perform(Solution(), &Solution::criticalConnections, v, grid);
 }
 
 // **************************************************************************
