@@ -177,45 +177,38 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    bool findSafeWalk(vector<vector<int>> &grid, int health) {
-        using ll = long long;
-        using pii = pair<int, int>;
-
-        int n = grid.size(), m = grid[0].size();
-        vector<vector<bool>> vt(n, vector<bool>(m));
-
-        priority_queue<pair<ll, pii>> pq;
-        auto check = [&](int x, int y, int h) {
-            return x >= 0 && x < n && y >= 0 && y < m && !vt[x][y] &&
-                   (h - grid[x][y] > 0);
-        };
-
-        if (check(0, 0, health)) { pq.push({health - grid[0][0], {0, 0}}); }
-
-        vector<pair<int, int>> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-        while (!pq.empty()) {
-            auto [h, d] = pq.top();
-            pq.pop();
-            auto [x, y] = d;
-            if (vt[x][y]) { continue; }
-            info(h, x, y);
-            if (x == n - 1 && y == m - 1) { return true; }
-            vt[x][y] = 1;
-            for (auto [dx, dy] : directions) {
-                if (check(x + dx, y + dy, h)) {
-                    pq.push({h - grid[x + dx][y + dy], {x + dx, y + dy}});
-                }
-            }
+    int idx = 0;
+    unordered_map<string, vector<pair<string, int>>> adj;
+    vector<bool> vt;
+    vector<string> path;
+    void dfs(string &s) {
+        for (auto &[v, id] : adj[s]) {
+            if (vt[id]) { continue; }
+            vt[id] = 1;
+            dfs(v);
+        }
+        path.push_back(s);
+    }
+    vector<string> findItinerary(vector<vector<string>> &tickets) {
+        for (auto &d : tickets) {
+            string &u = d[0], &v = d[1];
+            adj[u].push_back({v, idx++});
         }
 
-        return false;
+        for (auto &[_, v] : adj) { sort(begin(v), end(v)); }
+
+        vt.resize(idx);
+        string start = "JFK";
+        dfs(start);
+        reverse(begin(path), end(path));
+        return path;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::findSafeWalk, grid, v);
+    perform(Solution(), &Solution::findItinerary, str_grid);
 }
 
 // **************************************************************************
