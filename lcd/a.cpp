@@ -177,38 +177,56 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int idx = 0;
-    unordered_map<string, vector<pair<string, int>>> adj;
+    using ll = long long;
+    vector<ll> f, g, ans;
     vector<bool> vt;
-    vector<string> path;
-    void dfs(string &s) {
-        for (auto &[v, id] : adj[s]) {
-            if (vt[id]) { continue; }
-            vt[id] = 1;
-            dfs(v);
+    vector<vector<int>> adj;
+    void dfs(int u) {
+        vt[u] = 1;
+        g[u]++;
+        for (int v : adj[u]) {
+            if (!vt[v]) {
+                dfs(v);
+                f[u] += g[v] + f[v];
+                g[u] += g[v];
+            }
         }
-        path.push_back(s);
     }
-    vector<string> findItinerary(vector<vector<string>> &tickets) {
-        for (auto &d : tickets) {
-            string &u = d[0], &v = d[1];
-            adj[u].push_back({v, idx++});
+
+    void update(int u, int p) {
+        vt[u] = 1;
+        for (int v : adj[u]) {
+            if (!vt[v]) {
+                ans[v] += ans[u] - g[v] - f[v] + g[p] - g[v];
+                update(v, p);
+            }
+        }
+    }
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>> &edges) {
+        adj.resize(n), vt.resize(n);
+        f.resize(n), g.resize(n), ans.resize(n);
+        for (auto &d : edges) {
+            int u = d[0], v = d[1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        for (int i = 0; i < n; i++) {
+            if (!vt[i]) { dfs(i); }
         }
 
-        for (auto &[_, v] : adj) { sort(begin(v), end(v)); }
-
-        vt.resize(idx);
-        string start = "JFK";
-        dfs(start);
-        reverse(begin(path), end(path));
-        return path;
+        vt.assign(n, false);
+        ans = f;
+        for (int i = 0; i < n; i++) {
+            if (!vt[i]) { update(i, i); }
+        }
+        return vector<int>(begin(ans), end(ans));
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::findItinerary, str_grid);
+    perform(Solution(), &Solution::sumOfDistancesInTree, v, grid);
 }
 
 // **************************************************************************
