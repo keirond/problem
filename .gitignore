@@ -2,8 +2,9 @@
 node_modules/
 .cph/
 
+*.o
+*.out
 *.in.txt
 *.out.txt
-*.out
 
 cfs/temp/*.cpp
