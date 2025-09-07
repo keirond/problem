@@ -177,48 +177,73 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int ti = 0;
-    vector<vector<int>> adj;
-    vector<int> disc, llink;
-    vector<vector<int>> ans;
+    long long minimumWeight(int n, vector<vector<int>> &edges, int src1,
+                            int src2, int dest) {
+        using ll = long long;
+        using pli = pair<ll, int>;
 
-    void call(int u, int p) {
-        disc[u] = llink[u] = ti++;
+        vector<vector<pli>> adj(n), radj(n);
+        for (auto &d : edges) {
+            int u = d[0], v = d[1];
+            ll w = d[2];
+            adj[u].push_back({w, v});
+            radj[v].push_back({w, u});
+        }
 
-        for (int v : adj[u]) {
-            if (disc[v] == -1) {
-                call(v, u);
-                llink[u] = min(llink[u], llink[v]);
-                if (disc[u] < llink[v]) { ans.push_back({u, v}); }
-            } else if (v != p) {
-                llink[u] = min(llink[u], disc[v]);
+        vector<bool> vt;
+        priority_queue<pli, vector<pli>, greater<pli>> pq;
+        vector<ll> sw(n, -1), dw(n, -1);
+
+        pq = {}, vt.assign(n, 0);
+        pq.emplace(0, dest);
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (vt[u]) { continue; }
+            vt[u] = 1;
+            dw[u] = d;
+            for (auto [w, v] : radj[u]) {
+                if (!vt[v]) { pq.emplace(d + w, v); }
             }
         }
-    }
 
-    vector<vector<int>> criticalConnections(int n,
-                                            vector<vector<int>> &connections) {
-        adj.resize(n);
-        disc.assign(n, -1);
-        llink.resize(n);
-
-        for (auto &d : connections) {
-            int u = d[0], v = d[1];
-            adj[u].push_back(v);
-            adj[v].push_back(u);
+        pq = {}, vt.assign(n, 0);
+        pq.emplace(0, src1);
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (vt[u]) { continue; }
+            vt[u] = 1;
+            sw[u] = d;
+            for (auto [w, v] : adj[u]) {
+                if (!vt[v]) { pq.emplace(d + w, v); }
+            }
         }
 
-        for (int i = 0; i < n; i++) {
-            if (disc[i] == -1) { call(i, -1); }
+        ll ans = LLONG_MAX;
+        pq = {}, vt.assign(n, 0);
+        pq.emplace(0, src2);
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (vt[u]) { continue; }
+            vt[u] = 1;
+            if (sw[u] != -1 && dw[u] != -1) {
+                ans = min(ans, d + sw[u] + dw[u]);
+            }
+            for (auto [w, v] : adj[u]) {
+                if (!vt[v]) { pq.emplace(d + w, v); }
+            }
         }
-        return ans;
+        return ans == LLONG_MAX ? -1 : ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::criticalConnections, v, grid);
+    int v1, v2, v3;
+    perform(Solution(), &Solution::minimumWeight, v, grid, v1, v2, v3);
 }
 
 // **************************************************************************
