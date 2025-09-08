@@ -175,67 +175,70 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
+struct Point {
+    double x, y;
+
+    Point perp() { return {-y, x}; }
+    Point operator-(Point &v) { return {x - v.x, y - v.y}; }
+};
+
 class Solution {
   public:
-    long long minimumWeight(int n, vector<vector<int>> &edges, int src1,
-                            int src2, int dest) {
-        using ll = long long;
-        using pli = pair<ll, int>;
+    using ll = long long;
 
-        vector<vector<pli>> adj(n), radj(n);
-        for (auto &d : edges) {
-            int u = d[0], v = d[1];
-            ll w = d[2];
-            adj[u].push_back({w, v});
-            radj[v].push_back({w, u});
-        }
+    vector<Point> circleCircleIntersection(Point &c1, double r1, Point &c2,
+                                           double r2) {
+        Point d = (c2 - c1).perp();
 
-        vector<bool> vt;
-        priority_queue<pli, vector<pli>, greater<pli>> pq;
-        vector<ll> sw(n, -1), dw(n, -1);
+        
+    }
 
-        pq = {}, vt.assign(n, 0);
-        pq.emplace(0, dest);
-        while (!pq.empty()) {
-            auto [d, u] = pq.top();
-            pq.pop();
-            if (vt[u]) { continue; }
-            vt[u] = 1;
-            dw[u] = d;
-            for (auto [w, v] : radj[u]) {
-                if (!vt[v]) { pq.emplace(d + w, v); }
+    vector<pair<int, int>> intersect(vector<int> c1, vector<int> c2) {
+        ll dist2 = 1LL * (c1[0] - c2[0]) * (c1[0] - c2[0]) +
+                   1LL * (c1[1] - c2[1]) * (c1[1] - c2[1]);
+        ll rr2 = ((ll)c1[2] + c2[2]) * ((ll)c1[2] + c2[2]);
+        if (dist2 > rr2) { return {}; }
+    }
+    bool canReachCorner(ll xCorner, ll yCorner, vector<vector<int>> &circles) {
+        int n = circles.size();
+        vector<bool> vt(n);
+
+        deque<vector<int>> dq;
+        for (int i = 0; i < n; i++) {
+            auto d = circles[i];
+            d.push_back(i);
+            if (abs(d[0]) <= d[2] && d[1] >= 0 && d[1] <= yCorner) {
+                dq.push_back(d);
+            } else if (abs(yCorner - d[1]) <= d[2] && d[0] >= 0 &&
+                       d[0] <= xCorner) {
+                dq.push_back(d);
             }
         }
 
-        pq = {}, vt.assign(n, 0);
-        pq.emplace(0, src1);
-        while (!pq.empty()) {
-            auto [d, u] = pq.top();
-            pq.pop();
-            if (vt[u]) { continue; }
-            vt[u] = 1;
-            sw[u] = d;
-            for (auto [w, v] : adj[u]) {
-                if (!vt[v]) { pq.emplace(d + w, v); }
-            }
-        }
+        while (!dq.empty()) {
+            auto cr = dq.back();
+            dq.pop_back();
+            if (vt[cr[3]]) { continue; }
+            vt[cr[3]] = 1;
 
-        ll ans = LLONG_MAX;
-        pq = {}, vt.assign(n, 0);
-        pq.emplace(0, src2);
-        while (!pq.empty()) {
-            auto [d, u] = pq.top();
-            pq.pop();
-            if (vt[u]) { continue; }
-            vt[u] = 1;
-            if (sw[u] != -1 && dw[u] != -1) {
-                ans = min(ans, d + sw[u] + dw[u]);
+            if (abs(xCorner - cr[0]) <= cr[2] && cr[1] >= 0 &&
+                cr[1] <= yCorner) {
+                return false;
+            } else if (abs(cr[1]) <= cr[2] && cr[0] >= 0 && cr[0] <= xCorner) {
+                return false;
             }
-            for (auto [w, v] : adj[u]) {
-                if (!vt[v]) { pq.emplace(d + w, v); }
+            for (int i = 0; i < n; i++) {
+                auto &t = circles[i];
+                if (!vt[i] && 1LL * (t[0] - cr[0]) * (t[0] - cr[0]) +
+                                  1LL * (t[1] - cr[1]) * (t[1] - cr[1]) <=
+                                ((ll)t[2] + cr[2]) * ((ll)t[2] + cr[2])) {
+                    auto d = t;
+                    d.push_back(i);
+                    dq.push_back(d);
+                }
             }
         }
-        return ans == LLONG_MAX ? -1 : ans;
+        return true;
     }
 };
 
@@ -243,7 +246,7 @@ class Solution {
 
 void solve(int test_case [[maybe_unused]]) {
     int v1, v2, v3;
-    perform(Solution(), &Solution::minimumWeight, v, grid, v1, v2, v3);
+    perform(Solution(), &Solution::canReachCorner, v1, v2, grid);
 }
 
 // **************************************************************************
