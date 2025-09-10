@@ -195,7 +195,7 @@ class Solution {
         for (auto &d : darts) {
             P u(d[0], d[1]);
             double dist2 = (u - c).dot(u - c);
-            if (dist2 < r * r + 1e-9) { ans++; }
+            if (dist2 < r * r + 1e-7) { ans++; }
         }
         return ans;
     }
@@ -212,10 +212,10 @@ class Solution {
 
                 P uv = v - u;
                 double dist2 = uv.dot(uv);
-                if (dist2 < 1e-9) { continue; }
+                if (dist2 < 1e-7) { continue; }
                 double h2 = (double)r * r - dist2 / 4;
-                if (h2 < -1e-9) { continue; }
-                if (h2 < 1e-9) {
+                if (h2 < -1e-7) { continue; }
+                if (h2 < 1e-7) {
                     int t = count(darts, m, r);
                     ans = max(ans, t);
                 } else {
