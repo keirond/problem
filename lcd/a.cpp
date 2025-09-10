@@ -178,75 +178,66 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 struct Point {
     double x, y;
 
-    Point perp() { return {-y, x}; }
-    Point operator-(Point &v) { return {x - v.x, y - v.y}; }
+    Point operator+(const Point &v) const { return {x + v.x, y + v.y}; }
+    Point operator-(const Point &v) const { return {x - v.x, y - v.y}; }
+    Point operator*(double k) const { return {x * k, y * k}; }
+    Point operator/(double k) const { return {x / k, y / k}; }
+    Point perp() const { return {-y, x}; }
+    double dot(const Point &v) const { return x * v.x + y * v.y; }
 };
+
+using P = Point;
 
 class Solution {
   public:
-    using ll = long long;
-
-    vector<Point> circleCircleIntersection(Point &c1, double r1, Point &c2,
-                                           double r2) {
-        Point d = (c2 - c1).perp();
-
-        
-    }
-
-    vector<pair<int, int>> intersect(vector<int> c1, vector<int> c2) {
-        ll dist2 = 1LL * (c1[0] - c2[0]) * (c1[0] - c2[0]) +
-                   1LL * (c1[1] - c2[1]) * (c1[1] - c2[1]);
-        ll rr2 = ((ll)c1[2] + c2[2]) * ((ll)c1[2] + c2[2]);
-        if (dist2 > rr2) { return {}; }
-    }
-    bool canReachCorner(ll xCorner, ll yCorner, vector<vector<int>> &circles) {
-        int n = circles.size();
-        vector<bool> vt(n);
-
-        deque<vector<int>> dq;
-        for (int i = 0; i < n; i++) {
-            auto d = circles[i];
-            d.push_back(i);
-            if (abs(d[0]) <= d[2] && d[1] >= 0 && d[1] <= yCorner) {
-                dq.push_back(d);
-            } else if (abs(yCorner - d[1]) <= d[2] && d[0] >= 0 &&
-                       d[0] <= xCorner) {
-                dq.push_back(d);
-            }
+    int count(vector<vector<int>> &darts, const P &c, double r) {
+        int ans = 0;
+        for (auto &d : darts) {
+            P u(d[0], d[1]);
+            double dist2 = (u - c).dot(u - c);
+            if (dist2 < r * r + 1e-9) { ans++; }
         }
+        return ans;
+    }
 
-        while (!dq.empty()) {
-            auto cr = dq.back();
-            dq.pop_back();
-            if (vt[cr[3]]) { continue; }
-            vt[cr[3]] = 1;
+    int numPoints(vector<vector<int>> &darts, int r) {
+        int n = darts.size();
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            P u(darts[i][0], darts[i][1]);
+            for (int j = i + 1; j < n; j++) {
+                P v(darts[j][0], darts[j][1]);
 
-            if (abs(xCorner - cr[0]) <= cr[2] && cr[1] >= 0 &&
-                cr[1] <= yCorner) {
-                return false;
-            } else if (abs(cr[1]) <= cr[2] && cr[0] >= 0 && cr[0] <= xCorner) {
-                return false;
-            }
-            for (int i = 0; i < n; i++) {
-                auto &t = circles[i];
-                if (!vt[i] && 1LL * (t[0] - cr[0]) * (t[0] - cr[0]) +
-                                  1LL * (t[1] - cr[1]) * (t[1] - cr[1]) <=
-                                ((ll)t[2] + cr[2]) * ((ll)t[2] + cr[2])) {
-                    auto d = t;
-                    d.push_back(i);
-                    dq.push_back(d);
+                P m = (u + v) / 2;
+
+                P uv = v - u;
+                double dist2 = uv.dot(uv);
+                if (dist2 < 1e-9) { continue; }
+                double h2 = (double)r * r - dist2 / 4;
+                if (h2 < -1e-9) { continue; }
+                if (h2 < 1e-9) {
+                    int t = count(darts, m, r);
+                    ans = max(ans, t);
+                } else {
+                    P puv = uv.perp();
+                    double h = sqrt(max(0.0, h2));
+                    double dist = sqrt(max(0.0, dist2));
+                    int t;
+                    t = count(darts, m + puv * h / dist, r);
+                    ans = max(ans, t);
+                    t = count(darts, m - puv * h / dist, r);
+                    ans = max(ans, t);
                 }
             }
         }
-        return true;
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v1, v2, v3;
-    perform(Solution(), &Solution::canReachCorner, v1, v2, grid);
+    perform(Solution(), &Solution::numPoints, grid, v);
 }
 
 // **************************************************************************
