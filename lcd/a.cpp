@@ -175,69 +175,34 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-struct Point {
-    double x, y;
-
-    Point operator+(const Point &v) const { return {x + v.x, y + v.y}; }
-    Point operator-(const Point &v) const { return {x - v.x, y - v.y}; }
-    Point operator*(double k) const { return {x * k, y * k}; }
-    Point operator/(double k) const { return {x / k, y / k}; }
-    Point perp() const { return {-y, x}; }
-    double dot(const Point &v) const { return x * v.x + y * v.y; }
-};
-
-using P = Point;
-
 class Solution {
   public:
-    int count(vector<vector<int>> &darts, const P &c, double r) {
-        int ans = 0;
-        for (auto &d : darts) {
-            P u(d[0], d[1]);
-            double dist2 = (u - c).dot(u - c);
-            if (dist2 < r * r + 1e-7) { ans++; }
-        }
-        return ans;
-    }
-
-    int numPoints(vector<vector<int>> &darts, int r) {
-        int n = darts.size();
-        int ans = 1;
-        for (int i = 0; i < n; i++) {
-            P u(darts[i][0], darts[i][1]);
-            for (int j = i + 1; j < n; j++) {
-                P v(darts[j][0], darts[j][1]);
-
-                P m = (u + v) / 2;
-
-                P uv = v - u;
-                double dist2 = uv.dot(uv);
-                if (dist2 < 1e-7) { continue; }
-                double h2 = (double)r * r - dist2 / 4;
-                if (h2 < -1e-7) { continue; }
-                if (h2 < 1e-7) {
-                    int t = count(darts, m, r);
-                    ans = max(ans, t);
-                } else {
-                    P puv = uv.perp();
-                    double h = sqrt(max(0.0, h2));
-                    double dist = sqrt(max(0.0, dist2));
-                    int t;
-                    t = count(darts, m + puv * h / dist, r);
-                    ans = max(ans, t);
-                    t = count(darts, m - puv * h / dist, r);
-                    ans = max(ans, t);
-                }
+    int nonSpecialCount(int l, int r) {
+        int N = ceil(sqrt(r));
+        vector<bool> isp(N, 1);
+        for (int i = 2; i < N; i++) {
+            if (isp[i]) {
+                for (long long j = 1LL * i * i; j < N; j += i) { isp[j] = 0; }
             }
         }
-        return ans;
+
+        vector<int> ps;
+        for (int i = 2; i < N; i++) {
+            if (isp[i]) { ps.push_back(i); }
+        }
+
+        double ls = sqrt(l), rs = sqrt(r);
+        auto itl = lower_bound(begin(ps), end(ps), ceil(ls));
+        auto itr = upper_bound(begin(ps), end(ps), floor(rs));
+        return r - l + 1 - (itr - itl);
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::numPoints, grid, v);
+    int v1, v2;
+    perform(Solution(), &Solution::nonSpecialCount, v1, v2);
 }
 
 // **************************************************************************
