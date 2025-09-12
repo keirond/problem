@@ -177,33 +177,28 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int maxHeight(vector<vector<int>> &cuboids) {
-        int n = cuboids.size();
-        for (int i = 0; i < n; i++) {
-            sort(begin(cuboids[i]), end(cuboids[i]));
+    int kthGrammar(int n, int k) {
+        // 0
+        // 0 1
+        // 0 1 1 0
+        // 0 1 1 0 1 0 0 1
+        if (n == 1) { return 0; }
+        int t = kthGrammar(n - 1, (k + 1) / 2);
+        if (t) {
+            if (k % 2) { return 1; }
+            return 0;
         }
-        sort(begin(cuboids), end(cuboids));
 
-        int ans = 0;
-        vector<int> f(n);
-        for (int i = 0; i < n; i++) {
-            f[i] = cuboids[i][2];
-            for (int j = 0; j < i; j++) {
-                if (cuboids[i][1] >= cuboids[j][1] &&
-                    cuboids[i][2] >= cuboids[j][2]) {
-                    f[i] = max(f[i], f[j] + cuboids[i][2]);
-                }
-            }
-            ans = max(ans, f[i]);
-        }
-        return ans;
+        if (k % 2) { return 0; }
+        return 1;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maxHeight, grid);
+    int v1, v2;
+    perform(Solution(), &Solution::kthGrammar, v1, v2);
 }
 
 // **************************************************************************
