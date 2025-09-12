@@ -177,28 +177,39 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int kthGrammar(int n, int k) {
-        // 0
-        // 0 1
-        // 0 1 1 0
-        // 0 1 1 0 1 0 0 1
-        if (n == 1) { return 0; }
-        int t = kthGrammar(n - 1, (k + 1) / 2);
-        if (t) {
-            if (k % 2) { return 1; }
-            return 0;
-        }
+    vector<int> maximumBobPoints(int numArrows, vector<int> &aliceArrows) {
 
-        if (k % 2) { return 0; }
-        return 1;
+        vector<vector<pair<int, int>>> f(12,
+                                         vector<pair<int, int>>(numArrows + 1));
+        for (int i = 0; i < 12; i++) {
+            int t = aliceArrows[i];
+            for (int j = 0; j <= numArrows; j++) {
+                if (i > 0) {
+                    f[i][j] = {f[i - 1][j].first, j};
+                    if (j > t) {
+                        if (f[i - 1][j - t - 1].first + i > f[i][j].first) {
+                            f[i][j] = {f[i - 1][j - t - 1].first + i,
+                                       j - t - 1};
+                        }
+                    }
+                }
+            }
+        }
+        vector<int> ans(12);
+        int t = numArrows;
+        for (int i = 11; i >= 0; i--) {
+            int nt = f[i][t].second;
+            ans[i] = t - nt;
+            t = nt;
+        }
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v1, v2;
-    perform(Solution(), &Solution::kthGrammar, v1, v2);
+    perform(Solution(), &Solution::maximumBobPoints, v, arr);
 }
 
 // **************************************************************************
