@@ -175,7 +175,32 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-class Solution {};
+class Solution {
+  public:
+    int maxFrequency(vector<int> &nums, int k) {
+        int n = nums.size();
+        sort(begin(nums), end(nums));
+
+        vector<long long> ps(n + 1);
+        for (int i = 0; i < n; i++) { ps[i + 1] = ps[i] + nums[i]; }
+
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int l = 0, r = i;
+            while (l < r) {
+                int m = l + (r - l >> 1);
+                long long t = 1LL * (i - m) * nums[i] - (ps[i] - ps[m]);
+                if (t > k) {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            ans = max(ans, i - l + 1);
+        }
+        return ans;
+    }
+};
 
 // **************************************************************************
 
