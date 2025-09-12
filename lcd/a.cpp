@@ -175,41 +175,12 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-class Solution {
-  public:
-    vector<int> maximumBobPoints(int numArrows, vector<int> &aliceArrows) {
-
-        vector<vector<pair<int, int>>> f(12,
-                                         vector<pair<int, int>>(numArrows + 1));
-        for (int i = 0; i < 12; i++) {
-            int t = aliceArrows[i];
-            for (int j = 0; j <= numArrows; j++) {
-                if (i > 0) {
-                    f[i][j] = {f[i - 1][j].first, j};
-                    if (j > t) {
-                        if (f[i - 1][j - t - 1].first + i > f[i][j].first) {
-                            f[i][j] = {f[i - 1][j - t - 1].first + i,
-                                       j - t - 1};
-                        }
-                    }
-                }
-            }
-        }
-        vector<int> ans(12);
-        int t = numArrows;
-        for (int i = 11; i >= 0; i--) {
-            int nt = f[i][t].second;
-            ans[i] = t - nt;
-            t = nt;
-        }
-        return ans;
-    }
-};
+class Solution {};
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maximumBobPoints, v, arr);
+    perform(Solution(), &Solution::foo, v);
 }
 
 // **************************************************************************
