@@ -177,32 +177,21 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int nonSpecialCount(int l, int r) {
-        int N = ceil(sqrt(r));
-        vector<bool> isp(N, 1);
-        for (int i = 2; i < N; i++) {
-            if (isp[i]) {
-                for (long long j = 1LL * i * i; j < N; j += i) { isp[j] = 0; }
-            }
+    int getMaximumConsecutive(vector<int> &coins) {
+        sort(begin(coins), end(coins));
+        int n = coins.size();
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            if (ans >= coins[i]) { ans += coins[i]; }
         }
-
-        vector<int> ps;
-        for (int i = 2; i < N; i++) {
-            if (isp[i]) { ps.push_back(i); }
-        }
-
-        double ls = sqrt(l), rs = sqrt(r);
-        auto itl = lower_bound(begin(ps), end(ps), ceil(ls));
-        auto itr = upper_bound(begin(ps), end(ps), floor(rs));
-        return r - l + 1 - (itr - itl);
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v1, v2;
-    perform(Solution(), &Solution::nonSpecialCount, v1, v2);
+    perform(Solution(), &Solution::getMaximumConsecutive, arr);
 }
 
 // **************************************************************************
