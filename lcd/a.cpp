@@ -123,7 +123,7 @@ template <typename T, typename V> void __info(const pair<T, V> &x) {
 template <typename T, typename K, typename V>
 void __info(const tuple<T, K, V> &x) {
     cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
-      cerr << ", ", __info(get<2>(x)), cerr << '}';
+            cerr << ", ", __info(get<2>(x)), cerr << '}';
 }
 
 void __print() { cerr << ']' << nl; }
@@ -163,11 +163,11 @@ template <typename Obj, typename MemFn, typename... Args>
 void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
     __read(args...);
     if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
-                    std::forward<Args>(args)...))>) {
+                          std::forward<Args>(args)...))>) {
         (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
     } else {
         auto result =
-          (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+                (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
         __info(result);
         cerr << nl;
     }
@@ -175,48 +175,24 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-struct Trie {
-    Trie *link[26];
-    vector<int> at;
-
-    Trie() {
-        for (int i = 0; i < 26; i++) { this->link[i] = nullptr; }
-    }
-
-    void insert(string &word, int i) {
-        auto u = this;
-        for (char c : word) {
-            int d = c - 'a';
-            if (!u->link[d]) { u->link[d] = new Trie(); }
-            u = u->link[d];
-            u->at.push_back(i);
-        }
-    }
-};
-
 class Solution {
-  public:
-    vector<vector<string>> suggestedProducts(vector<string> &products,
-                                             string searchWord) {
-        int n = products.size();
-        sort(begin(products), end(products));
+public:
 
-        Trie *tr = new Trie();
-        for (int i = 0; i < n; i++) { tr->insert(products[i], i); }
+    long long maxStrength(vector<int> &nums) {
+        using ll = long long;
 
-        vector<vector<string>> ans;
-        bool ok = true;
-        for (char c : searchWord) {
-            vector<string> temp;
-            int d = c - 'a';
-            if (!tr->link[d]) { ok = false; }
-            if (ok) {
-                tr = tr->link[d];
-                for (int i = 0; i < min(3, (int)tr->at.size()); i++) {
-                    temp.push_back(products[tr->at[i]]);
-                }
-            }
-            ans.push_back(temp);
+        ll ans;
+        int n = nums.size();
+        vector<ll> f(n), g(n);
+        ans = f[0] = g[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            f[i] = min(f[i - 1], (ll)nums[i]);
+            f[i] = min(f[i], min(f[i - 1] * nums[i], g[i - 1] * nums[i]));
+
+            g[i] = max(g[i - 1], (ll)nums[i]);
+            g[i] = max(g[i], max(f[i - 1] * nums[i], g[i - 1] * nums[i]));
+
+            ans = max(ans, g[i]);
         }
         return ans;
     }
