@@ -177,13 +177,21 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int getMaximumConsecutive(vector<int> &coins) {
-        sort(begin(coins), end(coins));
-        int n = coins.size();
-        int ans = 1;
+    int maxDistinctElements(vector<int> &nums, int k) {
+        int n = nums.size();
+        sort(begin(nums), end(nums));
+        nums.push_back(INT_MAX);
+
+        int ans = 0;
+        int prev = INT_MIN;
         for (int i = 0; i < n; i++) {
-            if (ans >= coins[i]) { ans += coins[i]; }
+            if (prev + 1 <= nums[i] + k) {
+                nums[i] = max(prev + 1, nums[i] - k);
+                prev = nums[i];
+                ans++;
+            }
         }
+
         return ans;
     }
 };
@@ -191,16 +199,14 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::getMaximumConsecutive, arr);
+    perform(Solution(), &Solution::maxDistinctElements, arr, v);
 }
 
 // **************************************************************************
-
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0), cout.tie(0);
     enable_info();
-
     int test_cases = 1;
     // cin >> test_cases;
     while (test_cases--) {
