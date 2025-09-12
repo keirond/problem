@@ -177,21 +177,25 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 class Solution {
   public:
-    int maxDistinctElements(vector<int> &nums, int k) {
-        int n = nums.size();
-        sort(begin(nums), end(nums));
-        nums.push_back(INT_MAX);
+    int maxHeight(vector<vector<int>> &cuboids) {
+        int n = cuboids.size();
+        for (int i = 0; i < n; i++) {
+            sort(begin(cuboids[i]), end(cuboids[i]));
+        }
+        sort(begin(cuboids), end(cuboids));
 
         int ans = 0;
-        int prev = INT_MIN;
+        vector<int> f(n);
         for (int i = 0; i < n; i++) {
-            if (prev + 1 <= nums[i] + k) {
-                nums[i] = max(prev + 1, nums[i] - k);
-                prev = nums[i];
-                ans++;
+            f[i] = cuboids[i][2];
+            for (int j = 0; j < i; j++) {
+                if (cuboids[i][1] >= cuboids[j][1] &&
+                    cuboids[i][2] >= cuboids[j][2]) {
+                    f[i] = max(f[i], f[j] + cuboids[i][2]);
+                }
             }
+            ans = max(ans, f[i]);
         }
-
         return ans;
     }
 };
@@ -199,7 +203,7 @@ class Solution {
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maxDistinctElements, arr, v);
+    perform(Solution(), &Solution::maxHeight, grid);
 }
 
 // **************************************************************************
