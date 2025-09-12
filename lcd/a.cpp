@@ -175,28 +175,48 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
+struct Trie {
+    Trie *link[26];
+    vector<int> at;
+
+    Trie() {
+        for (int i = 0; i < 26; i++) { this->link[i] = nullptr; }
+    }
+
+    void insert(string &word, int i) {
+        auto u = this;
+        for (char c : word) {
+            int d = c - 'a';
+            if (!u->link[d]) { u->link[d] = new Trie(); }
+            u = u->link[d];
+            u->at.push_back(i);
+        }
+    }
+};
+
 class Solution {
   public:
-    int maxFrequency(vector<int> &nums, int k) {
-        int n = nums.size();
-        sort(begin(nums), end(nums));
+    vector<vector<string>> suggestedProducts(vector<string> &products,
+                                             string searchWord) {
+        int n = products.size();
+        sort(begin(products), end(products));
 
-        vector<long long> ps(n + 1);
-        for (int i = 0; i < n; i++) { ps[i + 1] = ps[i] + nums[i]; }
+        Trie *tr = new Trie();
+        for (int i = 0; i < n; i++) { tr->insert(products[i], i); }
 
-        int ans = 0;
-        for (int i = 0; i < n; i++) {
-            int l = 0, r = i;
-            while (l < r) {
-                int m = l + (r - l >> 1);
-                long long t = 1LL * (i - m) * nums[i] - (ps[i] - ps[m]);
-                if (t > k) {
-                    l = m + 1;
-                } else {
-                    r = m;
+        vector<vector<string>> ans;
+        bool ok = true;
+        for (char c : searchWord) {
+            vector<string> temp;
+            int d = c - 'a';
+            if (!tr->link[d]) { ok = false; }
+            if (ok) {
+                tr = tr->link[d];
+                for (int i = 0; i < min(3, (int)tr->at.size()); i++) {
+                    temp.push_back(products[tr->at[i]]);
                 }
             }
-            ans = max(ans, i - l + 1);
+            ans.push_back(temp);
         }
         return ans;
     }
