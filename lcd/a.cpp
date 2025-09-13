@@ -178,27 +178,19 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    int maxValue(vector<vector<int>> &events, int k) {
-        int n = events.size();
-        sort(begin(events), end(events));
-
-        vector<int> nxt(n);
+    int minimumLevels(vector<int> &possible) {
+        int n = possible.size();
+        vector<int> ps(n + 1);
         for (int i = 0; i < n; i++) {
-            nxt[i] = upper_bound(begin(events), end(events),
-                                 vector<int>{events[i][1], INT_MAX, INT_MAX}) -
-                     begin(events);
+            ps[i + 1] = ps[i] + (possible[i] ? 1 : -1);
         }
 
-        vector<int> f(n + 1), g(n + 1);
-        for (int i = 0; i < k; i++) {
-            g = f;
-            for (int j = n - 1; j >= 0; j--) {
-                g[j] = max(g[j], f[nxt[j]] + events[j][2]);
-                g[j] = max(g[j], g[j + 1]);
-            }
-            f = g;
+        int cur = 0;
+        for (int i = 0; i < n; i++) {
+            cur += possible[i] ? 1 : -1;
+            if (cur > ps[n] - ps[i + 1]) { return i + 1; }
         }
-        return *max_element(begin(f), end(f));
+        return -1;
     }
 };
 
