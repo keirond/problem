@@ -178,37 +178,34 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minDays(vector<int> &bloomDay, int m, int k) {
-        int n = bloomDay.size();
-        if (1LL * m * k > n) { return -1; }
+    int maxValue(vector<vector<int>> &events, int k) {
+        int n = events.size();
+        sort(begin(events), end(events));
 
-        int l = 0, r = *max_element(begin(bloomDay), end(bloomDay));
-        while (l < r) {
-            int day = l + (r - l >> 1);
-            int temp = 0, cnt = 0;
-            for (int i = 0; i < n; i++) {
-                if (bloomDay[i] > day) {
-                    cnt += temp / k;
-                    temp = 0;
-                } else {
-                    temp++;
-                }
-            }
-            cnt += temp / k;
-            if (cnt >= m) {
-                r = day;
-            } else {
-                l = day + 1;
-            }
+        vector<int> nxt(n);
+        for (int i = 0; i < n; i++) {
+            nxt[i] = upper_bound(begin(events), end(events),
+                                 vector<int>{events[i][1], INT_MAX, INT_MAX}) -
+                     begin(events);
         }
-        return l;
+
+        vector<int> f(n + 1), g(n + 1);
+        for (int i = 0; i < k; i++) {
+            g = f;
+            for (int j = n - 1; j >= 0; j--) {
+                g[j] = max(g[j], f[nxt[j]] + events[j][2]);
+                g[j] = max(g[j], g[j + 1]);
+            }
+            f = g;
+        }
+        return *max_element(begin(f), end(f));
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::closestToTarget, arr, v);
+    perform(Solution(), &Solution::maxValue, grid, v);
 }
 
 // **************************************************************************
