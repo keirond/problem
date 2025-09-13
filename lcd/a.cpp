@@ -178,26 +178,42 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minimumLevels(vector<int> &possible) {
-        int n = possible.size();
-        vector<int> ps(n + 1);
+    vector<int> minOperations(string boxes) {
+        int n = boxes.size();
+        vector<int> lps(n + 1), rps(n + 1);
+        vector<int> lcnt(n + 1), rcnt(n + 1);
+
         for (int i = 0; i < n; i++) {
-            ps[i + 1] = ps[i] + (possible[i] ? 1 : -1);
+            lps[i + 1] = lps[i];
+            lcnt[i + 1] = lcnt[i];
+            if (boxes[i] == '1') {
+                lps[i + 1] += i;
+                lcnt[i + 1]++;
+            }
         }
 
-        int cur = 0;
-        for (int i = 0; i < n; i++) {
-            cur += possible[i] ? 1 : -1;
-            if (cur > ps[n] - ps[i + 1]) { return i + 1; }
+        for (int i = n - 1; i >= 0; i--) {
+            rps[i] = rps[i + 1];
+            rcnt[i] = rcnt[i + 1];
+            if (boxes[i] == '1') {
+                rps[i] += n - 1 - i;
+                rcnt[i]++;
+            }
         }
-        return -1;
+
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            ans[i] += rps[0] - rps[i] - 1LL * (rcnt[0] - rcnt[i]) * (n - 1 - i);
+            ans[i] += lps[n] - lps[i + 1] - 1LL * (lcnt[n] - lcnt[i + 1]) * i;
+        }
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maxValue, grid, v);
+    perform(Solution(), &Solution::minOperations, s);
 }
 
 // **************************************************************************
