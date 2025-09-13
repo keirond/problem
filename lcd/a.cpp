@@ -175,24 +175,61 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
+vector<int> tr;
+
+void update(int i, int n, int val) {
+    for (i += n, tr[i] = val; i > 0; i >>= 1) {
+        tr[i >> 1] = tr[i] & tr[i ^ 1];
+    }
+}
+
+int query(int l, int r, int n) {
+    int ans = ~0;
+    for (l += n, r += n; l <= r; l >>= 1, r >>= 1) {
+        if (l & 1) { ans &= tr[l++]; }
+        if (!(r & 1)) { ans &= tr[r--]; }
+    }
+    return ans;
+}
+
 class Solution {
 public:
 
-    long long maxStrength(vector<int> &nums) {
-        using ll = long long;
+    int closestToTarget(vector<int> &arr, int target) {
+        int n = arr.size();
+        tr.assign(n * 2, ~0);
 
-        ll ans;
-        int n = nums.size();
-        vector<ll> f(n), g(n);
-        ans = f[0] = g[0] = nums[0];
-        for (int i = 1; i < n; i++) {
-            f[i] = min(f[i - 1], (ll)nums[i]);
-            f[i] = min(f[i], min(f[i - 1] * nums[i], g[i - 1] * nums[i]));
+        for (int i = 0; i < n; i++) { update(i, n, arr[i]); }
 
-            g[i] = max(g[i - 1], (ll)nums[i]);
-            g[i] = max(g[i], max(f[i - 1] * nums[i], g[i - 1] * nums[i]));
+        int ans = INT_MAX;
 
-            ans = max(ans, g[i]);
+        for (int i = 0; i < n; i++) {
+            int l, r, temp;
+            l = i, r = n - 1;
+            while (l < r) {
+                int m = l + (r - l >> 1);
+                temp = query(i, m, n);
+                if (temp <= target) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            temp = query(i, l, n);
+            ans = min(ans, abs(temp - target));
+
+            l = i, r = n - 1;
+            while (l < r) {
+                int m = l + (r - l + 1 >> 1);
+                temp = query(i, m, n);
+                if (temp >= target) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            temp = query(i, l, n);
+            ans = min(ans, abs(temp - target));
         }
         return ans;
     }
@@ -201,7 +238,7 @@ public:
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::foo, v);
+    perform(Solution(), &Solution::closestToTarget, arr, v);
 }
 
 // **************************************************************************
