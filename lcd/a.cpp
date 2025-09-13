@@ -175,63 +175,33 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 
 // **************************************************************************
 
-vector<int> tr;
-
-void update(int i, int n, int val) {
-    for (i += n, tr[i] = val; i > 0; i >>= 1) {
-        tr[i >> 1] = tr[i] & tr[i ^ 1];
-    }
-}
-
-int query(int l, int r, int n) {
-    int ans = ~0;
-    for (l += n, r += n; l <= r; l >>= 1, r >>= 1) {
-        if (l & 1) { ans &= tr[l++]; }
-        if (!(r & 1)) { ans &= tr[r--]; }
-    }
-    return ans;
-}
-
 class Solution {
 public:
 
-    int closestToTarget(vector<int> &arr, int target) {
-        int n = arr.size();
-        tr.assign(n * 2, ~0);
+    int minDays(vector<int> &bloomDay, int m, int k) {
+        int n = bloomDay.size();
+        if (1LL * m * k > n) { return -1; }
 
-        for (int i = 0; i < n; i++) { update(i, n, arr[i]); }
-
-        int ans = INT_MAX;
-
-        for (int i = 0; i < n; i++) {
-            int l, r, temp;
-            l = i, r = n - 1;
-            while (l < r) {
-                int m = l + (r - l >> 1);
-                temp = query(i, m, n);
-                if (temp <= target) {
-                    r = m;
+        int l = 0, r = *max_element(begin(bloomDay), end(bloomDay));
+        while (l < r) {
+            int day = l + (r - l >> 1);
+            int temp = 0, cnt = 0;
+            for (int i = 0; i < n; i++) {
+                if (bloomDay[i] > day) {
+                    cnt += temp / k;
+                    temp = 0;
                 } else {
-                    l = m + 1;
+                    temp++;
                 }
             }
-            temp = query(i, l, n);
-            ans = min(ans, abs(temp - target));
-
-            l = i, r = n - 1;
-            while (l < r) {
-                int m = l + (r - l + 1 >> 1);
-                temp = query(i, m, n);
-                if (temp >= target) {
-                    l = m;
-                } else {
-                    r = m - 1;
-                }
+            cnt += temp / k;
+            if (cnt >= m) {
+                r = day;
+            } else {
+                l = day + 1;
             }
-            temp = query(i, l, n);
-            ans = min(ans, abs(temp - target));
         }
-        return ans;
+        return l;
     }
 };
 
