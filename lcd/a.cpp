@@ -178,30 +178,77 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    bool checkEqualPartitions(vector<int> &nums, long long target) {
-        int n = nums.size();
-        for (int i = 1; i < (1 << n) - 1; i++) {
-            long long p1 = 1, p2 = 1;
-            for (int j = 0; j < n; j++) {
-                if (i & (1 << j)) {
-                    p1 *= nums[j];
-                    if (p1 > target) { break; }
-                } else {
-                    p2 *= nums[j];
-                    if (p2 > target) { break; }
+    vector<pair<int, int>> rook_moves = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+    vector<pair<int, int>> bishop_moves = {{-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
+    vector<pair<int, int>> queen_moves = {{-1, 0},  {0, -1}, {1, 0},  {0, 1},
+                                          {-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
+
+    bool check(int x, int y, int step, vector<vector<int>> &positions, int i) {
+        if (positions[i][0] + step * x < 1) { return false; }
+        if (positions[i][0] + step * x > 8) { return false; }
+
+        if (positions[i][1] + step * y < 1) { return false; }
+        if (positions[i][1] + step * y > 8) { return false; }
+
+        for (int j = 0; j < i; j++) {
+            for (int k = 1; k <= min(step, moves[j][2]); k++) {
+                if (positions[j][0] + k * moves[j][0] ==
+                            positions[i][0] + k * x &&
+                    positions[j][1] + k * moves[j][1] ==
+                            positions[i][1] + k * y) {
+                    return false;
                 }
             }
-            if (p1 == target && p2 == target) { return true; }
         }
-        return false;
+
+        return true;
+    }
+
+    vector<vector<int>> moves;
+    int countCombinations(vector<string> &pieces,
+                          vector<vector<int>> &positions, int i = 0) {
+        if (i == pieces.size()) { return 1; }
+        int ans = 1;
+        if (pieces[i] == "rook") {
+            for (auto [x, y] : rook_moves) {
+                int step = 1;
+                while (check(x, y, step, positions, i)) {
+                    moves.push_back({x, y, step});
+                    ans *= countCombinations(pieces, positions, i + 1);
+                    moves.pop_back();
+                    step++;
+                }
+            }
+        } else if (pieces[i] == "bishop") {
+            for (auto [x, y] : bishop_moves) {
+                int step = 1;
+                while (check(x, y, step, positions, i)) {
+                    moves.push_back({x, y, step});
+                    ans *= countCombinations(pieces, positions, i + 1);
+                    moves.pop_back();
+                    step++;
+                }
+            }
+        } else {
+            for (auto [x, y] : bishop_moves) {
+                int step = 1;
+                while (check(x, y, step, positions, i)) {
+                    moves.push_back({x, y, step});
+                    ans *= countCombinations(pieces, positions, i + 1);
+                    moves.pop_back();
+                    step++;
+                }
+            }
+        }
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    long long v;
-    perform(Solution(), &Solution::checkEqualPartitions, nums, v);
+    int v=0;
+    perform(Solution(), &Solution::countCombinations, strs, grid, v);
 }
 
 // **************************************************************************
