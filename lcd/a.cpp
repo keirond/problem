@@ -178,29 +178,60 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    bool checkIfCanBreak(string s1, string s2) {
-        sort(begin(s1), end(s1));
-        sort(begin(s2), end(s2));
+    vector<int> parent;
 
-        int n = s1.size();
-        int direction = 0;
+    int find(int u) {
+        if (parent[u] == u) { return u; }
+        return parent[u] = find(parent[u]);
+    }
+
+    void unite(int u, int v) {
+        int a = find(u), b = find(v);
+        if (a != b) { parent[b] = a; }
+    }
+
+    int numberOfGoodPaths(vector<int> &vals, vector<vector<int>> &edges) {
+        int n = vals.size();
+        vector<vector<int>> adj(n);
+
+        for (auto &d : edges) {
+            int u = d[0], v = d[1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        vector<int> idx(n);
+        iota(begin(idx), end(idx), 0);
+        sort(begin(idx), end(idx),
+             [&](int x, int y) { return vals[x] < vals[y]; });
+
+        parent.resize(n);
+        iota(begin(parent), end(parent), 0);
+
+        int l = 0, ans = 0;
         for (int i = 0; i < n; i++) {
-            if (!direction && s1[i] != s2[i]) {
-                direction = s1[i] > s2[i] ? 1 : -1;
-            } else {
-                if (direction == 1 && s1[i] < s2[i]) { return false; }
-                if (direction == -1 && s1[i] > s2[i]) { return false; }
+            int u = idx[i];
+            if (vals[u] != vals[idx[l]]) {
+                unordered_map<int, int> mp;
+                for (int j = l; j < i; j++) { mp[find(idx[j])]++; }
+                for (auto [_, k] : mp) { ans += 1LL * k * (k - 1) / 2; }
+                l = i;
+            }
+            for (int v : adj[u]) {
+                if (vals[v] <= vals[u]) { unite(u, v); }
             }
         }
-        return true;
+        unordered_map<int, int> mp;
+        for (int j = l; j < n; j++) { mp[find(idx[j])]++; }
+        for (auto [_, k] : mp) { ans += 1LL * k * (k - 1) / 2; }
+        return ans + n;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    string s1, s2;
-    perform(Solution(), &Solution::checkIfCanBreak, s1, s2);
+    perform(Solution(), &Solution::numberOfGoodPaths, nums, grid);
 }
 
 // **************************************************************************
