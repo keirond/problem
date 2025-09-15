@@ -178,60 +178,63 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<int> parent;
+    long long maxSpending(vector<vector<int>> &values) {
+        using ll = long long;
+        ll ans = 0;
 
-    int find(int u) {
-        if (parent[u] == u) { return u; }
-        return parent[u] = find(parent[u]);
-    }
+        int n = values.size();
+        int m = values[0].size();
 
-    void unite(int u, int v) {
-        int a = find(u), b = find(v);
-        if (a != b) { parent[b] = a; }
-    }
-
-    int numberOfGoodPaths(vector<int> &vals, vector<vector<int>> &edges) {
-        int n = vals.size();
-        vector<vector<int>> adj(n);
-
-        for (auto &d : edges) {
-            int u = d[0], v = d[1];
-            adj[u].push_back(v);
-            adj[v].push_back(u);
-        }
-
-        vector<int> idx(n);
-        iota(begin(idx), end(idx), 0);
-        sort(begin(idx), end(idx),
-             [&](int x, int y) { return vals[x] < vals[y]; });
-
-        parent.resize(n);
-        iota(begin(parent), end(parent), 0);
-
-        int l = 0, ans = 0;
+        vector<vector<int>> vals(n);
         for (int i = 0; i < n; i++) {
-            int u = idx[i];
-            if (vals[u] != vals[idx[l]]) {
-                unordered_map<int, int> mp;
-                for (int j = l; j < i; j++) { mp[find(idx[j])]++; }
-                for (auto [_, k] : mp) { ans += 1LL * k * (k - 1) / 2; }
-                l = i;
+            vector<int> temp;
+            for (int j = m - 1; j >= 0; j--) {
+                while (!temp.empty() && temp.back() > values[i][j]) {
+                    temp.pop_back();
+                }
+                temp.push_back(values[i][j]);
             }
-            for (int v : adj[u]) {
-                if (vals[v] <= vals[u]) { unite(u, v); }
+            reverse(begin(temp), end(temp));
+            vals[i] = temp;
+        }
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>,
+                       greater<pair<int, int>>>
+                pq;
+        for (int i = 0; i < n; i++) {
+            if (!vals[i].empty()) {
+                int t = vals[i].back();
+                pq.emplace(t, i);
+                vals[i].pop_back();
             }
         }
-        unordered_map<int, int> mp;
-        for (int j = l; j < n; j++) { mp[find(idx[j])]++; }
-        for (auto [_, k] : mp) { ans += 1LL * k * (k - 1) / 2; }
-        return ans + n;
+
+        int cnt = 1;
+        vector<int> pts(n, m - 1);
+        while (!pq.empty()) {
+            auto [v, id] = pq.top();
+            pq.pop();
+            for (; pts[id] >= 0; pts[id]--) {
+                ans += 1LL * values[id][pts[id]] * cnt++;
+                if (values[id][pts[id]] == v) {
+                    pts[id]--;
+                    break;
+                }
+            }
+            if (!vals[id].empty()) {
+                int t = vals[id].back();
+                pq.emplace(t, id);
+                vals[id].pop_back();
+            }
+        }
+        return ans;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::numberOfGoodPaths, nums, grid);
+    perform(Solution(), &Solution::maxSpending, grid);
 }
 
 // **************************************************************************
