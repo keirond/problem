@@ -178,45 +178,33 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<int> minOperations(string boxes) {
-        int n = boxes.size();
-        vector<int> lps(n + 1), rps(n + 1);
-        vector<int> lcnt(n + 1), rcnt(n + 1);
+    bool checkIfCanBreak(string s1, string s2) {
+        sort(begin(s1), end(s1));
+        sort(begin(s2), end(s2));
 
+        int n = s1.size();
+        int direction = 0;
         for (int i = 0; i < n; i++) {
-            lps[i + 1] = lps[i];
-            lcnt[i + 1] = lcnt[i];
-            if (boxes[i] == '1') {
-                lps[i + 1] += i;
-                lcnt[i + 1]++;
+            if (!direction && s1[i] != s2[i]) {
+                direction = s1[i] > s2[i] ? 1 : -1;
+            } else {
+                if (direction == 1 && s1[i] < s2[i]) { return false; }
+                if (direction == -1 && s1[i] > s2[i]) { return false; }
             }
         }
-
-        for (int i = n - 1; i >= 0; i--) {
-            rps[i] = rps[i + 1];
-            rcnt[i] = rcnt[i + 1];
-            if (boxes[i] == '1') {
-                rps[i] += n - 1 - i;
-                rcnt[i]++;
-            }
-        }
-
-        vector<int> ans(n);
-        for (int i = 0; i < n; i++) {
-            ans[i] += rps[0] - rps[i] - 1LL * (rcnt[0] - rcnt[i]) * (n - 1 - i);
-            ans[i] += lps[n] - lps[i + 1] - 1LL * (lcnt[n] - lcnt[i + 1]) * i;
-        }
-        return ans;
+        return true;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::minOperations, s);
+    string s1, s2;
+    perform(Solution(), &Solution::checkIfCanBreak, s1, s2);
 }
 
 // **************************************************************************
+
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0), cout.tie(0);
