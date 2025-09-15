@@ -178,63 +178,30 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long maxSpending(vector<vector<int>> &values) {
-        using ll = long long;
-        ll ans = 0;
-
-        int n = values.size();
-        int m = values[0].size();
-
-        vector<vector<int>> vals(n);
-        for (int i = 0; i < n; i++) {
-            vector<int> temp;
-            for (int j = m - 1; j >= 0; j--) {
-                while (!temp.empty() && temp.back() > values[i][j]) {
-                    temp.pop_back();
-                }
-                temp.push_back(values[i][j]);
-            }
-            reverse(begin(temp), end(temp));
-            vals[i] = temp;
-        }
-
-        priority_queue<pair<int, int>, vector<pair<int, int>>,
-                       greater<pair<int, int>>>
-                pq;
-        for (int i = 0; i < n; i++) {
-            if (!vals[i].empty()) {
-                int t = vals[i].back();
-                pq.emplace(t, i);
-                vals[i].pop_back();
-            }
-        }
-
-        int cnt = 1;
-        vector<int> pts(n, m - 1);
-        while (!pq.empty()) {
-            auto [v, id] = pq.top();
-            pq.pop();
-            for (; pts[id] >= 0; pts[id]--) {
-                ans += 1LL * values[id][pts[id]] * cnt++;
-                if (values[id][pts[id]] == v) {
-                    pts[id]--;
-                    break;
+    bool checkEqualPartitions(vector<int> &nums, long long target) {
+        int n = nums.size();
+        for (int i = 1; i < (1 << n) - 1; i++) {
+            long long p1 = 1, p2 = 1;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    p1 *= nums[j];
+                    if (p1 > target) { break; }
+                } else {
+                    p2 *= nums[j];
+                    if (p2 > target) { break; }
                 }
             }
-            if (!vals[id].empty()) {
-                int t = vals[id].back();
-                pq.emplace(t, id);
-                vals[id].pop_back();
-            }
+            if (p1 == target && p2 == target) { return true; }
         }
-        return ans;
+        return false;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maxSpending, grid);
+    long long v;
+    perform(Solution(), &Solution::checkEqualPartitions, nums, v);
 }
 
 // **************************************************************************
