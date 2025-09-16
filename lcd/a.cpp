@@ -178,17 +178,16 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<int> minBitwiseArray(vector<int> &nums) {
+    vector<bool> prefixesDivBy5(vector<int> &nums) {
         int n = nums.size();
-        vector<int> ans(n);
+        vector<bool> ans(n);
+        int prev = 0;
         for (int i = 0; i < n; i++) {
-            if (!(nums[i] & 1)) {
-                ans[i] = -1;
+            prev = (prev * 2 + nums[i]) % 10;
+            if (prev % 5 == 0) {
+                ans[i] = true;
             } else {
-                int toggle_num = ~nums[i];
-                int t = toggle_num & -toggle_num;
-                t >>= 1;
-                ans[i] = nums[i] & ~t;
+                ans[i] = false;
             }
         }
         return ans;
