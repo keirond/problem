@@ -178,26 +178,22 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    int jobScheduling(vector<int> &startTime, vector<int> &endTime,
-                      vector<int> &profit) {
-        int n = startTime.size();
-        vector<vector<int>> comb(n);
-        for (int i = 0; i < n; i++) {
-            comb[i] = {startTime[i], endTime[i], profit[i]};
+    int maxSum(vector<vector<int>> &grid) {
+        int n = grid.size(), m = grid[0].size();
+        long long ans = LLONG_MIN;
+        for (int i = 3; i < n; i++) {
+            for (int j = 3; j < m; j++) {
+                long long temp = 0;
+                for (int i1 = 0; i1 < 3; i1++) {
+                    for (int i2 = 0; i2 < 3; i2++) {
+                        if (i1 == 1 && (i2 == 0 || i2 == 2)) { continue; }
+                        temp += grid[i - i1][j - i2];
+                    }
+                }
+                ans = max(ans, temp);
+            }
         }
-
-        sort(begin(comb), end(comb));
-
-        vector<int> f(n);
-        for (int i = n - 1; i >= 0; i--) {
-            f[i] = comb[i][2];
-            if (i + 1 < n) { f[i] = max(f[i], f[i + 1]); }
-            auto it = lower_bound(begin(comb), end(comb),
-                                  vector<int>{comb[i][1], INT_MIN, INT_MIN}) -
-                      begin(comb);
-            if (it < n) { f[i] = max(f[i], f[it] + comb[i][2]); }
-        }
-        return f[0];
+        return ans;
     }
 };
 
