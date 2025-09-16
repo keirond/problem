@@ -178,62 +178,15 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<vector<int>> moves;
-    vector<pair<int, int>> rook_moves = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-    vector<pair<int, int>> bishop_moves = {{-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
-    vector<pair<int, int>> queen_moves = {{-1, 0},  {0, -1}, {1, 0},  {0, 1},
-                                          {-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
+    vector<int> successfulPairs(vector<int> &spells, vector<int> &potions,
+                                long long success) {
+        int n = spells.size();
+        sort(begin(potions), end(potions));
 
-    bool check(int x, int y, int step, vector<vector<int>> &positions, int i) {
-        int u = positions[i][0] + step * x;
-        int v = positions[i][1] + step * y;
-
-        if (u < 1 || u > 8) { return false; }
-        if (v < 1 || v > 8) { return false; }
-
-        for (int j = 0; j < i; j++) {
-            int T = max(step, moves[j][2]);
-            for (int k = 0; k <= T; k++) {
-                int u1 = positions[j][0] + min(k, moves[j][2]) * moves[j][0];
-                int v1 = positions[j][1] + min(k, moves[j][2]) * moves[j][1];
-
-                int u2 = positions[i][0] + min(k, step) * x;
-                int v2 = positions[i][1] + min(k, step) * y;
-
-                if (u1 == u2 && v1 == v2) { return false; }
-            }
-        }
-
-        return true;
-    }
-
-    int countCombinations(vector<string> &pieces,
-                          vector<vector<int>> &positions, int i = 0) {
-        if (i == pieces.size()) { return 1; }
-
-        vector<pair<int, int>> *piece_moves;
-        if (pieces[i] == "rook") {
-            piece_moves = &rook_moves;
-        } else if (pieces[i] == "bishop") {
-            piece_moves = &bishop_moves;
-        } else {
-            piece_moves = &queen_moves;
-        }
-
-        int ans = 0;
-        if (check(0, 0, 0, positions, i)) {
-            moves.push_back({0, 0, 0});
-            ans += countCombinations(pieces, positions, i + 1);
-            moves.pop_back();
-        }
-        for (auto [x, y] : *piece_moves) {
-            for (int step = 1; step <= 8; step++) {
-                if (check(x, y, step, positions, i)) {
-                    moves.push_back({x, y, step});
-                    ans += countCombinations(pieces, positions, i + 1);
-                    moves.pop_back();
-                }
-            }
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            ans[i] = end(potions) - lower_bound(begin(potions), end(potions),
+                                                (double)success / spells[i]);
         }
         return ans;
     }
