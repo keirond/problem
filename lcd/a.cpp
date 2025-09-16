@@ -178,65 +178,60 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
+    vector<vector<int>> moves;
     vector<pair<int, int>> rook_moves = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
     vector<pair<int, int>> bishop_moves = {{-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
     vector<pair<int, int>> queen_moves = {{-1, 0},  {0, -1}, {1, 0},  {0, 1},
                                           {-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
 
     bool check(int x, int y, int step, vector<vector<int>> &positions, int i) {
-        if (positions[i][0] + step * x < 1) { return false; }
-        if (positions[i][0] + step * x > 8) { return false; }
+        int u = positions[i][0] + step * x;
+        int v = positions[i][1] + step * y;
 
-        if (positions[i][1] + step * y < 1) { return false; }
-        if (positions[i][1] + step * y > 8) { return false; }
+        if (u < 1 || u > 8) { return false; }
+        if (v < 1 || v > 8) { return false; }
 
         for (int j = 0; j < i; j++) {
-            for (int k = 1; k <= min(step, moves[j][2]); k++) {
-                if (positions[j][0] + k * moves[j][0] ==
-                            positions[i][0] + k * x &&
-                    positions[j][1] + k * moves[j][1] ==
-                            positions[i][1] + k * y) {
-                    return false;
-                }
+            int T = max(step, moves[j][2]);
+            for (int k = 0; k <= T; k++) {
+                int u1 = positions[j][0] + min(k, moves[j][2]) * moves[j][0];
+                int v1 = positions[j][1] + min(k, moves[j][2]) * moves[j][1];
+
+                int u2 = positions[i][0] + min(k, step) * x;
+                int v2 = positions[i][1] + min(k, step) * y;
+
+                if (u1 == u2 && v1 == v2) { return false; }
             }
         }
 
         return true;
     }
 
-    vector<vector<int>> moves;
     int countCombinations(vector<string> &pieces,
                           vector<vector<int>> &positions, int i = 0) {
         if (i == pieces.size()) { return 1; }
-        int ans = 1;
+
+        vector<pair<int, int>> *piece_moves;
         if (pieces[i] == "rook") {
-            for (auto [x, y] : rook_moves) {
-                int step = 1;
-                while (check(x, y, step, positions, i)) {
-                    moves.push_back({x, y, step});
-                    ans *= countCombinations(pieces, positions, i + 1);
-                    moves.pop_back();
-                    step++;
-                }
-            }
+            piece_moves = &rook_moves;
         } else if (pieces[i] == "bishop") {
-            for (auto [x, y] : bishop_moves) {
-                int step = 1;
-                while (check(x, y, step, positions, i)) {
-                    moves.push_back({x, y, step});
-                    ans *= countCombinations(pieces, positions, i + 1);
-                    moves.pop_back();
-                    step++;
-                }
-            }
+            piece_moves = &bishop_moves;
         } else {
-            for (auto [x, y] : bishop_moves) {
-                int step = 1;
-                while (check(x, y, step, positions, i)) {
+            piece_moves = &queen_moves;
+        }
+
+        int ans = 0;
+        if (check(0, 0, 0, positions, i)) {
+            moves.push_back({0, 0, 0});
+            ans += countCombinations(pieces, positions, i + 1);
+            moves.pop_back();
+        }
+        for (auto [x, y] : *piece_moves) {
+            for (int step = 1; step <= 8; step++) {
+                if (check(x, y, step, positions, i)) {
                     moves.push_back({x, y, step});
-                    ans *= countCombinations(pieces, positions, i + 1);
+                    ans += countCombinations(pieces, positions, i + 1);
                     moves.pop_back();
-                    step++;
                 }
             }
         }
@@ -247,7 +242,7 @@ public:
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v=0;
+    int v = 0;
     perform(Solution(), &Solution::countCombinations, strs, grid, v);
 }
 
