@@ -178,13 +178,18 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minStartValue(vector<int> &nums) {
+    vector<int> minBitwiseArray(vector<int> &nums) {
         int n = nums.size();
-        long long sm = 0, ans = 1;
-        for (int d : nums) {
-            sm += d;
-            long long t = max(1LL, 1LL - sm);
-            ans = max(ans, t);
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            if (!(nums[i] & 1)) {
+                ans[i] = -1;
+            } else {
+                int toggle_num = ~nums[i];
+                int t = toggle_num & -toggle_num;
+                t >>= 1;
+                ans[i] = nums[i] & ~t;
+            }
         }
         return ans;
     }
