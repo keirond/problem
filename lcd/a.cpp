@@ -178,20 +178,13 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    int maxSum(vector<vector<int>> &grid) {
-        int n = grid.size(), m = grid[0].size();
-        long long ans = LLONG_MIN;
-        for (int i = 3; i < n; i++) {
-            for (int j = 3; j < m; j++) {
-                long long temp = 0;
-                for (int i1 = 0; i1 < 3; i1++) {
-                    for (int i2 = 0; i2 < 3; i2++) {
-                        if (i1 == 1 && (i2 == 0 || i2 == 2)) { continue; }
-                        temp += grid[i - i1][j - i2];
-                    }
-                }
-                ans = max(ans, temp);
-            }
+    int minStartValue(vector<int> &nums) {
+        int n = nums.size();
+        long long sm = 0, ans = 1;
+        for (int d : nums) {
+            sm += d;
+            long long t = max(1LL, 1LL - sm);
+            ans = max(ans, t);
         }
         return ans;
     }
