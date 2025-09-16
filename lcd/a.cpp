@@ -178,25 +178,34 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<int> successfulPairs(vector<int> &spells, vector<int> &potions,
-                                long long success) {
-        int n = spells.size();
-        sort(begin(potions), end(potions));
-
-        vector<int> ans(n);
+    int jobScheduling(vector<int> &startTime, vector<int> &endTime,
+                      vector<int> &profit) {
+        int n = startTime.size();
+        vector<vector<int>> comb(n);
         for (int i = 0; i < n; i++) {
-            ans[i] = end(potions) - lower_bound(begin(potions), end(potions),
-                                                (double)success / spells[i]);
+            comb[i] = {startTime[i], endTime[i], profit[i]};
         }
-        return ans;
+
+        sort(begin(comb), end(comb));
+
+        vector<int> f(n);
+        for (int i = n - 1; i >= 0; i--) {
+            f[i] = comb[i][2];
+            if (i + 1 < n) { f[i] = max(f[i], f[i + 1]); }
+            auto it = lower_bound(begin(comb), end(comb),
+                                  vector<int>{comb[i][1], INT_MIN, INT_MIN}) -
+                      begin(comb);
+            if (it < n) { f[i] = max(f[i], f[it] + comb[i][2]); }
+        }
+        return f[0];
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v = 0;
-    perform(Solution(), &Solution::countCombinations, strs, grid, v);
+    vector<int> n1, n2, n3;
+    perform(Solution(), &Solution::jobScheduling, n1, n2, n3);
 }
 
 // **************************************************************************
