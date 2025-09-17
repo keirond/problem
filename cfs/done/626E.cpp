@@ -36,7 +36,8 @@ void solve(int test_case [[maybe_unused]]) {
         while (r - l > 3) {
             int m1 = l + (r - l) / 3;
             int m2 = r - (r - l) / 3;
-            double t1 = calc(m1), t2 = calc(m2);
+            double t1 = calc(m1);
+            double t2 = calc(m2);
             if (t1 < t2) {
                 l = m1 + 1;
             } else {
@@ -47,7 +48,7 @@ void solve(int test_case [[maybe_unused]]) {
         double t1 = calc(best);
         for (int i = l; i <= r; i++) {
             double t2 = calc(i);
-            if (t2 > t1) { t1 = t2, best = i; }
+            if (t2 > t1) { best = i, t1 = t2; }
         }
         if (t1 > mx) { mx = t1, info = {i, i, best}; }
     }
@@ -62,7 +63,8 @@ void solve(int test_case [[maybe_unused]]) {
         while (r - l > 3) {
             int m1 = l + (r - l) / 3;
             int m2 = r - (r - l) / 3;
-            double t1 = calc(m1), t2 = calc(m2);
+            double t1 = calc(m1);
+            double t2 = calc(m2);
             if (t1 < t2) {
                 l = m1 + 1;
             } else {
@@ -73,7 +75,7 @@ void solve(int test_case [[maybe_unused]]) {
         double t1 = calc(best);
         for (int i = l; i <= r; i++) {
             double t2 = calc(i);
-            if (t2 > t1) { t1 = t2, best = i; }
+            if (t2 > t1) { best = i, t1 = t2; }
         }
         if (t1 > mx) { mx = t1, info = {i - 1, i, best}; }
     }
