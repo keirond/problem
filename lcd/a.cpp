@@ -180,14 +180,22 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    double findMaxAverage(vector<int> &nums, int k) {
+    long long maxSum(vector<int> &nums, int m, int k) {
         int n = nums.size();
-        double sum = 0;
-        for (int i = 0; i < k; i++) { sum += nums[i]; }
-        double ans = sum / k;
+        unordered_map<int, int> mp;
+        int cnt = 0;
+        long long sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += nums[i];
+            if (!mp[nums[i]]++) { cnt++; }
+        }
+        long long ans = 0;
+        if (cnt >= m) { ans = max(ans, sum); }
         for (int i = k; i < n; i++) {
             sum += nums[i] - nums[i - k];
-            ans = max(ans, sum / k);
+            if (!mp[nums[i]]++) { cnt++; }
+            if (!--mp[nums[i - k]]) { cnt--; }
+            if (cnt >= m) { ans = max(ans, sum); }
         }
         return ans;
     }
@@ -196,7 +204,8 @@ public:
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::threeSumMulti, nums, v);
+    int v1, v2;
+    perform(Solution(), &Solution::maxSum, nums, v1, v2);
 }
 
 // **************************************************************************
