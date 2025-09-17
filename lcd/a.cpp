@@ -180,14 +180,14 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int threeSumMulti(vector<int> &arr, int target) {
-        int mod = 1e9 + 7;
-        int n = arr.size();
-        unordered_map<int, int> mp;
-        long long ans = 0;
-        for (int i = 0; i < n; i++) {
-            ans = (ans + mp[target - arr[i]]) % mod;
-            for (int j = 0; j < i; j++) { mp[arr[i] + arr[j]]++; }
+    double findMaxAverage(vector<int> &nums, int k) {
+        int n = nums.size();
+        double sum = 0;
+        for (int i = 0; i < k; i++) { sum += nums[i]; }
+        double ans = sum / k;
+        for (int i = k; i < n; i++) {
+            sum += nums[i] - nums[i - k];
+            ans = max(ans, sum / k);
         }
         return ans;
     }
