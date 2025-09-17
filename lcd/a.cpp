@@ -180,22 +180,34 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long maxSum(vector<int> &nums, int m, int k) {
-        int n = nums.size();
-        unordered_map<int, int> mp;
-        int cnt = 0;
-        long long sum = 0;
-        for (int i = 0; i < k; i++) {
-            sum += nums[i];
-            if (!mp[nums[i]]++) { cnt++; }
-        }
-        long long ans = 0;
-        if (cnt >= m) { ans = max(ans, sum); }
-        for (int i = k; i < n; i++) {
-            sum += nums[i] - nums[i - k];
-            if (!mp[nums[i]]++) { cnt++; }
-            if (!--mp[nums[i - k]]) { cnt--; }
-            if (cnt >= m) { ans = max(ans, sum); }
+    vector<int> recoverArray(int n, vector<int> &sums) {
+        sort(begin(sums), end(sums));
+
+        vector<int> ans;
+
+        while (n--) {
+            int diff = sums[1] - sums[0];
+            unordered_map<int, int> mp;
+            bool flag = false;
+            vector<int> s1, s2;
+            for (int d : sums) {
+                if (mp[d - diff]) {
+                    s2.push_back(d);
+                    mp[d - diff]--;
+                    if (d == 0) { flag = 1; }
+                } else {
+                    s1.push_back(d);
+                    mp[d]++;
+                    if (d == 0) { flag = 0; }
+                }
+            }
+            if (flag) {
+                ans.push_back(-diff);
+                sums = s2;
+            } else {
+                ans.push_back(diff);
+                sums = s1;
+            }
         }
         return ans;
     }
@@ -204,8 +216,7 @@ public:
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v1, v2;
-    perform(Solution(), &Solution::maxSum, nums, v1, v2);
+    perform(Solution(), &Solution::recoverArray, v, nums);
 }
 
 // **************************************************************************
