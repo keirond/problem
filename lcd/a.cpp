@@ -160,14 +160,16 @@ char c [[maybe_unused]], ch [[maybe_unused]];
 string s [[maybe_unused]], str [[maybe_unused]];
 
 template <typename Obj, typename MemFn, typename... Args>
-void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
+void perform(Obj &&obj, MemFn memfn, Args &&...args) {
     __read(args...);
-    if constexpr (std::is_void_v<decltype((std::forward<Obj>(obj).*memfn)(
+
+    if constexpr (std::is_void_v<decltype(std::invoke(
+                          memfn, std::forward<Obj>(obj),
                           std::forward<Args>(args)...))>) {
-        (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+        std::invoke(memfn, std::forward<Obj>(obj), std::forward<Args>(args)...);
     } else {
-        auto result =
-                (std::forward<Obj>(obj).*memfn)(std::forward<Args>(args)...);
+        auto result = std::invoke(memfn, std::forward<Obj>(obj),
+                                  std::forward<Args>(args)...);
         __info(result);
         cerr << nl;
     }
@@ -178,17 +180,14 @@ void perform(Obj &&obj, MemFn &&memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<bool> prefixesDivBy5(vector<int> &nums) {
-        int n = nums.size();
-        vector<bool> ans(n);
-        int prev = 0;
+    int threeSumMulti(vector<int> &arr, int target) {
+        int mod = 1e9 + 7;
+        int n = arr.size();
+        unordered_map<int, int> mp;
+        long long ans = 0;
         for (int i = 0; i < n; i++) {
-            prev = (prev * 2 + nums[i]) % 10;
-            if (prev % 5 == 0) {
-                ans[i] = true;
-            } else {
-                ans[i] = false;
-            }
+            ans = (ans + mp[target - arr[i]]) % mod;
+            for (int j = 0; j < i; j++) { mp[arr[i] + arr[j]]++; }
         }
         return ans;
     }
@@ -197,8 +196,7 @@ public:
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    vector<int> n1, n2, n3;
-    perform(Solution(), &Solution::jobScheduling, n1, n2, n3);
+    perform(Solution(), &Solution::threeSumMulti, nums, v);
 }
 
 // **************************************************************************
