@@ -179,16 +179,17 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 class Solution {
 public:
-    int minimumOperations(vector<vector<int>>& grid) {
-        int n=grid.size();
-        int m=grid[0].size();
 
-        int ans=0;
-        for(int j=0; j<m; j++) {
-            for(int i=1; i<n; i++) {
-                int t=min(grid[i-1][j]+1, grid[i][j]);
+    int minimumOperations(vector<vector<int>> &grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+
+        int ans = 0;
+        for (int j = 0; j < m; j++) {
+            for (int i = 1; i < n; i++) {
+                int t = min(grid[i - 1][j] + 1, grid[i][j]);
                 ans += grid[i][j] - t;
-                grid[i][j]=t;
+                grid[i][j] = t;
             }
         }
         return ans;
