@@ -183,29 +183,26 @@ public:
     int mod = 1e9 + 7;
     vector<vector<long long>> tr;
 
-    void module(long long &t) {
-        t %= mod;
-        t = (t + mod) % mod;
-    }
-
-    vector<long long> merge(vector<long long> l, vector<long long> r) {
-        vector<long long> temp;
+    vector<long long> merge(vector<long long> &l, vector<long long> &r) {
+        vector<long long> temp(4);
         temp[0] = max(max(l[0] + r[2], l[1] + r[0]), l[1] + r[2]);
         temp[1] = max(max(l[0] + r[3], l[1] + r[1]), l[1] + r[3]);
         temp[2] = max(max(l[2] + r[2], l[3] + r[0]), l[3] + r[2]);
         temp[3] = max(max(l[2] + r[3], l[3] + r[1]), l[3] + r[3]);
-        for (long long &d : temp) { module(d); }
         return temp;
     }
 
     void update(int node, int l, int r, int i, int v) {
         if (l == r) {
-            tr[l][0] = v;
+            tr[node][0] = v;
             return;
         }
         int m = l + (r - l >> 1);
-        update(node << 1, l, m, i, v);
-        update(node << 1 | 1, m + 1, r, i, v);
+        if (i <= m) {
+            update(node << 1, l, m, i, v);
+        } else {
+            update(node << 1 | 1, m + 1, r, i, v);
+        }
         tr[node] = merge(tr[node << 1], tr[node << 1 | 1]);
     }
 
@@ -224,16 +221,15 @@ public:
         int mod = 1e9 + 7;
         int n = nums.size();
         tr.assign(n * 4, vector<long long>(4));
-
         for (int i = 0; i < n; i++) { update(1, 0, n - 1, i, nums[i]); }
 
         int m = queries.size();
         long long ans = 0;
         for (int i = 0; i < m; i++) {
-            nums[queries[i][0]] = queries[i][1];
             update(1, 0, n - 1, queries[i][0], queries[i][1]);
             auto t = query(1, 0, n - 1, 0, n - 1);
             ans = (ans + *max_element(begin(t), end(t))) % mod;
+            ans = (ans + mod) % mod;
         }
         return ans;
     }
