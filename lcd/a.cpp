@@ -179,57 +179,17 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 class Solution {
 public:
+    int minimumOperations(vector<vector<int>>& grid) {
+        int n=grid.size();
+        int m=grid[0].size();
 
-    int mod = 1e9 + 7;
-    vector<vector<long long>> tr;
-
-    vector<long long> merge(vector<long long> &l, vector<long long> &r) {
-        vector<long long> temp(4);
-        temp[0] = max(max(l[0] + r[2], l[1] + r[0]), l[1] + r[2]);
-        temp[1] = max(max(l[0] + r[3], l[1] + r[1]), l[1] + r[3]);
-        temp[2] = max(max(l[2] + r[2], l[3] + r[0]), l[3] + r[2]);
-        temp[3] = max(max(l[2] + r[3], l[3] + r[1]), l[3] + r[3]);
-        return temp;
-    }
-
-    void update(int node, int l, int r, int i, int v) {
-        if (l == r) {
-            tr[node][0] = v;
-            return;
-        }
-        int m = l + (r - l >> 1);
-        if (i <= m) {
-            update(node << 1, l, m, i, v);
-        } else {
-            update(node << 1 | 1, m + 1, r, i, v);
-        }
-        tr[node] = merge(tr[node << 1], tr[node << 1 | 1]);
-    }
-
-    vector<long long> query(int node, int l, int r, int ql, int qr) {
-        if (ql > r || qr < l) { return {}; }
-        if (ql <= l && r <= qr) { return tr[node]; }
-        int m = l + (r - l >> 1);
-        auto left = query(node << 1, l, m, ql, qr);
-        auto right = query(node << 1 | 1, m + 1, r, ql, qr);
-        if (left.empty()) { return right; }
-        if (right.empty()) { return left; }
-        return merge(left, right);
-    }
-
-    int maximumSumSubsequence(vector<int> &nums, vector<vector<int>> &queries) {
-        int mod = 1e9 + 7;
-        int n = nums.size();
-        tr.assign(n * 4, vector<long long>(4));
-        for (int i = 0; i < n; i++) { update(1, 0, n - 1, i, nums[i]); }
-
-        int m = queries.size();
-        long long ans = 0;
-        for (int i = 0; i < m; i++) {
-            update(1, 0, n - 1, queries[i][0], queries[i][1]);
-            auto t = query(1, 0, n - 1, 0, n - 1);
-            ans = (ans + *max_element(begin(t), end(t))) % mod;
-            ans = (ans + mod) % mod;
+        int ans=0;
+        for(int j=0; j<m; j++) {
+            for(int i=1; i<n; i++) {
+                int t=min(grid[i-1][j]+1, grid[i][j]);
+                ans += grid[i][j] - t;
+                grid[i][j]=t;
+            }
         }
         return ans;
     }
