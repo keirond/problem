@@ -180,19 +180,22 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minimumOperations(vector<vector<int>> &grid) {
-        int n = grid.size();
-        int m = grid[0].size();
+    int minLengthAfterRemovals(vector<int> &nums) {
 
-        int ans = 0;
-        for (int j = 0; j < m; j++) {
-            for (int i = 1; i < n; i++) {
-                int t = min(grid[i - 1][j] + 1, grid[i][j]);
-                ans += grid[i][j] - t;
-                grid[i][j] = t;
+        int n = nums.size();
+        sort(begin(nums), end(nums));
+        int cnt = 1, max_cnt = 1;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] == nums[i - 1]) {
+                cnt++;
+            } else {
+                max_cnt = max(max_cnt, cnt);
+                cnt = 1;
             }
         }
-        return ans;
+        max_cnt = max(max_cnt, cnt);
+        if (max_cnt < n / 2) { return n % 2; }
+        return 2 * max_cnt - n;
     }
 };
 
