@@ -180,47 +180,40 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    using ll = long long;
-    ll maxPower(vector<int> &stations, int r, int k) {
-        int n = stations.size();
-        vector<ll> power(n);
-        for (int i = 0; i <= r && i < n; i++) { power[0] += stations[i]; }
-        for (int i = 1; i < n; i++) {
-            power[i] += power[i - 1];
-            if (i + r < n) { power[i] += stations[i + r]; }
-            if (i - r - 1 >= 0) { power[i] -= stations[i - r - 1]; }
+    vector<int> lcp(vector<int> &nums) {
+        int n = nums.size();
+        vector<int> ans(n);
+        for (int i = 1, j = 0; i < n; i++) {
+            while (j > 0 && nums[i] != nums[j]) { j = ans[j - 1]; }
+            if (nums[i] == nums[j]) { j++; }
+            ans[i] = j;
         }
+        return ans;
+    }
 
-        ll lo = *min_element(begin(power), end(power));
-        ll hi = lo + k;
-
-        auto can = [&](ll m) -> bool {
-            vector<ll> diff(n + 1);
-            ll cur = 0;
-            int cnt = 0;
-            for (int i = 0; i < n; i++) {
-                cur += diff[i];
-                int need = m - power[i] - cur;
-                if (need > 0) {
-                    diff[i + 1] += need;
-                    int t = min(n, i + r + 1);
-                    diff[t] -= need;
-                    cnt += need;
-                    if (cnt > k) { break; }
+    using ll = long long;
+    bool canChoose(vector<vector<int>> &groups, vector<int> &nums) {
+        int n = nums.size();
+        int m = groups.size();
+        int ci = 0;
+        for (int i = 0; i < m; i++) {
+            int cm = groups[i].size();
+            vector<int> lcp_arr = lcp(groups[i]);
+            bool can = false;
+            for (int j = 0; ci < n; ci++) {
+                while (j > 0 && nums[ci] != groups[i][j]) {
+                    j = lcp_arr[j - 1];
+                }
+                if (nums[ci] == groups[i][j]) { j++; }
+                if (j == cm) {
+                    ci++;
+                    can = 1;
+                    break;
                 }
             }
-            return cnt <= k;
-        };
-
-        while (lo < hi) {
-            int mid = lo + (hi - lo + 1 >> 1);
-            if (can(mid)) {
-                lo = mid;
-            } else {
-                hi = mid - 1;
-            }
+            if (!can) { return false; }
         }
-        return lo;
+        return true;
     }
 };
 
