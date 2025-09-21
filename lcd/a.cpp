@@ -177,43 +177,41 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
 class Solution {
 public:
 
-    vector<int> lcp(vector<int> &nums) {
-        int n = nums.size();
-        vector<int> ans(n);
-        for (int i = 1, j = 0; i < n; i++) {
-            while (j > 0 && nums[i] != nums[j]) { j = ans[j - 1]; }
-            if (nums[i] == nums[j]) { j++; }
-            ans[i] = j;
+    int pairSum(ListNode *head) {
+        ListNode *slow = head, *fast = head;
+        while (fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+
+        ListNode *prev = nullptr, *curr = head, *next = head->next;
+        while (curr != slow) {
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+        }
+
+        int ans = INT_MIN;
+        while (slow && prev) {
+            ans = max(ans, slow->val + prev->val);
+            slow = slow->next;
+            prev = prev->next;
         }
         return ans;
-    }
-
-    using ll = long long;
-    bool canChoose(vector<vector<int>> &groups, vector<int> &nums) {
-        int n = nums.size();
-        int m = groups.size();
-        int ci = 0;
-        for (int i = 0; i < m; i++) {
-            int cm = groups[i].size();
-            vector<int> lcp_arr = lcp(groups[i]);
-            bool can = false;
-            for (int j = 0; ci < n; ci++) {
-                while (j > 0 && nums[ci] != groups[i][j]) {
-                    j = lcp_arr[j - 1];
-                }
-                if (nums[ci] == groups[i][j]) { j++; }
-                if (j == cm) {
-                    ci++;
-                    can = 1;
-                    break;
-                }
-            }
-            if (!can) { return false; }
-        }
-        return true;
     }
 };
 
