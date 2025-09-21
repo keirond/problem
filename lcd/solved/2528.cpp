@@ -37,7 +37,7 @@ public:
         };
 
         while (lo < hi) {
-            int mid = lo + (hi - lo + 1 >> 1);
+            int mid = lo + ((hi - lo + 1) >> 1);
             if (can(mid)) {
                 lo = mid;
             } else {
@@ -47,4 +47,3 @@ public:
         return lo;
     }
 };
-
