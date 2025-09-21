@@ -27,8 +27,8 @@ using vpii = vector<pii>;
 #define all(v) v.begin(), v.end()
 #define par(v, n) v.begin(), v.begin() + n
 
-#define loop(i, s, e, j) \
-	for (auto i = (s); ((j) > 0) ? (i <= (e)) : (i >= (e)); i += (j))
+#define loop(i, s, e, j)                                                       \
+    for (auto i = (s); ((j) > 0) ? (i <= (e)) : (i >= (e)); i += (j))
 #define iter(i, n) range(i, 0, n - 1, 1)
 #define each(i, arr) for (auto &i : (arr))
 
@@ -45,10 +45,10 @@ template <class T> using max_heap = priority_queue<T>;
 template <class T> using min_heap = priority_queue<T, vector<T>, greater<T>>;
 
 string to_upper(string a) {
-	return transform(a.begin(), a.end(), a.begin(), ::toupper), a;
+    return transform(a.begin(), a.end(), a.begin(), ::toupper), a;
 }
 string to_lower(string a) {
-	return transform(a.begin(), a.end(), a.begin(), ::tolower), a;
+    return transform(a.begin(), a.end(), a.begin(), ::tolower), a;
 }
 
 // --------------------------------------------------------------------------
@@ -73,36 +73,36 @@ void __info(const string &x) { cerr << '\"' << x << '\"'; }
 void __info(bool x) { cerr << (x ? "true" : "false"); }
 
 template <typename T> void __info(const T &x) {
-	int f = 0;
-	cerr << '{';
-	for (auto &i : x) cerr << (f++ ? ", " : ""), __info(i);
-	cerr << "}";
+    int f = 0;
+    cerr << '{';
+    for (auto &i : x) { cerr << (f++ ? ", " : ""), __info(i); }
+    cerr << "}";
 }
 
 template <typename T, typename V> void __info(const pair<T, V> &x) {
-	cerr << '{', __info(x.first), cerr << ", ", __info(x.second), cerr << '}';
+    cerr << '{', __info(x.first), cerr << ", ", __info(x.second), cerr << '}';
 }
 
 template <typename T, typename V, typename K>
 void __info(const tuple<T, V, K> &x) {
-	cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
-		cerr << ", ", __info(get<2>(x)), cerr << '}';
+    cerr << '{', __info(get<0>(x)), cerr << ", ", __info(get<1>(x)),
+            cerr << ", ", __info(get<2>(x)), cerr << '}';
 }
 
 void __print() { cerr << ']' << nl; }
 
 template <typename T, typename... V> void __print(T t, V... v) {
-	__info(t);
-	if (sizeof...(v)) cerr << ", ";
-	__print(v...);
+    __info(t);
+    if (sizeof...(v)) { cerr << ", "; }
+    __print(v...);
 }
 
 #ifdef INFO
 #define enable_info() cerr << "Enabling debug logging..." << nl;
-#define info(x...)                                                            \
-	cerr << "\e[91m" << __func__ << ":" << __LINE__ << " [" << #x << "] = ["; \
-	__print(x);                                                               \
-	cerr << "\e[39m";
+#define info(x...)                                                             \
+    cerr << "\e[91m" << __func__ << ":" << __LINE__ << " [" << #x << "] = [";  \
+    __print(x);                                                                \
+    cerr << "\e[39m";
 #else
 #define enable_info()
 #define info(x...)
@@ -115,17 +115,17 @@ void solve(int test_case [[maybe_unused]]) {}
 // **************************************************************************
 
 int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0), cout.tie(0);
-	enable_info();
+    ios::sync_with_stdio(0);
+    cin.tie(0), cout.tie(0);
+    enable_info();
 
-	int test_cases = 1;
-	// cin >> test_cases;
-	while (test_cases--) {
-		solve(test_cases);
-		cout << flush;
-	}
-	return 0;
+    int test_cases = 1;
+    // cin >> test_cases;
+    while (test_cases--) {
+        solve(test_cases);
+        cout << flush;
+    }
+    return 0;
 }
 
 // **************************************************************************
