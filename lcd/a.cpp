@@ -180,29 +180,55 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minLengthAfterRemovals(vector<int> &nums) {
-
-        int n = nums.size();
-        sort(begin(nums), end(nums));
-        int cnt = 1, max_cnt = 1;
+    using ll = long long;
+    ll maxPower(vector<int> &stations, int r, int k) {
+        int n = stations.size();
+        vector<ll> power(n);
+        for (int i = 0; i <= r && i < n; i++) { power[0] += stations[i]; }
         for (int i = 1; i < n; i++) {
-            if (nums[i] == nums[i - 1]) {
-                cnt++;
+            power[i] += power[i - 1];
+            if (i + r < n) { power[i] += stations[i + r]; }
+            if (i - r - 1 >= 0) { power[i] -= stations[i - r - 1]; }
+        }
+
+        ll lo = *min_element(begin(power), end(power));
+        ll hi = lo + k;
+
+        auto can = [&](ll m) -> bool {
+            vector<ll> diff(n + 1);
+            ll cur = 0;
+            int cnt = 0;
+            for (int i = 0; i < n; i++) {
+                cur += diff[i];
+                int need = m - power[i] - cur;
+                if (need > 0) {
+                    diff[i + 1] += need;
+                    int t = min(n, i + r + 1);
+                    diff[t] -= need;
+                    cnt += need;
+                    if (cnt > k) { break; }
+                }
+            }
+            return cnt <= k;
+        };
+
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1 >> 1);
+            if (can(mid)) {
+                lo = mid;
             } else {
-                max_cnt = max(max_cnt, cnt);
-                cnt = 1;
+                hi = mid - 1;
             }
         }
-        max_cnt = max(max_cnt, cnt);
-        if (max_cnt < n / 2) { return n % 2; }
-        return 2 * max_cnt - n;
+        return lo;
     }
 };
 
 // **************************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maximumSumSubsequence, nums, grid);
+    int v1, v2;
+    perform(Solution(), &Solution::maxPower, nums, v1, v2);
 }
 
 // **************************************************************************
