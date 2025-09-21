@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+set -e
+
+start="// * START ******************************************************************"
+end="// * END ********************************************************************"
+
+{
+	echo "#include <bits/stdc++.h>"
+	echo "using namespace std;"
+	awk -v s="$start" -v e="$end" '
+        $0 == s {flag=1; next}   # start line → turn on, skip it
+        $0 == e {flag=0; exit}   # end line → turn off, stop
+        flag                     # print lines only while inside
+    ' a.cpp
+} >"solved/$1.cpp"
