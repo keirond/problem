@@ -177,59 +177,36 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
- * right(right) {}
- * };
- */
-class FindElements {
-    TreeNode *root;
-
+class Solution {
 public:
 
-    FindElements(TreeNode *root) : root(root) { root->val = 0; }
+    using pdi = pair<double, int>;
+    vector<int> kthSmallestPrimeFraction(vector<int> &arr, int k) {
+        int n = arr.size();
+        sort(begin(arr), end(arr));
 
-    bool find(int target) {
-        if (target == 0) { return true; }
-        vector<int> direction;
-        while (target) {
-            target--;
-            direction.push_back(target & 1);
-            target >>= 1;
-        }
+        priority_queue<pdi, vector<pdi>, greater<pdi>> pq;
+        vector<int> cur(n);
 
-        TreeNode *cur = root;
-        for (int i = direction.size() - 1; i >= 0; i--) {
-            if (direction[i]) {
-                if (!cur->right) { return false; }
-                cur = cur->right;
-            } else {
-                if (!cur->left) { return false; }
-                cur = cur->left;
-            }
+        for (int i = 1; i < n; i++) { pq.emplace((double)1 / arr[i], i); }
+        pdi ans(0, 0);
+        while (k--) {
+            ans = pq.top();
+            pq.pop();
+            if (k == 0) { break; }
+            int j = ans.second;
+            int c = ++cur[j];
+            if (c < j) { pq.emplace((double)arr[c] / arr[j], j); }
         }
-        return true;
+        int j = ans.second;
+        return {arr[cur[j]], arr[j]};
     }
 };
-
-/**
- * Your FindElements object will be instantiated and called as such:
- * FindElements* obj = new FindElements(root);
- * bool param_1 = obj->find(target);
- */
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int v1, v2;
-    perform(Solution(), &Solution::maxPower, nums, v1, v2);
+    perform(Solution(), &Solution::kthSmallestPrimeFraction, nums, v);
 }
 
 // **************************************************************************
