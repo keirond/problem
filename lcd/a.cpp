@@ -180,48 +180,44 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<int> minimumTime(int n, vector<vector<int>> &edges,
-                            vector<int> &disappear) {
+    int maximalRectangle(vector<vector<char>> &matrix) {
+        int n = matrix.size();
+        int m = matrix[0].size();
 
-        vector<unordered_map<int, int>> adj(n);
-        for (auto &d : edges) {
-            if (!adj[d[0]].contains(d[1])) {
-                adj[d[0]][d[1]] = d[2];
-            } else {
-                adj[d[0]][d[1]] = min(adj[d[0]][d[1]], d[2]);
-            }
-            if (!adj[d[1]].contains(d[0])) {
-                adj[d[1]][d[0]] = d[2];
-            } else {
-                adj[d[1]][d[0]] = min(adj[d[1]][d[0]], d[2]);
-            }
-        }
-
-        vector<long long> f(n, LLONG_MAX);
-        priority_queue<pair<long long, int>, vector<pair<long long, int>>,
-                       greater<pair<long long, int>>>
-                pq;
-        f[0] = 0;
-        pq.emplace(0, 0);
-        while (!pq.empty()) {
-            auto [d, u] = pq.top();
-            pq.pop();
-            if (d >= disappear[u] || d > f[u]) { continue; }
-            for (auto [v, vw] : adj[u]) {
-                int w = d + vw;
-                if (w < disappear[v] && w < f[v]) {
-                    f[v] = w;
-                    pq.emplace(w, v);
+        long long ans = 0;
+        vector<deque<pair<int, int>>> f(m);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0, r = 0; j < m; j++) {
+                if (matrix[i][j] == '0') {
+                    int cw = 0;
+                    while (!f[j].empty()) {
+                        auto [h, w] = f[j].back();
+                        cw += w;
+                        ans = max(ans, 1LL * h * cw);
+                        f[j].pop_back();
+                    }
+                } else {
+                    r = max(j, r);
+                    while (r < m && matrix[i][r] == '1') { r++; }
+                    int ch = r - j, cw = 0;
+                    while (!f[j].empty() && f[j].back().first >= ch) {
+                        auto [h, w] = f[j].back();
+                        cw += w;
+                        ans = max(ans, 1LL * h * cw);
+                        f[j].pop_back();
+                    }
+                    f[j].push_back({ch, cw + 1});
                 }
             }
         }
 
-        vector<int> ans(n);
-        for (int i = 0; i < n; i++) {
-            if (f[i] == LLONG_MAX || f[i] >= disappear[i]) {
-                ans[i] = -1;
-            } else {
-                ans[i] = f[i];
+        for (int j = 0; j < m; j++) {
+            int cw = 0;
+            while (!f[j].empty()) {
+                auto [h, w] = f[j].back();
+                cw += w;
+                ans = max(ans, 1LL * h * cw);
+                f[j].pop_back();
             }
         }
         return ans;
@@ -231,7 +227,8 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::minimumTime, v, grid, arr);
+    vector<vector<char>> matrix;
+    perform(Solution(), &Solution::maximalRectangle, matrix);
 }
 
 // **************************************************************************
