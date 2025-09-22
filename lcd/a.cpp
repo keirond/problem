@@ -180,33 +180,58 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    using pdi = pair<double, int>;
-    vector<int> kthSmallestPrimeFraction(vector<int> &arr, int k) {
-        int n = arr.size();
-        sort(begin(arr), end(arr));
+    vector<int> minimumTime(int n, vector<vector<int>> &edges,
+                            vector<int> &disappear) {
 
-        priority_queue<pdi, vector<pdi>, greater<pdi>> pq;
-        vector<int> cur(n);
-
-        for (int i = 1; i < n; i++) { pq.emplace((double)1 / arr[i], i); }
-        pdi ans(0, 0);
-        while (k--) {
-            ans = pq.top();
-            pq.pop();
-            if (k == 0) { break; }
-            int j = ans.second;
-            int c = ++cur[j];
-            if (c < j) { pq.emplace((double)arr[c] / arr[j], j); }
+        vector<unordered_map<int, int>> adj(n);
+        for (auto &d : edges) {
+            if (!adj[d[0]].contains(d[1])) {
+                adj[d[0]][d[1]] = d[2];
+            } else {
+                adj[d[0]][d[1]] = min(adj[d[0]][d[1]], d[2]);
+            }
+            if (!adj[d[1]].contains(d[0])) {
+                adj[d[1]][d[0]] = d[2];
+            } else {
+                adj[d[1]][d[0]] = min(adj[d[1]][d[0]], d[2]);
+            }
         }
-        int j = ans.second;
-        return {arr[cur[j]], arr[j]};
+
+        vector<long long> f(n, LLONG_MAX);
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>,
+                       greater<pair<long long, int>>>
+                pq;
+        f[0] = 0;
+        pq.emplace(0, 0);
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (d >= disappear[u] || d > f[u]) { continue; }
+            for (auto [v, vw] : adj[u]) {
+                int w = d + vw;
+                if (w < disappear[v] && w < f[v]) {
+                    f[v] = w;
+                    pq.emplace(w, v);
+                }
+            }
+        }
+
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            if (f[i] == LLONG_MAX || f[i] >= disappear[i]) {
+                ans[i] = -1;
+            } else {
+                ans[i] = f[i];
+            }
+        }
+        return ans;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::kthSmallestPrimeFraction, nums, v);
+    perform(Solution(), &Solution::minimumTime, v, grid, arr);
 }
 
 // **************************************************************************
