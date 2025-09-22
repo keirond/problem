@@ -180,45 +180,59 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int maximalRectangle(vector<vector<char>> &matrix) {
-        int n = matrix.size();
-        int m = matrix[0].size();
+    int N = 1e6;
+    vector<int> spf;
+    vector<int> fact, ifact;
 
-        long long ans = 0;
-        vector<deque<pair<int, int>>> f(m);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0, r = 0; j < m; j++) {
-                if (matrix[i][j] == '0') {
-                    int cw = 0;
-                    while (!f[j].empty()) {
-                        auto [h, w] = f[j].back();
-                        cw += w;
-                        ans = max(ans, 1LL * h * cw);
-                        f[j].pop_back();
-                    }
-                } else {
-                    r = max(j, r);
-                    while (r < m && matrix[i][r] == '1') { r++; }
-                    int ch = r - j, cw = 0;
-                    while (!f[j].empty() && f[j].back().first >= ch) {
-                        auto [h, w] = f[j].back();
-                        cw += w;
-                        ans = max(ans, 1LL * h * cw);
-                        f[j].pop_back();
-                    }
-                    f[j].push_back({ch, cw + 1});
+    int egcd(int a, int b) {
+
+    }
+
+    void init() {
+        spf.resize(N + 1);
+        iota(begin(spf), end(spf), 0);
+
+        for (int i = 2; i <= N; i++) {
+            if (spf[i] == i) {
+                for (long long j = 1LL * i * i; j <= N; j += i) {
+                    if (spf[j] == j) { spf[j] = i; }
                 }
             }
         }
 
-        for (int j = 0; j < m; j++) {
-            int cw = 0;
-            while (!f[j].empty()) {
-                auto [h, w] = f[j].back();
-                cw += w;
-                ans = max(ans, 1LL * h * cw);
-                f[j].pop_back();
+        int mod = 1e9 + 7;
+        fact.resize(N + 1);
+        fact[1] = 1;
+        ifact.resize(N + 1);
+        for (int i = 2; i <= N; i++) { fact[i] = 1LL * fact[i - 1] * i % mod; }
+    }
+
+    int comb(int n, int k) {
+        int mod = 1e9 + 7;
+        return 1LL * fact[n] * ifact[n - k] % mod * ifact[k] % mod;
+    }
+    vector<int> waysToFillArray(vector<vector<int>> &queries) {
+        init();
+
+        int mod = 1e9 + 7;
+        int q = queries.size();
+        vector<int> ans(q);
+
+        for (int i = 0; i < q; i++) {
+            int n = queries[i][0], k = queries[i][1];
+            unordered_map<int, int> mp;
+            while (k != 1) {
+                mp[spf[k]]++;
+                k /= spf[k];
             }
+            long long cnt = 1;
+            for (auto [_, v] : mp) {
+                long long temp = 1;
+                for (int j = n; j < v + n; j++) { temp = temp * j; }
+                for (int j = 1; j <= v; j++) { temp /= j; }
+                cnt = (cnt * temp) % mod;
+            }
+            ans[i] = cnt;
         }
         return ans;
     }
@@ -227,8 +241,7 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    vector<vector<char>> matrix;
-    perform(Solution(), &Solution::maximalRectangle, matrix);
+    perform(Solution(), &Solution::waysToFillArray, grid);
 }
 
 // **************************************************************************
