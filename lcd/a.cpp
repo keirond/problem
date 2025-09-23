@@ -181,16 +181,16 @@ class Solution {
 public:
 
     bool hasSameDigits(string s) {
-        int N = 1e5 + 1;
         int n = s.size();
-        int t2 = 0, t5 = 0;
-        int ans1 = 0, ans2 = 0;
-        for (int i = 0; i < n - 1; i++) {
-            // 0 -> n-2
-            
-            ans1 = t * (s[i] - '0') % 10;
-            ans2 = t * (s[i + 1] - '0') % 10;
+        vector<int> nums(n);
+        for (int i = 0; i < n; i++) { nums[i] = s[i] - '0'; }
+        while (n > 2) {
+            for (int i = 0; i < n - 1; i++) {
+                nums[i] = (nums[i] + nums[i + 1]) % 10;
+            }
+            n--;
         }
+        return nums[0] == nums[1];
     }
 };
 
