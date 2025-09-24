@@ -177,31 +177,60 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-struct PrHash {
-    size_t operator()(const pair<int, int> &p) const {
-        return (hash<int>()(p.first) << 1) + hash<int>()(p.second);
-    }
-};
-
 class Solution {
 public:
 
-    long long interchangeableRectangles(vector<vector<int>> &rectangles) {
-        unordered_map<pair<int, int>, int, PrHash> mp;
-        for (auto &d : rectangles) {
-            int g = gcd(d[0], d[1]);
-            mp[make_pair(d[0] / g, d[1] / g)]++;
+    int N = 1e6 + 1;
+    vector<int> spf;
+    void init() {
+        spf.resize(N);
+        iota(begin(spf), end(spf), 0);
+        for (int i = 2; i < N; i++) {
+            if (spf[i] == i) {
+                for (long long j = 1LL * i * i; j < N; j += i) {
+                    if (spf[j] == j) { spf[j] = i; }
+                }
+            }
         }
-        long long ans = 0;
-        for (auto [_, v] : mp) { ans += 1LL * v * (v - 1) / 2; }
-        return ans;
+    }
+    int findValidSplit(vector<int> &nums) {
+        init();
+
+        unordered_map<int, int> mp;
+        for (int d : nums) {
+            while (d != 1) {
+                mp[spf[d]]++;
+                d /= spf[d];
+            }
+        }
+
+        int n = nums.size();
+        unordered_map<int, int> temp;
+        int cnt = 0;
+        for (int i = 0; i < n - 1; i++) {
+            int d = nums[i];
+            while (d != 1) {
+                if (temp.contains(spf[d])) {
+                    temp[spf[d]]--;
+                    mp[spf[d]]--;
+                    if (!temp[spf[d]]) { cnt--; }
+                } else if (mp[spf[d]]) {
+                    temp[spf[d]] = mp[spf[d]] - 1;
+                    cnt++;
+                    if (!temp[spf[d]]) { cnt--; }
+                }
+                d /= spf[d];
+            }
+            if (cnt == 0) { return i; }
+        }
+        return -1;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::smallestNumber, s, v);
+    perform(Solution(), &Solution::findValidSplit, nums);
 }
 
 // **************************************************************************
