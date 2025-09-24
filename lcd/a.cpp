@@ -180,57 +180,36 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int N = 1e6 + 1;
-    vector<int> spf;
-    void init() {
-        spf.resize(N);
-        iota(begin(spf), end(spf), 0);
-        for (int i = 2; i < N; i++) {
-            if (spf[i] == i) {
-                for (long long j = 1LL * i * i; j < N; j += i) {
-                    if (spf[j] == j) { spf[j] = i; }
-                }
-            }
+    long long makeSubKSumEqual(vector<int> &arr, int k) {
+        int n = arr.size();
+        vector<long long> sms(n);
+        for (int i = 0; i < k; i++) { sms[0] += arr[i]; }
+        for (int i = 1; i < n; i++) {
+            sms[i] = sms[i - 1] + arr[(i + k - 1) % n] - arr[i - 1];
         }
+        info(sms);
+        return 0;
     }
-    int findValidSplit(vector<int> &nums) {
-        init();
+};
 
-        unordered_map<int, int> mp;
-        for (int d : nums) {
-            while (d != 1) {
-                mp[spf[d]]++;
-                d /= spf[d];
-            }
-        }
+class Solution {
+public:
 
+    long long minimumOperations(vector<int> &nums, vector<int> &target) {
         int n = nums.size();
-        unordered_map<int, int> temp;
-        int cnt = 0;
-        for (int i = 0; i < n - 1; i++) {
-            int d = nums[i];
-            while (d != 1) {
-                if (temp.contains(spf[d])) {
-                    temp[spf[d]]--;
-                    mp[spf[d]]--;
-                    if (!temp[spf[d]]) { cnt--; }
-                } else if (mp[spf[d]]) {
-                    temp[spf[d]] = mp[spf[d]] - 1;
-                    cnt++;
-                    if (!temp[spf[d]]) { cnt--; }
-                }
-                d /= spf[d];
-            }
-            if (cnt == 0) { return i; }
+        bool up = true;
+        long long p1 = 0, p2 = 0;
+        long long ans = 0;
+        for (int i = 0; i < n; i++) { long long t = target[i] - nums[i];
+            
         }
-        return -1;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::findValidSplit, nums);
+    perform(Solution(), &Solution::makeSubKSumEqual, nums, v);
 }
 
 // **************************************************************************
