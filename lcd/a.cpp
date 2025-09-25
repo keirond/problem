@@ -192,20 +192,6 @@ public:
     }
 };
 
-class Solution {
-public:
-
-    long long minimumOperations(vector<int> &nums, vector<int> &target) {
-        int n = nums.size();
-        bool up = true;
-        long long p1 = 0, p2 = 0;
-        long long ans = 0;
-        for (int i = 0; i < n; i++) { long long t = target[i] - nums[i];
-            
-        }
-    }
-};
-
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
