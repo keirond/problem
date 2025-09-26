@@ -180,23 +180,22 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long makeSubKSumEqual(vector<int> &arr, int k) {
-        int n = arr.size();
-        int g = gcd(n, k);
-        long long ans = 0;
-        for (int i = 0; i < g; i++) {
-            vector<int> temp;
-            for (int j = i; j < n; j += g) { temp.push_back(arr[j]); }
-            sort(begin(temp), end(temp));
-
-            int m = temp.size();
-            int mid =
-                    (m % 2) ? temp[m / 2] : (temp[m / 2] + temp[m / 2 - 1]) / 2;
-            for (int i = 0; i < m; i++) {
-                ans += abs((long long)temp[i] - mid);
+    bool isSelfCrossing(vector<int> &d) {
+        int n = d.size();
+        for (int i = 0; i < n; i++) {
+            if (i >= 3 && d[i - 1] <= d[i - 3] && d[i] >= d[i - 2]) {
+                return true;
+            }
+            if (i >= 4 && d[i - 1] == d[i - 3] && d[i] + d[i - 4] >= d[i - 2]) {
+                return true;
+            }
+            if (i >= 5 && d[i - 2] >= d[i - 4] && d[i - 1] <= d[i - 3] &&
+                d[i - 1] + d[i - 5] >= d[i - 3] &&
+                d[i] + d[i - 4] >= d[i - 2]) {
+                return true;
             }
         }
-        return ans;
+        return false;
     }
 };
 
