@@ -180,22 +180,19 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    bool isSelfCrossing(vector<int> &d) {
-        int n = d.size();
+    int maxOperations(vector<int> &nums, int k) {
+        int n = nums.size();
+        unordered_map<int, int> mp;
+        int ans = 0;
         for (int i = 0; i < n; i++) {
-            if (i >= 3 && d[i - 1] <= d[i - 3] && d[i] >= d[i - 2]) {
-                return true;
-            }
-            if (i >= 4 && d[i - 1] == d[i - 3] && d[i] + d[i - 4] >= d[i - 2]) {
-                return true;
-            }
-            if (i >= 5 && d[i - 2] >= d[i - 4] && d[i - 1] <= d[i - 3] &&
-                d[i - 1] + d[i - 5] >= d[i - 3] &&
-                d[i] + d[i - 4] >= d[i - 2]) {
-                return true;
+            if (mp[k - nums[i]]) {
+                mp[k - nums[i]]--;
+                ans++;
+            } else {
+                mp[nums[i]]++;
             }
         }
-        return false;
+        return ans;
     }
 };
 
