@@ -180,39 +180,38 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    string getPermutation(int n, int k) {
-        vector<bool> ds(n);
-        int t = 1;
-        for (int i = 1; i <= n; i++) { t *= i; }
+    unordered_map<int, int> par;
 
-        auto get = [&](int x) {
-            int idx = 0;
-            for (int i = 0; i < n; i++) {
-                if (!ds[i]) {
-                    if (++idx == x) { return i + 1; }
-                }
+    int parent(int u) {
+        if (!par.contains(u) || par[u] == u) { return par[u] = u; }
+        return par[u] = parent(par[u]);
+    }
+
+    void unite(int u, int v) {
+        int x = parent(u), y = parent(v);
+        if (x == y) { return; }
+        if (x > y) { swap(x, y); }
+        par[y] = x;
+    }
+
+    int countComponents(vector<int> &nums, int threshold) {
+        int n = nums.size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = nums[i] * 2; j <= threshold; j += nums[i]) {
+                unite(j, nums[i]);
             }
-            return 1;
-        };
-
-        int m = n;
-        string ans;
-        while (m) {
-            t /= m--;
-            int d = (k - 1) / t;
-            int i = get(d + 1);
-            ans.push_back(i + '0');
-            ds[i - 1] = 1;
-            k -= d * t;
         }
-        return ans;
+        unordered_set<int> st;
+        for (int d : nums) { st.insert(parent(d)); }
+        return (int)st.size();
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::getPermutation, v, val);
+    perform(Solution(), &Solution::countComponents, nums, v);
 }
 
 // **************************************************************************
