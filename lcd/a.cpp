@@ -191,6 +191,13 @@ public:
             return false;
         }
         // ...
+        it = singly.lower_bound(startTime);
+        if (it != end(doubly) && it->first < endTime) {
+            int t = endTime;
+            endTime = it->first;
+            it->first = t;
+        }
+        return true;
     }
 };
 
