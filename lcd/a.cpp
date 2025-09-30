@@ -184,7 +184,14 @@ public:
     map<int, int> doubly;
     MyCalendarTwo() {}
 
-    bool book(int startTime, int endTime) {}
+    bool book(int startTime, int endTime) {
+        auto it = doubly.lower_bound(startTime);
+        if (it != end(doubly) && it->first < endTime) { return false; }
+        if (it != begin(doubly) && prev(it)->second > startTime) {
+            return false;
+        }
+        // ...
+    }
 };
 
 /**
