@@ -177,41 +177,26 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-class Solution {
+class MyCalendarTwo {
 public:
 
-    unordered_map<int, int> par;
+    map<int, int> singly;
+    map<int, int> doubly;
+    MyCalendarTwo() {}
 
-    int parent(int u) {
-        if (!par.contains(u) || par[u] == u) { return par[u] = u; }
-        return par[u] = parent(par[u]);
-    }
-
-    void unite(int u, int v) {
-        int x = parent(u), y = parent(v);
-        if (x == y) { return; }
-        if (x > y) { swap(x, y); }
-        par[y] = x;
-    }
-
-    int countComponents(vector<int> &nums, int threshold) {
-        int n = nums.size();
-
-        for (int i = 0; i < n; i++) {
-            for (int j = nums[i] * 2; j <= threshold; j += nums[i]) {
-                unite(j, nums[i]);
-            }
-        }
-        unordered_set<int> st;
-        for (int d : nums) { st.insert(parent(d)); }
-        return (int)st.size();
-    }
+    bool book(int startTime, int endTime) {}
 };
+
+/**
+ * Your MyCalendarTwo object will be instantiated and called as such:
+ * MyCalendarTwo* obj = new MyCalendarTwo();
+ * bool param_1 = obj->book(startTime,endTime);
+ */
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::countComponents, nums, v);
+    perform(Solution(), &Solution::reconstructQueue, grid);
 }
 
 // **************************************************************************
