@@ -177,35 +177,7 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-class MyCalendarTwo {
-public:
 
-    map<int, int> singly;
-    map<int, int> doubly;
-    MyCalendarTwo() {}
-
-    bool book(int startTime, int endTime) {
-        auto it = doubly.lower_bound(startTime);
-        if (it != end(doubly) && it->first < endTime) { return false; }
-        if (it != begin(doubly) && prev(it)->second > startTime) {
-            return false;
-        }
-        // ...
-        it = singly.lower_bound(startTime);
-        if (it != end(doubly) && it->first < endTime) {
-            int t = endTime;
-            endTime = it->first;
-            it->first = t;
-        }
-        return true;
-    }
-};
-
-/**
- * Your MyCalendarTwo object will be instantiated and called as such:
- * MyCalendarTwo* obj = new MyCalendarTwo();
- * bool param_1 = obj->book(startTime,endTime);
- */
 
 // * END ********************************************************************
 
