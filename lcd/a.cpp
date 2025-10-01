@@ -177,12 +177,20 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
+class Solution {
+public:
 
+    long long maxTotalValue(vector<int> &nums, int k) {
+        int min = *min_element(begin(nums), end(nums));
+        int max = *max_element(begin(nums), end(nums));
+        return 1LL * k * (max - min);
+    }
+};
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::reconstructQueue, grid);
+    perform(Solution(), &Solution::distinctPoints, s, v);
 }
 
 // **************************************************************************
