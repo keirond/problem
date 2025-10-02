@@ -153,9 +153,9 @@ vector<string> strs [[maybe_unused]];
 vector<vector<int>> grid [[maybe_unused]];
 vector<vector<string>> str_grid [[maybe_unused]];
 
-int v [[maybe_unused]], val [[maybe_unused]];
-long long l [[maybe_unused]], lg [[maybe_unused]];
-double d [[maybe_unused]], dd [[maybe_unused]];
+int v [[maybe_unused]];
+long long l [[maybe_unused]];
+double d [[maybe_unused]];
 char c [[maybe_unused]], ch [[maybe_unused]];
 string s [[maybe_unused]], str [[maybe_unused]];
 
@@ -177,15 +177,31 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-class Solution {
-public:
+int K, n;
+vector<vector<int>> tr; // tr[k][i] -> answer for range [i, i+2^k-1]
+vector<int> lg;
 
-    long long maxTotalValue(vector<int> &nums, int k) {
-        int min = *min_element(begin(nums), end(nums));
-        int max = *max_element(begin(nums), end(nums));
-        return 1LL * k * (max - min);
+void preprocess(vector<int> &nums) {
+    n = nums.size();
+    K = __lg(n) + 1;
+
+    lg.resize(n + 1);
+    lg[1] = 0;
+    for (int i = 2; i <= n; i++) { lg[i] = lg[i / 2] + 1; }
+
+    tr.assign(K, vector<int>(n));
+    for (int i = 0; i < n; i++) { tr[0][i] = nums[i]; }
+    for (int k = 1; k < K; k++) {
+        for (int i = 0; i + (1 << k) <= n; i++) {
+            tr[k][i] = min(tr[k - 1][i], tr[k - 1][i + (1 << (k - 1))]);
+        }
     }
-};
+}
+
+int query(int l, int r) {
+    int i = lg[r - l + 1];
+    return min(tr[i][l], tr[i][r - (1 << i) + 1]);
+}
 
 // * END ********************************************************************
 
