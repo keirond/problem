@@ -179,37 +179,19 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 class Solution {
 public:
+    int countStableSubsequences(vector<int>& nums) {
+        int mod=1e9+7;
+        int n=nums.size();
+        vector<long long> f{0, 0, 1, 0, 0}, nf;
+        for(int i=0; i<n; i++) {
+            nf.assign(5, 0);
+            if(nums[i]%2) {
+                nf[0] = f[1] + 1;
+                nf[1] = f[2] + 1;
+            } else {
 
-    using ll = long long;
-    vector<bool> subsequenceSumAfterCapping(vector<int> &nums, int k) {
-        int n = nums.size();
-        sort(begin(nums), end(nums));
-
-        vector<vector<bool>> f(k + 1, vector<bool>(n + 1));
-        for (int i = 0; i <= n; i++) { f[0][i] = 1; }
-
-        for (int i = 1; i <= k; i++) {
-            for (int j = 0; j < n; j++) {
-                f[i][j + 1] = f[i][j];
-                if (i >= nums[j]) {
-                    f[i][j + 1] = f[i][j + 1] || f[i - nums[j]][j];
-                }
             }
         }
-
-        vector<bool> ans(n);
-        for (int x = 0; x < n; x++) {
-            for (int j = 0; 1LL * j * (x + 1) <= k; j++) {
-                int t = upper_bound(begin(nums), end(nums), x + 1) -
-                        begin(nums);
-                if (j + t > n) { break; }
-                if (f[k - 1LL * j * (x + 1)][t]) {
-                    ans[x] = 1;
-                    break;
-                }
-            }
-        }
-        return ans;
     }
 };
 
