@@ -180,71 +180,43 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minSplitMerge(vector<int> &nums1, vector<int> &nums2) {
-        int n = nums1.size();
+    using ll = long long;
+    vector<bool> subsequenceSumAfterCapping(vector<int> &nums, int k) {
+        int n = nums.size();
+        sort(begin(nums), end(nums));
 
-        int k = 0;
-        unordered_map<int, int> mp;
-        for (int d : nums2) {
-            if (!mp.contains(d)) { mp[d] = (int)mp.size(); }
-            k = k * 10 + mp[d];
-        }
+        vector<vector<bool>> f(k + 1, vector<bool>(n + 1));
+        for (int i = 0; i <= n; i++) { f[0][i] = 1; }
 
-        int s = 0;
-        for (int d : nums1) { s = s * 10 + mp[d]; }
-
-        int ans = 0;
-        vector<bool> vt(1e7);
-        deque<int> dq, ndq;
-        dq.push_back(s);
-        vt[s] = 1;
-
-        while (!dq.empty()) {
-            ndq.clear();
-            for (int d : dq) {
-                if (d == k) { return ans; }
-                vector<int> temp(n);
-                for (int i = n - 1; i >= 0; i--) {
-                    temp[i] = d % 10;
-                    d /= 10;
-                }
-
-                for (int l = 0; l < n; l++) {
-                    for (int r = l + 1; r <= n; r++) {
-                        vector<int> left;
-                        for (int i = 0; i < l; i++) { left.push_back(temp[i]); }
-                        for (int i = r; i < n; i++) { left.push_back(temp[i]); }
-                        for (int i = 0; i <= left.size(); i++) {
-                            int nxt = 0;
-                            for (int j = 0; j < i; j++) {
-                                nxt = nxt * 10 + left[j];
-                            }
-                            for (int j = l; j < r; j++) {
-                                nxt = nxt * 10 + temp[j];
-                            }
-                            for (int j = i; j < left.size(); j++) {
-                                nxt = nxt * 10 + left[j];
-                            }
-                            if (!vt[nxt]) {
-                                vt[nxt] = 1;
-                                ndq.push_back(nxt);
-                            }
-                        }
-                    }
+        for (int i = 1; i <= k; i++) {
+            for (int j = 0; j < n; j++) {
+                f[i][j + 1] = f[i][j];
+                if (i >= nums[j]) {
+                    f[i][j + 1] = f[i][j + 1] || f[i - nums[j]][j];
                 }
             }
-            ans++;
-            dq = ndq;
         }
-        return -1;
+
+        vector<bool> ans(n);
+        for (int x = 0; x < n; x++) {
+            for (int j = 0; 1LL * j * (x + 1) <= k; j++) {
+                int t = upper_bound(begin(nums), end(nums), x + 1) -
+                        begin(nums);
+                if (j + t > n) { break; }
+                if (f[k - 1LL * j * (x + 1)][t]) {
+                    ans[x] = 1;
+                    break;
+                }
+            }
+        }
+        return ans;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    vector<int> nums1, nums2;
-    perform(Solution(), &Solution::minSplitMerge, nums1, nums2);
+    perform(Solution(), &Solution::subsequenceSumAfterCapping, nums, v);
 }
 
 // **************************************************************************
