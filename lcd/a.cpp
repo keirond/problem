@@ -204,6 +204,9 @@ public:
             }
         };
 
+        vector<vector<int>> mp{{1, 3}, {0, 2, 4}, {1, 5},
+                               {0, 4}, {1, 3, 5}, {2, 4}};
+
         while (!dq.empty()) {
             ndq.clear();
             for (int d : dq) {
@@ -215,32 +218,7 @@ public:
                     if (!temp[i]) { j = i; }
                     d /= 10;
                 }
-                if (j == 0) {
-                    convert(temp, 0, 1);
-                    convert(temp, 0, 3);
-                }
-                if (j == 1) {
-                    convert(temp, 1, 0);
-                    convert(temp, 1, 2);
-                    convert(temp, 1, 4);
-                }
-                if (j == 2) {
-                    convert(temp, 2, 1);
-                    convert(temp, 2, 5);
-                }
-                if (j == 3) {
-                    convert(temp, 3, 0);
-                    convert(temp, 3, 4);
-                }
-                if (j == 4) {
-                    convert(temp, 4, 1);
-                    convert(temp, 4, 3);
-                    convert(temp, 4, 5);
-                }
-                if (j == 5) {
-                    convert(temp, 5, 4);
-                    convert(temp, 5, 2);
-                }
+                for (int t : mp[j]) { convert(temp, j, t); }
             }
             dq = ndq;
             ans++;
