@@ -180,48 +180,61 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int slidingPuzzle(vector<vector<int>> &board) {
+    int minSplitMerge(vector<int> &nums1, vector<int> &nums2) {
+        int n = nums1.size();
+
         int k = 0;
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 3; j++) { k = k * 10 + board[i][j]; }
+        unordered_map<int, int> mp;
+        for (int d : nums2) {
+            if (!mp.contains(d)) { mp[d] = (int)mp.size(); }
+            k = k * 10 + mp[d];
         }
-        int s = 123450;
+
+        int s = 0;
+        for (int d : nums1) { s = s * 10 + mp[d]; }
 
         int ans = 0;
+        vector<bool> vt(1e7);
         deque<int> dq, ndq;
-        vector<int> vt(543211);
-        dq.push_back(k);
-        vt[k] = 1;
-
-        auto convert = [&](vector<int> &t, int i, int j) {
-            swap(t[i], t[j]);
-            int ans = 0;
-            for (int i = 0; i < 6; i++) { ans = ans * 10 + t[i]; }
-            swap(t[i], t[j]);
-            if (!vt[ans]) {
-                vt[ans] = 1;
-                ndq.push_back(ans);
-            }
-        };
-
-        vector<vector<int>> mp{{1, 3}, {0, 2, 4}, {1, 5},
-                               {0, 4}, {1, 3, 5}, {2, 4}};
+        dq.push_back(s);
+        vt[s] = 1;
 
         while (!dq.empty()) {
             ndq.clear();
             for (int d : dq) {
-                if (d == s) { return ans; }
-                vector<int> temp(6);
-                int j = 0;
-                for (int i = 5; i >= 0; i--) {
+                if (d == k) { return ans; }
+                vector<int> temp(n);
+                for (int i = n - 1; i >= 0; i--) {
                     temp[i] = d % 10;
-                    if (!temp[i]) { j = i; }
                     d /= 10;
                 }
-                for (int t : mp[j]) { convert(temp, j, t); }
+
+                for (int l = 0; l < n; l++) {
+                    for (int r = l + 1; r <= n; r++) {
+                        vector<int> left;
+                        for (int i = 0; i < l; i++) { left.push_back(temp[i]); }
+                        for (int i = r; i < n; i++) { left.push_back(temp[i]); }
+                        for (int i = 0; i <= left.size(); i++) {
+                            int nxt = 0;
+                            for (int j = 0; j < i; j++) {
+                                nxt = nxt * 10 + left[j];
+                            }
+                            for (int j = l; j < r; j++) {
+                                nxt = nxt * 10 + temp[j];
+                            }
+                            for (int j = i; j < left.size(); j++) {
+                                nxt = nxt * 10 + left[j];
+                            }
+                            if (!vt[nxt]) {
+                                vt[nxt] = 1;
+                                ndq.push_back(nxt);
+                            }
+                        }
+                    }
+                }
             }
-            dq = ndq;
             ans++;
+            dq = ndq;
         }
         return -1;
     }
@@ -230,7 +243,8 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::slidingPuzzle, grid);
+    vector<int> nums1, nums2;
+    perform(Solution(), &Solution::minSplitMerge, nums1, nums2);
 }
 
 // **************************************************************************
