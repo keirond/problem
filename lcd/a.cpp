@@ -180,24 +180,77 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int countStableSubsequences(vector<int> &nums) {
+    // n%2 == 0 => up -> up, down -> down
+    // n%2 == 1 => up -> down, down -> up
+    // f[0][up][i]
+    // f[0][down][i]
+    // f[1][up] = f[0][up][i][t] + f[0][down][t][j]
+    int call(int n, int l, int r, int i, bool up) {}
+
+    int zigZagArrays(int n, int l, int r) {
         int mod = 1e9 + 7;
-        int n = nums.size();
-        vector<long long> f{0, 0, 1, 0, 0}, nf;
-        for (int i = 0; i < n; i++) {
-            nf = f;
-            if (nums[i] % 2) {
-                nf[0] = (f[1] + nf[0]) % mod;
-                nf[1] = ((f[2] + f[3]) % mod + (f[4] + nf[1]) % mod) % mod;
-            } else {
-                nf[3] = ((f[0] + f[1]) % mod + (f[2] + nf[3]) % mod) % mod;
-                nf[4] = (f[3] + nf[4]) % mod;
-            }
-            f = nf;
+        int K = 5;
+        int m = r - l;
+        vector<vector<vector<vector<int>>>> f;
+        // f[k][i][up] is zzArray size 2^k up / down from i
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < i; j++) { f[0][0][i][j] = i - j - 1; }
+            for (int j = i + 1; j < m; j++) { f[0][1][i][j] = j - i - 1; }
         }
+        for (int i = 0; i < m; i++) {
+            for (int t = 0; t < i; t++) {
+                for (int j = t + 1; j < m; j++) {
+                    f[1][0][i][j] = f[0][0][i][t] + f[0][1][t][j];
+                }
+            }
+            for (int t = i + 1; t < m; t++) {
+                for (int j = 0; j < t; j++) {
+                    f[1][1][i][j] = f[0][1][i][t] + f[0][0][t][j];
+                }
+            }
+        }
+
+        for (int k = 2; k < K; k++) {
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < m; j++) {
+                    for (int t = 0; t < m; t++) {
+                        f[k][0][i][j] =
+                                (f[k - 1][0][i][t] + f[k - 1][0][t][j]) % mod;
+                        f[k][1][i][j] =
+                                (f[k - 1][1][i][t] + f[k - 1][1][t][j]) % mod;
+                    }
+                }
+            }
+        }
+
+        vector<long long> g1(m), g2(m);
+        if (n & 1) {
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < m; j++) {
+                    g1[i] = (g1[i] + f[0][1][i][j]) % mod;
+                    g2[i] = (g2[i] + f[0][0][i][j]) % mod;
+                }
+            }
+        }
+        for (int k = 1; k <= 4; k++) {
+            if (n & (1 << k)) {
+                vector<long long> ng1(m), ng2(m);
+                for (int i = 0; i < m; i++) {
+                    for (int j = 0; j < m; j++) {
+                        ng1[i] = (ng1[i] + 1LL * f[k][0][i][j] * g1[j] % mod) %
+                                 mod;
+                        ng2[i] = (ng2[i] + 1LL * f[k][1][i][j] * g2[j] % mod) %
+                                 mod;
+                    }
+                }
+                g1 = ng1, g2 = ng2;
+            }
+        }
+
         long long ans = 0;
-        for (int i = 0; i < 5; i++) {
-            if (i != 2) { ans = (ans + f[i]) % mod; }
+        for (int i = 0; i < m; i++) {
+            ans = (ans + g1[i]) % mod;
+            ans = (ans + g2[i]) % mod;
         }
         return ans;
     }
