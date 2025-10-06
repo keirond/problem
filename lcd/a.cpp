@@ -180,77 +180,17 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    // n%2 == 0 => up -> up, down -> down
-    // n%2 == 1 => up -> down, down -> up
-    // f[0][up][i]
-    // f[0][down][i]
-    // f[1][up] = f[0][up][i][t] + f[0][down][t][j]
-    int zigZagArrays(int n, int l, int r) {
-        int mod = 1e9 + 7;
-        int K = 31;
-        int m = r - l + 1;
-        vector<vector<vector<vector<int>>>> f(
-                K, vector<vector<vector<int>>>(
-                           2, vector<vector<int>>(m, vector<int>(m))));
-        // f[k][i][up] is zzArray size 2^k up / down from i
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < i; j++) { f[0][0][i][j] = 1; }
-            for (int j = i + 1; j < m; j++) { f[0][1][i][j] = 1; }
-        }
-
-        for (int i = 0; i < m; i++) {
-            for (int t = 0; t < i; t++) {
-                for (int j = t + 1; j < m; j++) {
-                    f[1][0][i][j] =
-                            (f[1][0][i][j] +
-                             1LL * f[0][0][i][t] * f[0][1][t][j] % mod) %
-                            mod;
-                }
-            }
-            for (int t = i + 1; t < m; t++) {
-                for (int j = 0; j < t; j++) {
-                    f[1][1][i][j] =
-                            (f[1][1][i][j] +
-                             1LL * f[0][1][i][t] * f[0][0][t][j] % mod) %
-                            mod;
-                }
+    int alternatingSum(vector<int> &nums) {
+        int n = nums.size();
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2) {
+                ans -= nums[i];
+            } else {
+                ans += nums[i];
             }
         }
-
-        for (int k = 2; k < K; k++) {
-            for (int i = 0; i < m; i++) {
-                for (int j = 0; j < m; j++) {
-                    for (int t = 0; t < m; t++) {
-                        f[k][0][i][j] = (f[k][0][i][j] +
-                                         1LL * f[k - 1][0][i][t] *
-                                                 f[k - 1][0][t][j] % mod) %
-                                        mod;
-                        f[k][1][i][j] = (f[k][1][i][j] +
-                                         1LL * f[k - 1][1][i][t] *
-                                                 f[k - 1][1][t][j] % mod) %
-                                        mod;
-                    }
-                }
-            }
-        }
-
-        vector<long long> g1(m, 1), g2(m, 1);
-        for (int k = 0; k < K; k++) {
-            if (n & (1 << k)) {
-                vector<long long> ng1(m), ng2(m);
-                for (int i = 0; i < m; i++) {
-                    for (int j = 0; j < m; j++) {
-                        ng1[i] = (ng1[i] + 1LL * f[k][0][i][j] * g1[j] % mod) %
-                                 mod;
-                        ng2[i] = (ng2[i] + 1LL * f[k][1][i][j] * g2[j] % mod) %
-                                 mod;
-                    }
-                }
-                g1 = ng1, g2 = ng2;
-            }
-        }
-
-        return (g1.back() + g2.front()) % mod;
+        return ans;
     }
 };
 
