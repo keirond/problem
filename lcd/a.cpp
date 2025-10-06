@@ -180,20 +180,56 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int longestSubsequence(vector<int> &nums) {
-        int n = nums.size();
-        int ans = 0;
-        for (int k = 0; k < 31; k++) {
-            int t1 = 0, t2 = 0;
-            for (int i = 0; i < n; i++) {
-                if ((nums[i] >> k) & 1) {
-                    t1 ^= 1;
-                    t2++;
+    string removeSubstring(string s, int k) {
+        s.push_back('.');
+        int n = s.size();
+        deque<int> freq;
+        int t1 = 0;
+        char t2 = '(';
+        for (int i = 0; i < n; i++) {
+            if (s[i] == t2) {
+                t1++;
+            } else {
+                t2 = s[i];
+                freq.push_back(t1);
+                t1 = 1;
+            }
+            if (freq.size() % 2) { continue; }
+            while (!freq.empty()) {
+                int v = freq.back();
+                freq.pop_back();
+                int u = freq.back();
+                freq.pop_back();
+                while (u >= k && v >= k) {
+                    u -= k;
+                    v -= k;
+                }
+                if (freq.empty()) {
+                    freq.push_back(u);
+                    freq.push_back(v);
+                    break;
+                } else if (freq.back() == 0) {
+                    freq.pop_back();
+                    freq.back() += u;
+                    freq.push_back(v);
+                } else if (u) {
+                    freq.push_back(u);
+                    freq.push_back(v);
+                    break;
+                } else {
+                    freq.back() += v;
                 }
             }
-            if (t2) {
-                if (t1) { return n; }
-                ans = n - 1;
+        }
+
+        string ans;
+        for (int i = 0; i < freq.size(); i++) {
+            for (int j = 0; j < freq[i]; j++) {
+                if (i % 2) {
+                    ans.push_back(')');
+                } else {
+                    ans.push_back('(');
+                }
             }
         }
         return ans;
@@ -203,8 +239,7 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    int n, l, r;
-    perform(Solution(), &Solution::zigZagArrays, n, l, r);
+    perform(Solution(), &Solution::removeSubstring, s, v);
 }
 
 // **************************************************************************
