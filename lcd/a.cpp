@@ -180,14 +180,20 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int alternatingSum(vector<int> &nums) {
+    int longestSubsequence(vector<int> &nums) {
         int n = nums.size();
-        long long ans = 0;
-        for (int i = 0; i < n; i++) {
-            if (i % 2) {
-                ans -= nums[i];
-            } else {
-                ans += nums[i];
+        int ans = 0;
+        for (int k = 0; k < 31; k++) {
+            int t1 = 0, t2 = 0;
+            for (int i = 0; i < n; i++) {
+                if ((nums[i] >> k) & 1) {
+                    t1 ^= 1;
+                    t2++;
+                }
+            }
+            if (t2) {
+                if (t1) { return n; }
+                ans = n - 1;
             }
         }
         return ans;
