@@ -180,58 +180,31 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    string removeSubstring(string s, int k) {
-        s.push_back('.');
-        int n = s.size();
-        deque<int> freq;
-        int t1 = 0;
-        char t2 = '(';
-        for (int i = 0; i < n; i++) {
-            if (s[i] == t2) {
-                t1++;
-            } else {
-                t2 = s[i];
-                freq.push_back(t1);
-                t1 = 1;
-            }
-            if (freq.size() % 2) { continue; }
-            while (!freq.empty()) {
-                int v = freq.back();
-                freq.pop_back();
-                int u = freq.back();
-                freq.pop_back();
-                while (u >= k && v >= k) {
-                    u -= k;
-                    v -= k;
-                }
-                if (freq.empty()) {
-                    freq.push_back(u);
-                    freq.push_back(v);
-                    break;
-                } else if (freq.back() == 0) {
-                    freq.pop_back();
-                    freq.back() += u;
-                    freq.push_back(v);
-                } else if (u) {
-                    freq.push_back(u);
-                    freq.push_back(v);
-                    break;
-                } else {
-                    freq.back() += v;
-                }
-            }
+    long long countNoZeroPairs(long long n) {
+        vector<int> digits;
+        while (n) {
+            digits.push_back(n % 10);
+            n /= 10;
         }
+        int m = digits.size();
 
-        string ans;
-        for (int i = 0; i < freq.size(); i++) {
-            for (int j = 0; j < freq[i]; j++) {
-                if (i % 2) {
-                    ans.push_back(')');
-                } else {
-                    ans.push_back('(');
+        vector<vector<long long>> f(m + 1, vector<long long>(2));
+        f[0][0] = 1;
+
+        for (int i = 0; i < m; i++) {
+            for (int carry = 0; carry <= 1; carry++) {
+                if (!f[i][carry]) { continue; }
+                for (int a = 1; a <= 9; a++) {
+                    for (int b = 1; b <= 9; b++) {
+                        int s = a + b + carry;
+                        if (s % 10 == digits[i]) {
+                            f[i + 1][s / 10] += f[i][carry];
+                        }
+                    }
                 }
             }
         }
+        long long ans = 0;
         return ans;
     }
 };
@@ -239,7 +212,7 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::removeSubstring, s, v);
+    perform(Solution(), &Solution::countNoZeroPairs, l);
 }
 
 // **************************************************************************
