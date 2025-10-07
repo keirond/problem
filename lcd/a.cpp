@@ -180,16 +180,26 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int smallestAbsent(vector<int> &nums) {
-        int n = nums.size();
-        sort(begin(nums), end(nums));
-        long long sm = accumulate(begin(nums), end(nums), 0LL);
-        int nxt = (sm + n) / n;
-        for (int i = 0; i < n; i++) {
-            if (nums[i] > nxt) { return nxt; }
-            if (nums[i] == nxt) { nxt++; }
+    int minArrivalsToDiscard(vector<int> &arrivals, int w, int m) {
+        int n = arrivals.size();
+        unordered_map<int, int> freq;
+        int ans = 0;
+        for (int i = 0; i < w; i++) {
+            if (++freq[arrivals[i]] > m) {
+                freq[arrivals[i]]--;
+                arrivals[i] = 0;
+                ans++;
+            }
         }
-        return nums.back() + 1;
+        for (int i = w; i < n; i++) {
+            freq[arrivals[i - w]]--;
+            if (++freq[arrivals[i]] > m) {
+                freq[arrivals[i]]--;
+                arrivals[i] = 0;
+                ans++;
+            }
+        }
+        return ans;
     }
 };
 
