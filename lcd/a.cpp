@@ -181,31 +181,48 @@ class Solution {
 public:
 
     long long countNoZeroPairs(long long n) {
+        long long tn = n;
         vector<int> digits;
-        while (n) {
-            digits.push_back(n % 10);
-            n /= 10;
+        while (tn) {
+            digits.push_back(tn % 10);
+            tn /= 10;
         }
         int m = digits.size();
 
-        vector<vector<long long>> f(m + 1, vector<long long>(2));
-        f[0][0] = 1;
+        using ll = long long;
+        vector<vector<vector<vector<ll>>>> f(
+                32, vector<vector<vector<ll>>>(
+                            2, vector<vector<ll>>(2, vector<ll>(2))));
+        // ll f[32][2][2][2];
+        f[0][0][0][0] = 1;
 
+        // f[i+1][s/10][0][0] += f[i][c][0][0]
+        // f[i+1][s/10][1][0] += f[i][c][1][0] + f[i][c][0][0]
+        // f[i+1][s/10][0][1] += f[i][c][0][1] + f[i][c][0][0]
         for (int i = 0; i < m; i++) {
             for (int carry = 0; carry <= 1; carry++) {
-                if (!f[i][carry]) { continue; }
-                for (int a = 1; a <= 9; a++) {
-                    for (int b = 1; b <= 9; b++) {
+                for (int a = 0; a <= 9; a++) {
+                    for (int b = 0; b <= 9; b++) {
                         int s = a + b + carry;
-                        if (s % 10 == digits[i]) {
-                            f[i + 1][s / 10] += f[i][carry];
+                        if (s % 10 != digits[i]) { continue; }
+                        int az = a == 0 ? 1 : 0;
+                        int bz = b == 0 ? 1 : 0;
+                        if (!az && !bz) {
+                            f[i + 1][s / 10][0][0] += f[i][carry][0][0];
+                        } else if (i > 0 && ((az && !bz) || (!az && bz))) {
+                            f[i + 1][s / 10][az][bz] +=
+                                    f[i][carry][az][bz] + f[i][carry][0][0];
                         }
                     }
                 }
             }
         }
-        long long ans = 0;
-        return ans;
+
+        if (digits[m - 1] == 1) {
+            return f[m - 1][1][0][0] + f[m - 1][1][1][0] + f[m - 1][1][0][1] +
+                   f[m][0][1][0] + f[m][0][0][1];
+        }
+        return f[m][0][0][0] + f[m][0][1][0] + f[m][0][0][1];
     }
 };
 
