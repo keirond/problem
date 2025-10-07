@@ -180,49 +180,16 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long countNoZeroPairs(long long n) {
-        long long tn = n;
-        vector<int> digits;
-        while (tn) {
-            digits.push_back(tn % 10);
-            tn /= 10;
+    int smallestAbsent(vector<int> &nums) {
+        int n = nums.size();
+        sort(begin(nums), end(nums));
+        long long sm = accumulate(begin(nums), end(nums), 0LL);
+        int nxt = (sm + n) / n;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > nxt) { return nxt; }
+            if (nums[i] == nxt) { nxt++; }
         }
-        int m = digits.size();
-
-        using ll = long long;
-        vector<vector<vector<vector<ll>>>> f(
-                32, vector<vector<vector<ll>>>(
-                            2, vector<vector<ll>>(2, vector<ll>(2))));
-        // ll f[32][2][2][2];
-        f[0][0][0][0] = 1;
-
-        // f[i+1][s/10][0][0] += f[i][c][0][0]
-        // f[i+1][s/10][1][0] += f[i][c][1][0] + f[i][c][0][0]
-        // f[i+1][s/10][0][1] += f[i][c][0][1] + f[i][c][0][0]
-        for (int i = 0; i < m; i++) {
-            for (int carry = 0; carry <= 1; carry++) {
-                for (int a = 0; a <= 9; a++) {
-                    for (int b = 0; b <= 9; b++) {
-                        int s = a + b + carry;
-                        if (s % 10 != digits[i]) { continue; }
-                        int az = a == 0 ? 1 : 0;
-                        int bz = b == 0 ? 1 : 0;
-                        if (!az && !bz) {
-                            f[i + 1][s / 10][0][0] += f[i][carry][0][0];
-                        } else if (i > 0 && ((az && !bz) || (!az && bz))) {
-                            f[i + 1][s / 10][az][bz] +=
-                                    f[i][carry][az][bz] + f[i][carry][0][0];
-                        }
-                    }
-                }
-            }
-        }
-
-        if (digits[m - 1] == 1) {
-            return f[m - 1][1][0][0] + f[m - 1][1][1][0] + f[m - 1][1][0][1] +
-                   f[m][0][1][0] + f[m][0][0][1];
-        }
-        return f[m][0][0][0] + f[m][0][1][0] + f[m][0][0][1];
+        return nums.back() + 1;
     }
 };
 
