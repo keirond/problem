@@ -180,33 +180,34 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int minArrivalsToDiscard(vector<int> &arrivals, int w, int m) {
-        int n = arrivals.size();
-        unordered_map<int, int> freq;
-        int ans = 0;
-        for (int i = 0; i < w; i++) {
-            if (++freq[arrivals[i]] > m) {
-                freq[arrivals[i]]--;
-                arrivals[i] = 0;
-                ans++;
+    int maxXorSubsequences(vector<int> &nums) {
+        vector<int> basis(31);
+        for (int d : nums) {
+            int cur = d;
+            for (int i = 30; i >= 0; i--) {
+                if (cur & (1 << i)) {
+                    if (!basis[i]) {
+                        basis[i] = cur;
+                        break;
+                    }
+                    cur ^= basis[i];
+                }
             }
         }
-        for (int i = w; i < n; i++) {
-            freq[arrivals[i - w]]--;
-            if (++freq[arrivals[i]] > m) {
-                freq[arrivals[i]]--;
-                arrivals[i] = 0;
-                ans++;
-            }
+
+        int ans = 0;
+        for (int i = 30; i >= 0; i--) {
+            if ((ans ^ basis[i]) > ans) { ans ^= basis[i]; }
         }
         return ans;
     }
 };
 
-// * END ********************************************************************
+// * END
+// ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::countNoZeroPairs, l);
+    perform(Solution(), &Solution::maxXorSubsequences, nums);
 }
 
 // **************************************************************************
