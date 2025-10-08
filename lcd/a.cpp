@@ -177,31 +177,27 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-class Solution {
-public:
-
-    int maxXorSubsequences(vector<int> &nums) {
-        vector<int> basis(31);
-        for (int d : nums) {
-            int cur = d;
-            for (int i = 30; i >= 0; i--) {
-                if (cur & (1 << i)) {
-                    if (!basis[i]) {
-                        basis[i] = cur;
-                        break;
-                    }
-                    cur ^= basis[i];
+int max_xor_subsequences(vector<int> &nums) {
+    vector<int> basis(31);
+    for (int d : nums) {
+        int cur = d;
+        for (int i = 30; i >= 0; i--) {
+            if (cur & (1 << i)) {
+                if (!basis[i]) {
+                    basis[i] = cur;
+                    break;
                 }
+                cur ^= basis[i];
             }
         }
-
-        int ans = 0;
-        for (int i = 30; i >= 0; i--) {
-            if ((ans ^ basis[i]) > ans) { ans ^= basis[i]; }
-        }
-        return ans;
     }
-};
+
+    int ans = 0;
+    for (int i = 30; i >= 0; i--) {
+        if ((ans ^ basis[i]) > ans) { ans ^= basis[i]; }
+    }
+    return ans;
+}
 
 // * END
 // ********************************************************************
