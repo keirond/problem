@@ -177,33 +177,48 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 
 // * START ******************************************************************
 
-int max_xor_subsequences(vector<int> &nums) {
-    vector<int> basis(31);
-    for (int d : nums) {
-        int cur = d;
-        for (int i = 30; i >= 0; i--) {
-            if (cur & (1 << i)) {
-                if (!basis[i]) {
-                    basis[i] = cur;
-                    break;
-                }
-                cur ^= basis[i];
+class Solution {
+public:
+
+    int countBinaryPalindromes(long long n) {
+        vector<int> digits;
+        while (n) {
+            digits.push_back(n % 2);
+            n /= 10;
+        }
+        reverse(begin(digits), end(digits));
+        info(digits);
+        n = digits.size();
+
+        vector<vector<int>> f(n + 1, vector<int>(2));
+        f[0][0] = 1, f[0][1] = 1;
+        f[1][0] = 1, f[1][1] = 2;
+        for (int k = 2; k <= n; k++) {
+            f[k][0] = f[k - 2][1];
+            f[k][1] = f[k][0] + f[k - 2][1];
+        }
+        info(f);
+
+        bool ok = true;
+        long long ans = -f[n][0];
+        if (n > 1) { ans += f[n - 1][1]; }
+        for (int i = 0; i <= n / 2; i++) {
+            if (digits[i]) { ans += f[n - i * 2][0]; }
+            if (digits[i] < digits[n - 1 - i]) {
+                ok = true;
+            } else if (digits[i] > digits[n - 1 - i]) {
+                ok = false;
             }
         }
+        if (ok) { ans++; }
+        return ans;
     }
+};
 
-    int ans = 0;
-    for (int i = 30; i >= 0; i--) {
-        if ((ans ^ basis[i]) > ans) { ans ^= basis[i]; }
-    }
-    return ans;
-}
-
-// * END
-// ********************************************************************
+// * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maxXorSubsequences, nums);
+    perform(Solution(), &Solution::countBinaryPalindromes, v);
 }
 
 // **************************************************************************
