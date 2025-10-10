@@ -181,32 +181,28 @@ class Solution {
 public:
 
     int countBinaryPalindromes(long long n) {
+        if (n == 0) { return 1; }
+        if (n == 1) { return 2; }
         vector<int> digits;
         while (n) {
-            digits.push_back(n % 2);
-            n /= 10;
+            digits.push_back(n & 1);
+            n >>= 1;
         }
         reverse(begin(digits), end(digits));
-        info(digits);
-        n = digits.size();
+        int m = digits.size();
 
-        vector<vector<int>> f(n + 1, vector<int>(2));
-        f[0][0] = 1, f[0][1] = 1;
-        f[1][0] = 1, f[1][1] = 2;
-        for (int k = 2; k <= n; k++) {
-            f[k][0] = f[k - 2][1];
-            f[k][1] = f[k][0] + f[k - 2][1];
-        }
-        info(f);
+        vector<int> f(m + 1);
+        f[1] = 1;
+        f[2] = 1;
+        for (int k = 3; k <= m; k++) { f[k] = 2 * f[k - 2]; }
 
         bool ok = true;
-        long long ans = -f[n][0];
-        if (n > 1) { ans += f[n - 1][1]; }
-        for (int i = 0; i <= n / 2; i++) {
-            if (digits[i]) { ans += f[n - i * 2][0]; }
-            if (digits[i] < digits[n - 1 - i]) {
+        long long ans = 2 * f[m - 1] - 1;
+        for (int i = 0; i < (m + 1) / 2; i++) {
+            if (digits[i]) { ans += f[m - 2 * i]; }
+            if (digits[m - 1 - i] > digits[i]) {
                 ok = true;
-            } else if (digits[i] > digits[n - 1 - i]) {
+            } else if (digits[i] > digits[m - 1 - i]) {
                 ok = false;
             }
         }
