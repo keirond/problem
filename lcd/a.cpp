@@ -180,33 +180,21 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int countBinaryPalindromes(long long n) {
-        if (n == 0) { return 1; }
-        if (n == 1) { return 2; }
-        vector<int> digits;
-        while (n) {
-            digits.push_back(n & 1);
-            n >>= 1;
-        }
-        reverse(begin(digits), end(digits));
-        int m = digits.size();
-
-        vector<int> f(m + 1);
-        f[1] = 1;
-        f[2] = 1;
-        for (int k = 3; k <= m; k++) { f[k] = 2 * f[k - 2]; }
-
-        bool ok = true;
-        long long ans = 2 * f[m - 1] - 1;
-        for (int i = 0; i < (m + 1) / 2; i++) {
-            if (digits[i]) { ans += f[m - 2 * i]; }
-            if (digits[m - 1 - i] > digits[i]) {
-                ok = true;
-            } else if (digits[i] > digits[m - 1 - i]) {
-                ok = false;
+    long long maxProduct(vector<int> &nums) {
+        int n = nums.size();
+        int mx = *max_element(begin(nums), end(nums));
+        int b = __lg(mx) + 1;
+        vector<int> f(1 << b);
+        for (int i = 0; i < n; i++) { f[nums[i]] = nums[i]; }
+        for (int i = 1; i < (1 << b); i++) {
+            for (int j = 0; j < b; j++) {
+                if (i & (1 << j)) { f[i] = max(f[i], f[i ^ (1 << j)]); }
             }
         }
-        if (ok) { ans++; }
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, 1LL * nums[i] * f[~nums[i] & ((1 << b) - 1)]);
+        }
         return ans;
     }
 };
@@ -214,7 +202,8 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::countBinaryPalindromes, v);
+    int v1, v2;
+    perform(Solution(), &Solution::minDifference, v1, v2);
 }
 
 // **************************************************************************
