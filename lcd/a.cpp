@@ -180,35 +180,21 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int totalBeauty(vector<int> &nums) {
-        int N = 1e6 + 1;
-        vector<int> spf(N);
-        iota(begin(spf), end(spf), 0);
-        for (int i = 2; i < N; i++) {
-            if (spf[i] == i) {
-                for (long long j = 1LL * i * i; j < N; j += i) {
-                    if (spf[j] == j) { spf[j] = i; }
+    int getLeastFrequentDigit(int n) {
+        vector<int> freq(10);
+        while (n) {
+            freq[n % 10]++;
+            n /= 10;
+        }
+        int ans = 9, t = INT_MAX;
+        for (int i = 0; i < 10; i++) {
+            if (freq[i]) {
+                if (freq[i] < t || (freq[i] == t && i < ans)) {
+                    ans = i;
+                    t = freq[i];
                 }
             }
         }
-
-        unordered_map<int, unordered_map<int, int>> mp;
-        int cnt = 0;
-        for (int d : nums) {
-            unordered_map<int, int> temp;
-            while (d != 1) {
-                temp[spf[d]]++;
-                d /= spf[d];
-            }
-            for (auto [k, v] : temp) { mp[k][v]++; }
-        }
-        long long ans = 0;
-        for (auto &[k, vmp] : mp) {
-            for (auto &[kk, v] : vmp) {
-                ans += 1LL * ((1 << v) - 1) * pow(k, kk);
-            }
-        }
-        int n = nums.size();
         return ans;
     }
 };
