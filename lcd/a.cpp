@@ -180,29 +180,36 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int getLeastFrequentDigit(int n) {
-        vector<int> freq(10);
-        while (n) {
-            freq[n % 10]++;
-            n /= 10;
+    int uniquePaths(vector<vector<int>> &grid) {
+        using ll = long long;
+        int n = grid.size();
+        int m = grid[0].size();
+        int mod = 1e9 + 7;
+        vector<vector<pair<ll, ll>>> f(n, vector<pair<ll, ll>>(m));
+        for (int j = 0; j < m; j++) {
+            f[0][j] = {0, 1};
+            if (grid[0][j]) { break; }
         }
-        int ans = 9, t = INT_MAX;
-        for (int i = 0; i < 10; i++) {
-            if (freq[i]) {
-                if (freq[i] < t || (freq[i] == t && i < ans)) {
-                    ans = i;
-                    t = freq[i];
+
+        for (int i = 1; i < n; i++) {
+            f[i][0] = {f[i - 1][0].second, grid[i][0] ? 0 : f[i - 1][0].second};
+            for (int j = 1; j < m; j++) {
+                if (grid[i][j]) {
+                    f[i][j] = {f[i - 1][j].second, f[i][j - 1].first};
+                } else {
+                    ll t = (f[i][j - 1].first + f[i - 1][j].second) % mod;
+                    f[i][j] = {t, t};
                 }
             }
         }
-        return ans;
+        return f[n - 1][m - 1].first;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::totalBeauty, nums);
+    perform(Solution(), &Solution::uniquePaths, grid);
 }
 
 // **************************************************************************
