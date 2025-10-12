@@ -180,36 +180,80 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int uniquePaths(vector<vector<int>> &grid) {
-        using ll = long long;
-        int n = grid.size();
-        int m = grid[0].size();
-        int mod = 1e9 + 7;
-        vector<vector<pair<ll, ll>>> f(n, vector<pair<ll, ll>>(m));
-        for (int j = 0; j < m; j++) {
-            f[0][j] = {0, 1};
-            if (grid[0][j]) { break; }
-        }
-
-        for (int i = 1; i < n; i++) {
-            f[i][0] = {f[i - 1][0].second, grid[i][0] ? 0 : f[i - 1][0].second};
-            for (int j = 1; j < m; j++) {
-                if (grid[i][j]) {
-                    f[i][j] = {f[i - 1][j].second, f[i][j - 1].first};
-                } else {
-                    ll t = (f[i][j - 1].first + f[i - 1][j].second) % mod;
-                    f[i][j] = {t, t};
-                }
+    int minOperations(string s, int k) {
+        int x = 0, y = 0;
+        for (char c : s) {
+            if (c == '1') {
+                x++;
+            } else {
+                y++;
             }
         }
-        return f[n - 1][m - 1].first;
+
+        if (!(y % k)) { return y / k; }
+        int ans = 0;
+        while (y > k && (k - y % k) % 2 == 0) {
+            if (x >= (k - y % k) / 2) {
+                return ans + y / k + 1;
+            } else {
+                int t = k - x;
+                y += x - t;
+                x = t;
+                ans++;
+            }
+        }
+
+        ans += y / k;
+        y %= k;
+        if (y % 2 && (k - y) % 2) { return -1; }
+
+        int n = s.size();
+        int t = n - k;
+        if (t == 0) { return -1; }
+        int t1 = INT_MAX, t2 = INT_MAX;
+        if (y % 2 == 0) { t1 = ((y / 2 - 1) / t + 1) * 2; }
+        if ((k - y) % 2 == 0) { t2 = (((k - y) / 2 - 1) / t + 1) * 2 + 1; }
+        return ans + min(t1, t2);
     }
 };
+// x set bit, n-x unset bit.
+// y = gcd(x, k)
+// xt, yt, kt
+// xt + ut - vt, yt - ut + vt, k = ut + vt;
+// x + u - v, y - u + v, k = u + v;
+// u = y/2;
+// toggle y/2 unset bit -> set bit
+// toggle k-y/2 set bit -> unset bit;
+// k-y/2 <= x; x + y = n
+// k + y/2 <= n;
+// n - k = 1 y/2 = 1;
+
+// y_n = 2t + (k-y_n-1);
+// y_n = k
+// y_n-1 = 2t_n-1 = 2t_n-2 + (k-y_n-2);
+
+// 2t + (k-y) with t <= min(n-k, y);
+// k + 2t - y with t <= min(n-k, y);
+// 2(t'-t) + y with t' <= min(n-k, k+2t-y);
+// k + 2t''- 2(t' - t) - y
+// k + 2t'' - 2t' + 2t - y
+
+// make y even and y <= 2*(n-k);
+// ans += 2;
+// 2 = 101
+//
+// 11111 0 -> 111
+// 3
+// t - 3
+// 1 = 10
+// 11 0000 -> 111 000 -> 1111 00 -> 1 00000 -> 111111
+// 6
+// 2t' + (k - 2t + (k-y)) = k
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::uniquePaths, grid);
+    perform(Solution(), &Solution::minOperations, s, v);
 }
 
 // **************************************************************************
