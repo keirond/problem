@@ -180,48 +180,26 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int maxWalls(vector<int> &robots, vector<int> &distance,
-                 vector<int> &walls) {
-        int n = robots.size();
-        vector<pair<int, int>> prs(n);
-        for (int i = 0; i < n; i++) { prs[i] = {robots[i], distance[i]}; }
-        sort(begin(prs), end(prs));
-        sort(begin(walls), end(walls));
-        auto get = [&](int l, int r) -> int {
-            if (l > r) { return 0; }
-            return upper_bound(begin(walls), end(walls), r) -
-                   lower_bound(begin(walls), end(walls), l);
-        };
-
-        vector<int> f(n, INT_MIN), g(n, INT_MIN);
-        f[0] = get(prs[0].first - prs[0].second, prs[0].first);
-        g[0] = get(prs[0].first, min(prs[0].first + prs[0].second,
-                                     n - 1 != 0 ? prs[1].first : INT_MAX));
-        for (int i = 1; i < n; i++) {
-            f[i] = max(f[i], f[i - 1] + get(max(prs[i].first - prs[i].second,
-                                                prs[i - 1].first + 1),
-                                            prs[i].first));
-            f[i] = max(f[i], g[i - 1] + get(max(prs[i].first - prs[i].second,
-                                                prs[i - 1].first +
-                                                        prs[i - 1].second + 1),
-                                            prs[i].first));
-
-            g[i] = max(g[i], f[i - 1] + get(prs[i].first,
-                                            min(prs[i].first + prs[i].second,
-                                                n - 1 != i ? prs[i + 1].first
-                                                           : INT_MAX)));
-            g[i] = max(
-                    g[i],
-                    g[i - 1] +
-                            get(prs[i].first + ((prs[i - 1].first +
-                                                         prs[i - 1].second >=
-                                                 prs[i].first)
-                                                        ? 1
-                                                        : 0),
-                                min(prs[i].first + prs[i].second,
-                                    n - 1 != i ? prs[i + 1].first : INT_MAX)));
+    long long maxProfit(vector<int> &prices, vector<int> &strategy, int k) {
+        int n = prices.size();
+        long long profit = 0;
+        for (int i = 0; i < n; i++) { profit += 1LL * prices[i] * strategy[i]; }
+        long long left = 0, right = 0;
+        for (int i = 0; i < k / 2; i++) {
+            left += 1LL * prices[i] * (-strategy[i]);
         }
-        return max(f[n - 1], g[n - 1]);
+        for (int i = k / 2; i < k; i++) {
+            right += 1LL * prices[i] * (1 - strategy[i]);
+        }
+        long long ans = max(0LL, left + right);
+        for (int r = k, m = k / 2, l = 0; r < n; r++, l++, m++) {
+            left -= 1LL * prices[l] * (-strategy[l]);
+            left += 1LL * prices[m] * (-strategy[m]);
+            right -= 1LL * prices[m] * (1 - strategy[m]);
+            right += 1LL * prices[r] * (1 - strategy[r]);
+            ans = max(ans, left + right);
+        }
+        return ans + profit;
     }
 };
 
