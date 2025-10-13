@@ -180,34 +180,27 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long maxProfit(vector<int> &prices, vector<int> &strategy, int k) {
-        int n = prices.size();
-        long long profit = 0;
-        for (int i = 0; i < n; i++) { profit += 1LL * prices[i] * strategy[i]; }
-        long long left = 0, right = 0;
-        for (int i = 0; i < k / 2; i++) {
-            left += 1LL * prices[i] * (-strategy[i]);
+    long long minArraySum(vector<int> &nums, int k) {
+        using ll = long long;
+        int n = nums.size();
+        unordered_map<int, int> div;
+        vector<ll> f(n + 1, LLONG_MAX);
+        div[0] = 0, f[0] = 0;
+        ll sm = 0;
+        for (int i = 1; i <= n; i++) {
+            sm += nums[i - 1];
+            if (!div.contains(sm % k)) { div[sm % k] = i; }
+            f[i] = min(f[i - 1] + nums[i - 1], f[div[sm % k]]);
+            div[sm % k] = i;
         }
-        for (int i = k / 2; i < k; i++) {
-            right += 1LL * prices[i] * (1 - strategy[i]);
-        }
-        long long ans = max(0LL, left + right);
-        for (int r = k, m = k / 2, l = 0; r < n; r++, l++, m++) {
-            left -= 1LL * prices[l] * (-strategy[l]);
-            left += 1LL * prices[m] * (-strategy[m]);
-            right -= 1LL * prices[m] * (1 - strategy[m]);
-            right += 1LL * prices[r] * (1 - strategy[r]);
-            ans = max(ans, left + right);
-        }
-        return ans + profit;
+        return f[n];
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    vector<int> nums1, nums2, nums3;
-    perform(Solution(), &Solution::maxWalls, nums1, nums2, nums3);
+    perform(Solution(), &Solution::minArraySum, nums, v);
 }
 
 // **************************************************************************
