@@ -180,45 +180,56 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    vector<int> maxValue(vector<int> &nums) {
-        int n = nums.size();
-        vector<int> ans(n);
-        int mx = INT_MIN;
-        for (int i = 0; i < n; i++) {
-            mx = max(mx, nums[i]);
-            ans[i] = mx;
-        }
-
-        vector<int> tmp(nums);
-        sort(begin(tmp), end(tmp));
-        tmp.erase(unique(begin(tmp), end(tmp)), end(tmp));
-        auto get = [&](int m) {
-            return lower_bound(begin(tmp), end(tmp), m) - begin(tmp);
+    int maxWalls(vector<int> &robots, vector<int> &distance,
+                 vector<int> &walls) {
+        int n = robots.size();
+        vector<pair<int, int>> prs(n);
+        for (int i = 0; i < n; i++) { prs[i] = {robots[i], distance[i]}; }
+        sort(begin(prs), end(prs));
+        sort(begin(walls), end(walls));
+        auto get = [&](int l, int r) -> int {
+            if (l > r) { return 0; }
+            return upper_bound(begin(walls), end(walls), r) -
+                   lower_bound(begin(walls), end(walls), l);
         };
 
-        vector<int> tr(2 * n, INT_MIN);
-        for (int i = n - 1; i >= 0; i--) {
-            int l = 0;
-            int r = get(ans[i]) - 1;
-            int t = INT_MIN;
-            for (l += n, r += n; l <= r; l >>= 1, r >>= 1) {
-                if (l & 1) { t = max(t, tr[l++]); }
-                if (!(r & 1)) { t = max(t, tr[r--]); }
-            }
-            ans[i] = max(ans[i], t);
-            int j = get(nums[i]);
-            for (j += n, tr[j] = ans[i]; j > 0; j >>= 1) {
-                tr[j >> 1] = max(tr[j], tr[j ^ 1]);
-            }
+        vector<int> f(n, INT_MIN), g(n, INT_MIN);
+        f[0] = get(prs[0].first - prs[0].second, prs[0].first);
+        g[0] = get(prs[0].first, min(prs[0].first + prs[0].second,
+                                     n - 1 != 0 ? prs[1].first : INT_MAX));
+        for (int i = 1; i < n; i++) {
+            f[i] = max(f[i], f[i - 1] + get(max(prs[i].first - prs[i].second,
+                                                prs[i - 1].first + 1),
+                                            prs[i].first));
+            f[i] = max(f[i], g[i - 1] + get(max(prs[i].first - prs[i].second,
+                                                prs[i - 1].first +
+                                                        prs[i - 1].second + 1),
+                                            prs[i].first));
+
+            g[i] = max(g[i], f[i - 1] + get(prs[i].first,
+                                            min(prs[i].first + prs[i].second,
+                                                n - 1 != i ? prs[i + 1].first
+                                                           : INT_MAX)));
+            g[i] = max(
+                    g[i],
+                    g[i - 1] +
+                            get(prs[i].first + ((prs[i - 1].first +
+                                                         prs[i - 1].second >=
+                                                 prs[i].first)
+                                                        ? 1
+                                                        : 0),
+                                min(prs[i].first + prs[i].second,
+                                    n - 1 != i ? prs[i + 1].first : INT_MAX)));
         }
-        return ans;
+        return max(f[n - 1], g[n - 1]);
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::maxValue, nums);
+    vector<int> nums1, nums2, nums3;
+    perform(Solution(), &Solution::maxWalls, nums1, nums2, nums3);
 }
 
 // **************************************************************************
