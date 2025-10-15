@@ -180,27 +180,51 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long minArraySum(vector<int> &nums, int k) {
-        using ll = long long;
-        int n = nums.size();
-        unordered_map<int, int> div;
-        vector<ll> f(n + 1, LLONG_MAX);
-        div[0] = 0, f[0] = 0;
-        ll sm = 0;
-        for (int i = 1; i <= n; i++) {
-            sm += nums[i - 1];
-            if (!div.contains(sm % k)) { div[sm % k] = i; }
-            f[i] = min(f[i - 1] + nums[i - 1], f[div[sm % k]]);
-            div[sm % k] = i;
+    int pown(int a, int n, int m) {
+        int ans = 1;
+        while (n) {
+            if (n & 1) { ans = 1LL * ans * a % m; }
+            a = 1LL * a * a % m;
+            n >>= 1;
         }
-        return f[n];
+        return ans;
+    }
+
+    int xorAfterQueries(vector<int> &nums, vector<vector<int>> &queries) {
+        int n = nums.size();
+        int m = sqrt(n);
+        int mod = 1e9 + 7;
+        vector<vector<int>> f(m + 1, vector<int>(n, 1));
+        for (auto &d : queries) {
+            int l = d[0], r = d[1], k = d[2], v = d[3];
+            if (k <= m) {
+                f[k][l] = 1LL * f[k][l] * v % mod;
+                int rr = r - (r - l) % k + k;
+                if (rr < n) {
+                    f[k][rr] = 1LL * f[k][rr] * pown(v, mod - 2, mod) % mod;
+                }
+            } else {
+                for (int i = l; i <= r; i += k) {
+                    nums[i] = 1LL * nums[i] * v % mod;
+                }
+            }
+        }
+        for (int k = 1; k <= m; k++) {
+            for (int i = 0; i < n; i++) {
+                if (i >= k) { f[k][i] = 1LL * f[k][i] * f[k][i - k] % mod; }
+                nums[i] = 1LL * nums[i] * f[k][i] % mod;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) { ans ^= nums[i]; }
+        return ans;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::minArraySum, nums, v);
+    perform(Solution(), &Solution::xorAfterQueries, nums, grid);
 }
 
 // **************************************************************************
