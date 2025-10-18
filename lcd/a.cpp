@@ -180,43 +180,41 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int pown(int a, int n, int m) {
-        int ans = 1;
-        while (n) {
-            if (n & 1) { ans = 1LL * ans * a % m; }
-            a = 1LL * a * a % m;
-            n >>= 1;
+    int lengthLongestPath(string input) {
+        vector<string> parts;
+        string delimiter = "\n";
+        int start = 0, end = 0;
+        while ((end = input.find(delimiter, start)) != string::npos) {
+            parts.push_back(input.substr(start, end - start));
+            start = end + delimiter.length();
         }
-        return ans;
-    }
+        parts.push_back(input.substr(start));
 
-    int xorAfterQueries(vector<int> &nums, vector<vector<int>> &queries) {
-        int n = nums.size();
-        int m = sqrt(n);
-        int mod = 1e9 + 7;
-        vector<vector<int>> f(m + 1, vector<int>(n, 1));
-        for (auto &d : queries) {
-            int l = d[0], r = d[1], k = d[2], v = d[3];
-            if (k <= m) {
-                f[k][l] = 1LL * f[k][l] * v % mod;
-                int rr = r - (r - l) % k + k;
-                if (rr < n) {
-                    f[k][rr] = 1LL * f[k][rr] * pown(v, mod - 2, mod) % mod;
-                }
-            } else {
-                for (int i = l; i <= r; i += k) {
-                    nums[i] = 1LL * nums[i] * v % mod;
-                }
-            }
-        }
-        for (int k = 1; k <= m; k++) {
-            for (int i = 0; i < n; i++) {
-                if (i >= k) { f[k][i] = 1LL * f[k][i] * f[k][i - k] % mod; }
-                nums[i] = 1LL * nums[i] * f[k][i] % mod;
-            }
-        }
         int ans = 0;
-        for (int i = 0; i < n; i++) { ans ^= nums[i]; }
+        int n = parts.size();
+        int len = 0;
+        deque<int> qu;
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            int j = 0;
+            for (; j < parts[i].size(); j++) {
+                if (parts[i][j] == '\t') {
+                    cnt++;
+                } else {
+                    break;
+                }
+            }
+            while (cnt < qu.size()) {
+                len -= qu.back();
+                qu.pop_back();
+            }
+            int t = parts[i].size() - j;
+            qu.push_back(t);
+            len += t;
+            if (parts[i].find('.') != string::npos) {
+                ans = max(ans, len + (int)qu.size() - 1);
+            }
+        }
         return ans;
     }
 };
@@ -224,7 +222,7 @@ public:
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::xorAfterQueries, nums, grid);
+    perform(Solution(), &Solution::lengthLongestPath, s);
 }
 
 // **************************************************************************
