@@ -180,49 +180,39 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int lengthLongestPath(string input) {
-        vector<string> parts;
-        string delimiter = "\n";
-        int start = 0, end = 0;
-        while ((end = input.find(delimiter, start)) != string::npos) {
-            parts.push_back(input.substr(start, end - start));
-            start = end + delimiter.length();
-        }
-        parts.push_back(input.substr(start));
-
-        int ans = 0;
-        int n = parts.size();
-        int len = 0;
-        deque<int> qu;
+    long long numOfSubsequences(string s) {
+        int n = s.size();
+        long long l = 0, c = 0, lc = 0, ct = 0, lct = 0;
         for (int i = 0; i < n; i++) {
-            int cnt = 0;
-            int j = 0;
-            for (; j < parts[i].size(); j++) {
-                if (parts[i][j] == '\t') {
-                    cnt++;
-                } else {
-                    break;
-                }
-            }
-            while (cnt < qu.size()) {
-                len -= qu.back();
-                qu.pop_back();
-            }
-            int t = parts[i].size() - j;
-            qu.push_back(t);
-            len += t;
-            if (parts[i].find('.') != string::npos) {
-                ans = max(ans, len + (int)qu.size() - 1);
+            if (s[i] == 'L') {
+                l++;
+            } else if (s[i] == 'C') {
+                c++;
+                lc += l;
+            } else if (s[i] == 'T') {
+                ct += c;
+                lct += lc;
             }
         }
-        return ans;
+
+        long long mx = max(lc, ct);
+        long long t = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (s[i] == 'T') {
+                t++;
+            } else if (s[i] == 'L') {
+                l--;
+            }
+            mx = max(mx, 1LL * l * t);
+        }
+        return lct + mx;
     }
 };
 
 // * END ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::lengthLongestPath, s);
+    perform(Solution(), &Solution::numOfSubsequences, s);
 }
 
 // **************************************************************************
