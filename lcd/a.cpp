@@ -180,32 +180,20 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    long long numOfSubsequences(string s) {
-        int n = s.size();
-        long long l = 0, c = 0, lc = 0, ct = 0, lct = 0;
-        for (int i = 0; i < n; i++) {
-            if (s[i] == 'L') {
-                l++;
-            } else if (s[i] == 'C') {
-                c++;
-                lc += l;
-            } else if (s[i] == 'T') {
-                ct += c;
-                lct += lc;
+    int countTrapezoids(vector<vector<int>> &points) {
+        int mod = 1e9 + 7;
+        unordered_map<int, int> mp;
+        for (auto &d : points) { mp[d[1]]++; }
+        int ans = 0;
+        long long sm = 0;
+        for (auto [_, t] : mp) {
+            if (t >= 2) {
+                int d = (1LL * t * (t - 1) / 2) % mod;
+                ans = (sm * d % mod + ans) % mod;
+                sm += d;
             }
         }
-
-        long long mx = max(lc, ct);
-        long long t = 0;
-        for (int i = n - 1; i >= 0; i--) {
-            if (s[i] == 'T') {
-                t++;
-            } else if (s[i] == 'L') {
-                l--;
-            }
-            mx = max(mx, 1LL * l * t);
-        }
-        return lct + mx;
+        return ans;
     }
 };
 
