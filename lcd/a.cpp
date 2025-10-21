@@ -180,17 +180,18 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    int countTrapezoids(vector<vector<int>> &points) {
-        int mod = 1e9 + 7;
-        unordered_map<int, int> mp;
-        for (auto &d : points) { mp[d[1]]++; }
-        int ans = 0;
-        long long sm = 0;
-        for (auto [_, t] : mp) {
-            if (t >= 2) {
-                int d = (1LL * t * (t - 1) / 2) % mod;
-                ans = (sm * d % mod + ans) % mod;
-                sm += d;
+    string processStr(string s) {
+        string ans;
+        for (char c : s) {
+            if (c == '*') {
+                if (!ans.empty()) { ans.pop_back(); }
+            } else if (c == '#') {
+                int n = ans.size();
+                for (int i = 0; i < n; i++) { ans.push_back(ans[i]); }
+            } else if (c == '%') {
+                reverse(begin(ans), end(ans));
+            } else {
+                ans.push_back(c);
             }
         }
         return ans;
