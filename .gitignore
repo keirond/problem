@@ -1,10 +1,10 @@
-.idea/
-node_modules/
-.cph/
+.idea/**
+node_modules/**
+.cph/**
 
 *.o
 *.out
 *.in.txt
 *.out.txt
 
-cfs/temp/*.cpp
+codeforces/temp/*.cpp
