@@ -12,5 +12,5 @@ void next_permutations_of_an_array(vector<int> &nums) {
 
 int main() {
     vector<int> nums = {1, 2, 3, 4, 5, 4};
-    next_permutations_of_an_array(nums);
+    // next_permutations_of_an_array(nums);
 }
