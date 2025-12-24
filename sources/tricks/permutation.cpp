@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void next_permutations_of_an_array(vector<int> &nums) {
+void Next_Permutations_of_an_Array(vector<int> &nums) {
     int n = nums.size();
     sort(begin(nums), end(nums));
     do {
@@ -12,5 +12,5 @@ void next_permutations_of_an_array(vector<int> &nums) {
 
 int main() {
     vector<int> nums = {1, 2, 3, 4, 5, 4};
-    // next_permutations_of_an_array(nums);
+    // Next_Permutations_of_an_Array(nums);
 }
