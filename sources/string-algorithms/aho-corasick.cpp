@@ -15,7 +15,7 @@ int add() {
     return nn++;
 }
 
-void build(vector<string> &ps) {
+void buildAc(vector<string> &ps) {
     nx.clear();
     en.clear();
     lk.clear();
@@ -68,7 +68,7 @@ int main() {
     vector<string> ps{"abc", "bcd", "efg"};
     string s("abcdqefgdabcdefgdagh");
 
-    build(ps);
+    buildAc(ps);
 
     int u = 0;
     for (char c : s) {
