@@ -1,10 +1,8 @@
-.idea/**
-node_modules/**
-.cph/**
+.idea/
+.vscode/
 
 *.o
 *.out
 *.in.txt
 *.out.txt
 
-codeforces/temp/*.cpp
