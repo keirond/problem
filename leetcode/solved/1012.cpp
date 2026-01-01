@@ -45,9 +45,6 @@ public:
 
 int main() {
     Solution s;
-    cout << s.numDupDigitsAtMostN(20) << endl;
-    cout << s.numDupDigitsAtMostN(100) << endl;
-    cout << s.numDupDigitsAtMostN(1000) << endl;
     cout << s.numDupDigitsAtMostN(1e9) << endl;
     return 0;
 }
