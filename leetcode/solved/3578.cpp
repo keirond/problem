@@ -7,14 +7,6 @@ public:
     int mod = 1e9 + 7;
     int countPartitions(vector<int> &nums, int k) {
         int n = nums.size();
-        vector<int> mntr(2 * n, INT_MAX), mxtr(2 * n, INT_MIN);
-        for (int i = 0; i < n; i++) {
-            int j = i;
-            for (j += n, mntr[j] = nums[i], mxtr[j] = nums[i]; j > 1; j >>= 1) {
-                mntr[j >> 1] = min(mntr[j], mntr[j ^ 1]);
-                mxtr[j >> 1] = max(mxtr[j], mxtr[j ^ 1]);
-            }
-        }
 
         vector<long long> f(n + 1), p(n + 2);
         p[n + 1] = 0;
@@ -39,8 +31,11 @@ public:
                 if (!mndq.empty() && r < mndq.front().second) {
                     mndq.pop_front();
                 }
-                if (mxdq.front().first - mndq.front().first > k) { r--; }
-                else break;
+                if (mxdq.front().first - mndq.front().first > k) {
+                    r--;
+                } else {
+                    break;
+                }
             }
 
             f[i] = (p[i + 1] - p[r + 2]) % mod;
@@ -50,4 +45,3 @@ public:
         return f[0];
     }
 };
-
