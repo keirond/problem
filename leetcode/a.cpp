@@ -180,28 +180,59 @@ void perform(Obj &&obj, MemFn memfn, Args &&...args) {
 class Solution {
 public:
 
-    string processStr(string s) {
-        string ans;
-        for (char c : s) {
-            if (c == '*') {
-                if (!ans.empty()) { ans.pop_back(); }
-            } else if (c == '#') {
-                int n = ans.size();
-                for (int i = 0; i < n; i++) { ans.push_back(ans[i]); }
-            } else if (c == '%') {
-                reverse(begin(ans), end(ans));
-            } else {
-                ans.push_back(c);
+    int mod = 1e9 + 7;
+    int countPartitions(vector<int> &nums, int k) {
+        int n = nums.size();
+        vector<int> mntr(2 * n, INT_MAX), mxtr(2 * n, INT_MIN);
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            for (j += n, mntr[j] = nums[i], mxtr[j] = nums[i]; j > 1; j >>= 1) {
+                mntr[j >> 1] = min(mntr[j], mntr[j ^ 1]);
+                mxtr[j >> 1] = max(mxtr[j], mxtr[j ^ 1]);
             }
         }
-        return ans;
+
+        vector<long long> f(n + 1), p(n + 2);
+        p[n + 1] = 0;
+        f[n] = 1;
+        p[n] = 1;
+
+        for (int i = n - 1; i >= 0; i--) {
+            int l = i, r = n - 1;
+            while (l < r) {
+                int m = l + (r - l + 1 >> 1);
+                int mn = INT_MAX, mx = INT_MIN;
+                for (int tl = i + n, tr = m + n; tl <= tr; tl >>= 1, tr >>= 1) {
+                    if (tl & 1) {
+                        mn = min(mn, mntr[tl]);
+                        mx = max(mx, mxtr[tl]);
+                        tl++;
+                    }
+                    if (!(tr & 1)) {
+                        mn = min(mn, mntr[tr]);
+                        mx = max(mx, mxtr[tr]);
+                        tr--;
+                    }
+                }
+                if (mx - mn <= k) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            f[i] = (p[i + 1] - p[r + 2]) % mod;
+            f[i] = (f[i] + mod) % mod;
+            p[i] = (p[i + 1] + f[i]) % mod;
+        }
+        return f[0];
     }
 };
 
-// * END ********************************************************************
+// * END
+// ********************************************************************
 
 void solve(int test_case [[maybe_unused]]) {
-    perform(Solution(), &Solution::numOfSubsequences, s);
+    perform(Solution(), &Solution::countPartitions, nums, v);
 }
 
 // **************************************************************************
