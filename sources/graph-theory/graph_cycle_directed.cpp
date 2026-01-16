@@ -26,6 +26,7 @@ bool dfs(int u) {
     return false;
 }
 
+// Find the list of edges (edge_ids) that forms a graph cycle if exists
 int main() {
     cin >> n >> m;
     adj.assign(n, vector<pair<int, int>>());
