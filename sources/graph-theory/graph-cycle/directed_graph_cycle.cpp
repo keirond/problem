@@ -1,3 +1,5 @@
+// https://judge.yosupo.jp/problem/cycle_detection
+
 #include <bits/stdc++.h>
 using namespace std;
 
