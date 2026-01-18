@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run C++ (script)",
+      "type": "shell",
+      "command": "run",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        {
+          "owner": "cpp",
+          "pattern": [
+            {
+              "regexp": "^(.+):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+              "file": 1,
+              "line": 2,
+              "column": 3,
+              "severity": 4,
+              "message": 5
+            },
+            {
+              "regexp": "^\\s*#\\d+\\s+0x[0-9a-f]+.*\\s+(.+\\.cpp):(\\d+)$",
+              "file": 1,
+              "line": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
