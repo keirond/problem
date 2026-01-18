@@ -19,7 +19,7 @@ int dijkstra(int src, int dest) {
         for (auto [v, w] : adj[u]) {
             if (f[u] + w < f[v]) {
                 f[v] = f[u] + w;
-                f[v] = u;
+                g[v] = u;
                 pq.emplace(f[v], v);
             }
         }
